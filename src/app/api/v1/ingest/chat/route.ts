@@ -8,15 +8,20 @@ import {
   findUserByEmailInOrg,
 } from "@/server/create-request";
 import { resolveChatIngestOrgId } from "@/server/tenant-resolution";
+import { detectRequestIntent } from "@/server/ai/intent-detection";
 
 export const runtime = "nodejs";
 
 const WINDOW_MS = 60_000;
 
 const bodySchema = z.object({
-  requestTypeSlug: z.string().min(1).max(64),
+  requestTypeSlug: z.string().min(1).max(64).optional(),
   requesterEmail: z.string().email(),
-  payload: z.record(z.string(), z.unknown()),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  message: z.string().min(1).max(2000).optional(),
+}).refine((data) => data.requestTypeSlug || data.message, {
+  message: "Either requestTypeSlug or message must be provided",
+  path: ["requestTypeSlug", "message"],
 });
 
 /**
@@ -69,10 +74,36 @@ export async function POST(req: Request) {
     );
   }
 
-  const type = await findRequestTypeBySlug(orgId, parsed.data.requestTypeSlug);
+  let { requestTypeSlug, payload, message } = parsed.data;
+
+  // AI-assisted intent detection if no explicit slug
+  if (!requestTypeSlug && message) {
+    const detected = await detectRequestIntent(orgId, message);
+    if (!detected.slug) {
+      return Response.json(
+        { 
+          error: "Could not detect request intent from message", 
+          code: "ambiguous_intent",
+          reasoning: detected.reasoning 
+        },
+        { status: 422 },
+      );
+    }
+    requestTypeSlug = detected.slug;
+    payload = { ...detected.payload, ...payload };
+  }
+
+  if (!requestTypeSlug) {
+    return Response.json(
+      { error: "Request type slug is required", code: "missing_type" },
+      { status: 400 },
+    );
+  }
+
+  const type = await findRequestTypeBySlug(orgId, requestTypeSlug);
   if (!type) {
     return Response.json(
-      { error: "Unknown request type slug", code: "unknown_type" },
+      { error: "Unknown request type slug", code: "unknown_type", slug: requestTypeSlug },
       { status: 404 },
     );
   }
@@ -86,13 +117,14 @@ export async function POST(req: Request) {
   }
 
   const fieldSchema = parseFieldSchema(type.fieldSchema);
-  const payloadCheck = buildPayloadSchema(fieldSchema.fields).safeParse(parsed.data.payload);
+  const payloadCheck = buildPayloadSchema(fieldSchema.fields).safeParse(payload ?? {});
   if (!payloadCheck.success) {
     return Response.json(
       {
         error: "Payload validation failed",
         code: "validation_error",
         details: payloadCheck.error.flatten(),
+        message: "The message did not contain all required fields for this request type.",
       },
       { status: 422 },
     );
@@ -110,7 +142,7 @@ export async function POST(req: Request) {
       typeRiskDefaults: type.riskDefaults,
       auditAction: "request_created_chat_ingest",
       auditActorId: null,
-      auditMetadata: { ingest: "chat" },
+      auditMetadata: { ingest: "chat", mode: message ? "ai_assisted" : "direct" },
     });
     id = res.id;
   } catch (e) {

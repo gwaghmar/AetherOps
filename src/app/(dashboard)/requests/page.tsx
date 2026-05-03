@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { and, desc, eq, inArray, lt } from "drizzle-orm";
 import { db } from "@/db";
 import {
@@ -40,6 +40,7 @@ export default async function RequestsHubPage({
       typeTitle: requestType.title,
       assignedApproverId: requestTable.assignedApproverId,
       createdAt: requestTable.createdAt,
+      expiresAt: requestTable.expiresAt,
     })
     .from(requestTable)
     .innerJoin(requestType, eq(requestTable.requestTypeId, requestType.id))
@@ -86,7 +87,11 @@ export default async function RequestsHubPage({
     approverEmail: r.assignedApproverId
       ? (emailByApproverId.get(r.assignedApproverId) ?? null)
       : null,
+    expiresAt: r.expiresAt,
   }));
+
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
 
   return (
     <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
@@ -94,6 +99,7 @@ export default async function RequestsHubPage({
         catalog={catalog}
         requests={myRequests}
         isAdmin={isAdmin}
+        now={now}
         listPagination={{
           cursorActive: Boolean(cursor),
           nextBeforeIso: nextCursor,

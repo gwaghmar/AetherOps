@@ -1,8 +1,9 @@
-﻿import { asc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 import { requireSession } from "@/lib/session";
 import { UserRoleForm } from "./user-role-form";
+import { OffboardButton } from "./offboard-button";
 
 export default async function AdminUsersPage() {
   const session = await requireSession();
@@ -49,10 +50,13 @@ export default async function AdminUsersPage() {
             {m.id === session.user.id ? (
               <span className="text-xs text-zinc-500">This is you</span>
             ) : (
-              <UserRoleForm
-                userId={m.id}
-                currentRole={m.role ?? "requester"}
-              />
+              <div className="flex items-center gap-3">
+                <UserRoleForm
+                  userId={m.id}
+                  currentRole={m.role ?? "requester"}
+                />
+                <OffboardButton userId={m.id} userName={m.name} />
+              </div>
             )}
           </li>
         ))}

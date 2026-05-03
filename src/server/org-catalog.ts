@@ -10,6 +10,7 @@ export async function fetchOrgCatalogTiles(organizationId: string) {
       slug: requestType.slug,
       title: requestType.title,
       description: requestType.description,
+      fieldSchema: requestType.fieldSchema,
     })
     .from(requestType)
     .where(

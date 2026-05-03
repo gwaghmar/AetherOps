@@ -4,6 +4,8 @@ import { request as requestTable } from "@/db/schema";
 import { enqueueFulfillmentJob } from "@/server/fulfillment-queue";
 import { recordAuditEvent } from "@/server/audit";
 
+type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
 const NOTIFY_BEFORE_EXPIRY_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 /**
@@ -35,7 +37,7 @@ export async function scanAndEnqueueRevocations() {
           requestId: req.id,
           actorId: null, // System-triggered
           jobType: "revoke",
-        }, tx as any);
+        }, tx);
 
         // Optional: Update status to revocation_pending to show intent in UI
         await tx
@@ -50,7 +52,7 @@ export async function scanAndEnqueueRevocations() {
           entityId: req.id,
           action: "revocation_enqueued",
           metadata: { expiresAt: req.expiresAt },
-        }, tx as any);
+        }, tx);
       });
     } catch (err) {
       console.error(`[revocation] Failed to enqueue revocation for ${req.id}:`, err);

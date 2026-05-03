@@ -1,5 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { sso } from "@better-auth/sso";
+import { scim } from "@better-auth/scim";
 import { count, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
@@ -163,4 +165,8 @@ export const auth = betterAuth({
         }
       : {}),
   },
+  plugins: [
+    sso(),
+    scim(),
+  ],
 });

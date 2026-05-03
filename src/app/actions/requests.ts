@@ -21,6 +21,8 @@ const createRequestInputSchema = z.object({
   requestTypeId: z.uuid(),
   payload: z.record(z.string(), z.unknown()),
   expiresAt: z.string().datetime().optional().nullable(),
+  isEmergencyOverride: z.boolean().optional(),
+  overrideReason: z.string().optional(),
 });
 
 const decideApprovalInputSchema = z.object({
@@ -45,6 +47,8 @@ export async function createRequestAction(input: {
   requestTypeId: string;
   payload: Record<string, unknown>;
   expiresAt?: string | null;
+  isEmergencyOverride?: boolean;
+  overrideReason?: string;
 }) {
   const boundary = createRequestInputSchema.safeParse(input);
   if (!boundary.success) {
@@ -87,6 +91,8 @@ export async function createRequestAction(input: {
       requestTypeId: type.id,
       payload: parsed.data as Record<string, unknown>,
       expiresAt: expiresAtDate,
+      isEmergencyOverride: boundary.data.isEmergencyOverride,
+      overrideReason: boundary.data.overrideReason,
       typeSlug: type.slug,
       typeTitle: type.title,
       typeRiskDefaults: type.riskDefaults,

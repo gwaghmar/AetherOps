@@ -7,6 +7,7 @@ import {
 } from "@/lib/approval-email-token";
 import { getPublicAppName, getPublicAppUrl } from "@/lib/env";
 import { sendTransactionalEmail } from "@/server/email/send-email";
+import { sendSlackApprovalMessage } from "./slack";
 
 export async function sendRequestCreatedNotifications(input: {
   requestId: string;
@@ -125,6 +126,21 @@ ${buttons}
       to: approver.email,
       subject: `[${appName}] Approve? ${typeTitle} — ${input.requesterName}`,
       html,
+    });
+
+    const payloadText = Object.entries(payload)
+      .map(([k, v]) => `• *${k}:* ${v}`)
+      .join("\n");
+
+    void sendSlackApprovalMessage({
+      organizationId: input.organizationId,
+      requestId: input.requestId,
+      requestTitle: typeTitle,
+      requesterName: input.requesterName,
+      requesterEmail: input.requesterEmail,
+      managerEmail: approver.email,
+      reviewUrl: input.reviewUrl,
+      payloadSummary: payloadText || "No extra fields.",
     });
   }
 

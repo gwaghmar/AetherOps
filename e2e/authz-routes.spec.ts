@@ -4,7 +4,6 @@ test.describe("Authz on dashboard routes", () => {
   test("requester is redirected from /approvals and /admin/types to /", async ({
     page,
   }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
 
     const ts = Date.now();
     const email = `authz-req-${ts}@example.com`;
@@ -47,7 +46,6 @@ test.describe("Authz on dashboard routes", () => {
   test("approver can open /approvals but not /admin/types", async ({
     page,
   }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
 
     const ts = Date.now();
     const email = `authz-appr-${ts}@example.com`;

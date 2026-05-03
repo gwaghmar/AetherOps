@@ -4,7 +4,6 @@ test.describe("API security", () => {
   test("fulfillment worker rejects missing bearer when CRON_SECRET is set", async ({
     request,
   }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
     test.skip(
       !process.env.CRON_SECRET?.trim(),
       "CRON_SECRET (set in .env.local to enable this check)",
@@ -15,7 +14,6 @@ test.describe("API security", () => {
   });
 
   test("fulfillment worker rejects wrong bearer", async ({ request }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
     test.skip(!process.env.CRON_SECRET?.trim(), "CRON_SECRET");
 
     const res = await request.post("/api/internal/worker/fulfillment", {
@@ -27,7 +25,6 @@ test.describe("API security", () => {
   test("fulfillment worker returns 503 when CRON_SECRET unset", async ({
     request,
   }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
     test.skip(
       Boolean(process.env.CRON_SECRET?.trim()),
       "Skip when CRON_SECRET is set (use other tests)",
@@ -42,7 +39,6 @@ test.describe("API security", () => {
   test("audit export & PDF return 401 without session", async ({
     request,
   }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
 
     const q = "from=2024-01-01&to=2024-01-31";
     const csv = await request.get(`/api/admin/audit-export?${q}`);
@@ -55,7 +51,6 @@ test.describe("API security", () => {
   test("Slack interactions returns 503 when signing secret unset", async ({
     request,
   }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
     test.skip(
       Boolean(process.env.SLACK_SIGNING_SECRET?.trim()),
       "Skip when SLACK_SIGNING_SECRET is set",
@@ -73,7 +68,6 @@ test.describe("API security", () => {
   test("Slack interactions returns 401 on bad signature when secret is set", async ({
     request,
   }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
     test.skip(
       !process.env.SLACK_SIGNING_SECRET?.trim(),
       "Set SLACK_SIGNING_SECRET in .env.local to run",
@@ -94,7 +88,6 @@ test.describe("API security", () => {
   });
 
   test("email approval POST rejects missing token", async ({ request }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
 
     const res = await request.post("/api/approvals/email", {
       data: {},
@@ -106,7 +99,6 @@ test.describe("API security", () => {
   });
 
   test("email approval POST rejects garbage token", async ({ request }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
 
     const res = await request.post("/api/approvals/email", {
       data: { token: "not-a-real-token" },

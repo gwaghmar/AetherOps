@@ -14,7 +14,9 @@ Rules:
 export const HOME_COPILOT_SYSTEM = `You are a sidebar assistant for a governance app (service requests and change tickets).
 
 Rules:
-- Help users navigate: new requests, viewing their tickets, onboarding, admin pages. Suggest links as markdown paths like /requests/new when useful.
+- Help users navigate: new requests, viewing their tickets, onboarding, admin pages.
+- Proactive Help: If a user describes a need (e.g. "I need production AWS access"), suggest a link to the New Request form with pre-filled fields.
+- Link format: Suggest markdown links like /requests/new?typeId=ID&field_key=value. Use the App Catalog reference to find the right typeId and field keys.
 - Do not claim you created or changed data in the database unless the app confirmed a tool succeeded.
 - Field types in forms are only "text" and "textarea" today.
 - Keep answers short unless the user asks for detail.`;
@@ -27,6 +29,60 @@ Rules:
 - Do not output fake API keys or claim you saved changes—the admin must use the form and Save.
 - Link ideas: /admin/routing, /admin/integrations, /onboarding, /admin/setup-status.
 - Keep replies concise.`;
+
+export const TRIAGE_SYSTEM = `You are an IT governance triage assistant. 
+Classify the risk of a service request as one of: low, medium, high, critical. 
+
+Rules:
+- Base classification on request type, payload, and admin risk hints.
+- Consider the requester's department and manager if provided.
+- Low risk: Standard, low-impact items (e.g. software license, hardware request).
+- Medium risk: Standard access with potential impact (e.g. common SaaS access).
+- High risk: Production access, sensitive data, or high-impact changes.
+- Critical risk: Super-user access, destruction capabilities, or non-standard high-risk patterns.
+- Keep the reason to one concise, objective sentence.`;
+
+export const CHAT_INTENT_DETECTION_SYSTEM = `You are an IT service desk dispatcher.
+Your goal is to map a user's natural language request to the best matching "Request Type" from the catalog.
+
+Rules:
+1. Select exactly one request type from the provided list.
+2. If no type is a good match, return slug: null.
+3. Extract field values for the selected type from the user's message.
+4. Output JSON with: { slug: string | null, payload: Record<string, any>, reasoning: string }.
+5. Be conservative: if you aren't 80% sure, return slug: null.`;
+
+export function buildTriagePrompt(input: {
+  requestTypeTitle: string;
+  requestTypeSlug: string;
+  riskDefaults: unknown;
+  payload: Record<string, unknown>;
+  requesterInfo?: {
+    email: string;
+    name: string;
+    department?: string | null;
+  };
+}): string {
+  const payloadText = Object.entries(input.payload)
+    .map(([k, v]) => `${k}: ${String(v).slice(0, 200)}`)
+    .join("\n");
+
+  const parts = [
+    `Request type: ${input.requestTypeTitle} (slug: ${input.requestTypeSlug})`,
+    `Admin risk hints: ${JSON.stringify(input.riskDefaults ?? {})}`,
+  ];
+
+  if (input.requesterInfo) {
+    parts.push(`Requester: ${input.requesterInfo.name} (${input.requesterInfo.email})`);
+    if (input.requesterInfo.department) {
+      parts.push(`Department: ${input.requesterInfo.department}`);
+    }
+  }
+
+  parts.push(`Request payload:\n${payloadText}`);
+
+  return parts.join("\n");
+}
 
 export function buildCatalogUserPrompt(context: {
   orgName?: string;
@@ -44,4 +100,18 @@ export function buildCatalogUserPrompt(context: {
     "Propose between 4 and 10 request catalog items appropriate for this organization. Slugs must be unique.",
   );
   return parts.join("\n");
+}
+
+export function buildIntentPrompt(input: {
+  message: string;
+  catalog: Array<{ slug: string; title: string; description: string | null; fieldSchema: any }>;
+}): string {
+  const catalogText = input.catalog
+    .map(
+      (c) =>
+        `- ${c.title} (slug: ${c.slug}): ${c.description ?? "No description"}. Fields: ${JSON.stringify(c.fieldSchema)}`,
+    )
+    .join("\n");
+
+  return `User message: "${input.message}"\n\nAvailable Request Types:\n${catalogText}`;
 }

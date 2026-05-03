@@ -22,16 +22,22 @@ const approverItems: NavItem[] = [{ href: "/approvals", label: "Approvals" }];
 
 const adminItems: NavItem[] = [
   { href: "/admin/types", label: "Catalog" },
+  { href: "/admin/app-registry", label: "App registry" },
   { href: "/admin/change-templates", label: "Change templates" },
   { href: "/admin/routing", label: "Routing" },
+  { href: "/admin/roles", label: "Role bundles & JML" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/invites", label: "Invites" },
+  { href: "/admin/access-reviews", label: "Access reviews" },
   { href: "/admin/ai", label: "AI" },
   { href: "/admin/api-keys", label: "API keys" },
+  { href: "/admin/vault", label: "Credential vault" },
   { href: "/admin/billing", label: "Billing" },
   { href: "/admin/setup-status", label: "Setup status" },
+  { href: "/admin/audit-log", label: "Audit log" },
   { href: "/admin/audit-export", label: "Audit export" },
   { href: "/admin/integrations", label: "Integrations" },
+  { href: "/admin/sso", label: "Enterprise SSO" },
   { href: "/analytics", label: "Analytics" },
 ];
 
@@ -64,9 +70,11 @@ export function DashboardNav({ role }: { role: Role }) {
   const pathname = usePathname();
 
   // Close dropdown when navigating
-  useEffect(() => {
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setAdminOpen(false);
-  }, [pathname]);
+  }
 
   // Close on outside click
   useEffect(() => {

@@ -53,8 +53,13 @@ async function rateLimitRedis(
     const windowSec = Math.ceil(windowMs / 1000);
     const current = await redis.incr(key);
     if (current === 1) await redis.expire(key, windowSec);
-    await redis.quit();
-    if (current <= limit) return { ok: true };
+
+    if (current <= limit) {
+      await redis.quit();
+      return { ok: true };
+    }
+
+    // Read TTL *before* closing the connection (fixes quit-before-read bug).
     const ttl = await redis.ttl(key);
     await redis.quit();
     return { ok: false, retryAfterMs: Math.max(1, ttl) * 1000 };

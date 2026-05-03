@@ -18,6 +18,7 @@ export type MyRequestRow = {
   status: string;
   typeTitle: string;
   approverEmail: string | null;
+  expiresAt: Date | null;
 };
 
 function Timeline({
@@ -97,11 +98,13 @@ export function RequestsHub({
   catalog,
   requests,
   isAdmin,
+  now,
   listPagination,
 }: {
   catalog: CatalogTile[];
   requests: MyRequestRow[];
   isAdmin: boolean;
+  now: number;
   listPagination?: {
     cursorActive: boolean;
     nextBeforeIso: string | null;
@@ -229,6 +232,18 @@ export function RequestsHub({
                     status={r.status}
                     approverEmail={r.approverEmail}
                   />
+                  {r.status === "fulfilled" && r.expiresAt && (
+                    <div className="mt-3 flex items-center gap-2 text-[10px]">
+                      <div className={`h-1.5 w-1.5 rounded-full ${
+                        new Date(r.expiresAt).getTime() - now < 24 * 60 * 60 * 1000
+                          ? "bg-amber-500 animate-pulse"
+                          : "bg-emerald-500"
+                      }`} />
+                      <span className="text-zinc-500">
+                        Expires: {new Date(r.expiresAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
                 </Link>
               </li>
             ))

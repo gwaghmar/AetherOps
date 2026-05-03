@@ -124,9 +124,10 @@ async function run() {
     try {
       await db.insert(appCatalog).values(row);
       console.log(`Inserted ${row.appName}`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       // ignore unique constraint errors if re-running
-      console.log(`Skipped ${row.appName} - ${e.message}`);
+      const msg = e instanceof Error ? e.message : String(e);
+      console.log(`Skipped ${row.appName} - ${msg}`);
     }
   }
 

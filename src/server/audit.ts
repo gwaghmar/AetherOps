@@ -24,3 +24,24 @@ export async function recordAuditEvent(input: {
     metadata: input.metadata ?? null,
   });
 }
+export async function getAuditEvents(input: {
+  organizationId: string;
+  limit?: number;
+  offset?: number;
+}) {
+  const { organizationId, limit = 50, offset = 0 } = input;
+  return db.query.auditEvent.findMany({
+    where: (table, { eq }) => eq(table.organizationId, organizationId),
+    orderBy: (table, { desc }) => [desc(table.createdAt)],
+    limit,
+    offset,
+    with: {
+      actor: {
+        columns: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+}

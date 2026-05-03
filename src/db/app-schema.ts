@@ -458,6 +458,85 @@ export const organizationEmailSettings = pgTable("organization_email_settings", 
     .$onUpdate(() => new Date()),
 });
 
+/** Encrypted vault for integration tokens/keys (linear, slack, aws, etc.). */
+export const connectorCredential = pgTable(
+  "connector_credential",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    connectorId: text("connector_id").notNull(),
+    encryptedData: text("encrypted_data").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    uniqueIndex("connector_credential_org_connector_unique").on(
+      t.organizationId,
+      t.connectorId,
+    ),
+  ]
+);
+
+export const accessReviewCampaign = pgTable("access_review_campaign", {
+  id: text("id").primaryKey(),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  status: text("status").notNull().default("active"), // "active" | "completed"
+  dueDate: timestamp("due_date", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const accessReviewItem = pgTable("access_review_item", {
+  id: text("id").primaryKey(),
+  campaignId: text("campaign_id")
+    .notNull()
+    .references(() => accessReviewCampaign.id, { onDelete: "cascade" }),
+  requestId: text("request_id")
+    .notNull()
+    .references(() => request.id, { onDelete: "cascade" }),
+  reviewerId: text("reviewer_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  decision: text("decision"), // "keep" | "revoke"
+  decidedAt: timestamp("decided_at", { withTimezone: true }),
+});
+
+export const accessReviewCampaignRelations = relations(accessReviewCampaign, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [accessReviewCampaign.organizationId],
+    references: [organization.id],
+  }),
+  items: many(accessReviewItem),
+}));
+
+export const accessReviewItemRelations = relations(accessReviewItem, ({ one }) => ({
+  campaign: one(accessReviewCampaign, {
+    fields: [accessReviewItem.campaignId],
+    references: [accessReviewCampaign.id],
+  }),
+  request: one(request, {
+    fields: [accessReviewItem.requestId],
+    references: [request.id],
+  }),
+  reviewer: one(user, {
+    fields: [accessReviewItem.reviewerId],
+    references: [user.id],
+  }),
+}));
+
 export const organizationAiSettingsRelations = relations(
   organizationAiSettings,
   ({ one }) => ({
@@ -557,6 +636,16 @@ export const organizationEmailSettingsRelations = relations(
   }),
 );
 
+export const connectorCredentialRelations = relations(
+  connectorCredential,
+  ({ one }) => ({
+    organization: one(organization, {
+      fields: [connectorCredential.organizationId],
+      references: [organization.id],
+    }),
+  }),
+);
+
 export const approvalRoutingRuleRelations = relations(
   approvalRoutingRule,
   ({ one }) => ({
@@ -592,6 +681,104 @@ export const organizationRelations = relations(organization, ({ many, one }) => 
   appCatalogs: many(appCatalog),
   oktaGroupMappings: many(oktaGroupMapping),
   policyDecisionLogs: many(policyDecisionLog),
+  connectorCredentials: many(connectorCredential),
+  accessReviewCampaigns: many(accessReviewCampaign),
+  aiUsageTelemetry: many(aiUsageTelemetry),
+  roleBundles: many(roleBundle),
+}));
+
+export const roleBundle = pgTable(
+  "role_bundle",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    name: text("name").notNull(), 
+    description: text("description"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("role_bundle_org_name_unique").on(t.organizationId, t.name),
+  ]
+);
+
+export const roleBundleRequestType = pgTable(
+  "role_bundle_request_type",
+  {
+    id: text("id").primaryKey(),
+    roleBundleId: text("role_bundle_id")
+      .notNull()
+      .references(() => roleBundle.id, { onDelete: "cascade" }),
+    requestTypeId: text("request_type_id")
+      .notNull()
+      .references(() => requestType.id, { onDelete: "cascade" }),
+    /** Optional JSON payload overrides for the request type when triggered by this bundle. */
+    payloadOverrides: jsonb("payload_overrides").$type<Record<string, unknown>>(),
+  }
+);
+
+export const roleBundleRelations = relations(roleBundle, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [roleBundle.organizationId],
+    references: [organization.id],
+  }),
+  requestTypes: many(roleBundleRequestType),
+}));
+
+export const roleBundleRequestTypeRelations = relations(roleBundleRequestType, ({ one }) => ({
+  roleBundle: one(roleBundle, {
+    fields: [roleBundleRequestType.roleBundleId],
+    references: [roleBundle.id],
+  }),
+  requestType: one(requestType, {
+    fields: [roleBundleRequestType.requestTypeId],
+    references: [requestType.id],
+  }),
+}));
+
+export const aiUsageTelemetry = pgTable(
+  "ai_usage_telemetry",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .references(() => user.id, { onDelete: "set null" }),
+    appId: text("app_id"), // Reference to app_catalog.id
+    modelName: text("model_name").notNull(),
+    promptTokens: integer("prompt_tokens").notNull().default(0),
+    completionTokens: integer("completion_tokens").notNull().default(0),
+    totalTokens: integer("total_tokens").notNull().default(0),
+    estimatedCostUsd: text("estimated_cost_usd").notNull().default("0"),
+    budgetOwnerId: text("budget_owner_id").references(() => user.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("ai_usage_org_idx").on(t.organizationId),
+    index("ai_usage_user_idx").on(t.userId),
+    index("ai_usage_created_idx").on(t.createdAt),
+  ]
+);
+
+export const aiUsageTelemetryRelations = relations(aiUsageTelemetry, ({ one }) => ({
+  organization: one(organization, {
+    fields: [aiUsageTelemetry.organizationId],
+    references: [organization.id],
+  }),
+  user: one(user, {
+    fields: [aiUsageTelemetry.userId],
+    references: [user.id],
+  }),
+  budgetOwner: one(user, {
+    fields: [aiUsageTelemetry.budgetOwnerId],
+    references: [user.id],
+  }),
 }));
 
 export const changeTemplateRelations = relations(

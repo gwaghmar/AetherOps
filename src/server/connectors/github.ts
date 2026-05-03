@@ -1,12 +1,10 @@
 import type { ProvisionContext } from "./types";
 import { withProvisionLifecycle, withRevokeLifecycle } from "@/server/fulfillment";
 
+import { getCredential } from "@/server/credential-vault";
+
 /**
  * GitHub connector: invites a user to an org/team via the GitHub REST API.
- *
- * Required env:
- * - GITHUB_ORG: the GitHub organization slug
- * - GITHUB_PAT: a personal access token (or fine-grained token) with `admin:org` scope
  *
  * Expected payload fields from the request:
  * - email: the user's email for the org invite
@@ -14,11 +12,12 @@ import { withProvisionLifecycle, withRevokeLifecycle } from "@/server/fulfillmen
  * - role (optional): "member" | "admin" (defaults to "member")
  */
 export async function runGitHubProvision(ctx: ProvisionContext): Promise<void> {
-  const org = process.env.GITHUB_ORG?.trim();
-  const pat = process.env.GITHUB_PAT?.trim();
+  const creds = await getCredential<{ org: string, pat: string }>(ctx.organizationId, "github");
+  const org = creds?.org || process.env.GITHUB_ORG?.trim();
+  const pat = creds?.pat || process.env.GITHUB_PAT?.trim();
 
   if (!org || !pat) {
-    throw new Error("GITHUB_ORG and GITHUB_PAT must be set for the github connector");
+    throw new Error("GITHUB_ORG and GITHUB_PAT must be set in vault or env for the github connector");
   }
 
   const email = (ctx.payload.email as string)?.trim();
@@ -91,11 +90,12 @@ export async function runGitHubProvision(ctx: ProvisionContext): Promise<void> {
  * Revoke GitHub access: removes the user from the organization entirely.
  */
 export async function runGitHubRevoke(ctx: ProvisionContext): Promise<void> {
-  const org = process.env.GITHUB_ORG?.trim();
-  const pat = process.env.GITHUB_PAT?.trim();
+  const creds = await getCredential<{ org: string, pat: string }>(ctx.organizationId, "github");
+  const org = creds?.org || process.env.GITHUB_ORG?.trim();
+  const pat = creds?.pat || process.env.GITHUB_PAT?.trim();
 
   if (!org || !pat) {
-    throw new Error("GITHUB_ORG and GITHUB_PAT must be set for the github connector");
+    throw new Error("GITHUB_ORG and GITHUB_PAT must be set in vault or env for the github connector");
   }
 
   const email = (ctx.payload.email as string)?.trim();

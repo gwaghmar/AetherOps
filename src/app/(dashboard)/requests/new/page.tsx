@@ -7,9 +7,16 @@ import { NewRequestForm, type RequestTypeOption } from "./new-request-form";
 export default async function NewRequestPage({
   searchParams,
 }: {
-  searchParams: Promise<{ typeId?: string }>;
+  searchParams: Promise<{ typeId?: string; [key: string]: string | undefined }>;
 }) {
-  const { typeId: typeIdParam } = await searchParams;
+  const params = await searchParams;
+  const { typeId: typeIdParam, ...rest } = params;
+  
+  // Extract field values from query params (e.g. ?access_level=admin)
+  const initialValues: Record<string, string> = {};
+  for (const [k, v] of Object.entries(rest)) {
+    if (v) initialValues[k] = v;
+  }
   const session = await requireSession();
   const orgId = session.user.organizationId;
   if (!orgId) {
@@ -48,6 +55,10 @@ export default async function NewRequestPage({
   }));
 
   return (
-    <NewRequestForm types={options} initialTypeId={typeIdParam ?? null} />
+    <NewRequestForm 
+      types={options} 
+      initialTypeId={typeIdParam ?? null} 
+      initialValues={initialValues}
+    />
   );
 }

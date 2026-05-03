@@ -65,6 +65,104 @@ export function getConnector(connectorId?: string | null): ProvisionConnector {
     };
   }
 
+  if (name === "aws") {
+    return {
+      name: "aws",
+      async provision(ctx) {
+        const { runAwsProvision } = await import("./aws");
+        await runAwsProvision(ctx);
+      },
+      async revoke(ctx) {
+        const { runAwsRevoke } = await import("./aws");
+        await runAwsRevoke(ctx);
+      },
+    };
+  }
+
+  if (name === "slack") {
+    return {
+      name: "slack",
+      async provision(ctx) {
+        const { runSlackProvision } = await import("./slack");
+        await runSlackProvision(ctx);
+      },
+      async revoke(ctx) {
+        const { runSlackRevoke } = await import("./slack");
+        await runSlackRevoke(ctx);
+      },
+    };
+  }
+
+  if (name === "linear") {
+    return {
+      name: "linear",
+      async provision(ctx) {
+        const { runLinearProvision } = await import("./linear");
+        await runLinearProvision(ctx);
+      },
+      async revoke(ctx) {
+        const { runLinearRevoke } = await import("./linear");
+        await runLinearRevoke(ctx);
+      },
+    };
+  }
+
+  if (name === "vercel") {
+    return {
+      name: "vercel",
+      async provision(ctx) {
+        const { runVercelProvision } = await import("./vercel");
+        await runVercelProvision(ctx);
+      },
+      async revoke(ctx) {
+        const { runVercelRevoke } = await import("./vercel");
+        await runVercelRevoke(ctx);
+      },
+    };
+  }
+
+  if (name === "openai") {
+    return {
+      name: "openai",
+      async provision(ctx) {
+        const { runOpenAIProvision } = await import("./openai");
+        await runOpenAIProvision(ctx);
+      },
+      async revoke(ctx) {
+        const { runOpenAIRevoke } = await import("./openai");
+        await runOpenAIRevoke(ctx);
+      },
+    };
+  }
+
+  if (name === "notion") {
+    return {
+      name: "notion",
+      async provision(ctx) {
+        const { runNotionProvision } = await import("./notion");
+        await runNotionProvision(ctx);
+      },
+      async revoke(ctx) {
+        const { runNotionRevoke } = await import("./notion");
+        await runNotionRevoke(ctx);
+      },
+    };
+  }
+
+  if (name === "stripe") {
+    return {
+      name: "stripe",
+      async provision(ctx) {
+        const { runStripeProvision } = await import("./stripe");
+        await runStripeProvision(ctx);
+      },
+      async revoke(ctx) {
+        const { runStripeRevoke } = await import("./stripe");
+        await runStripeRevoke(ctx);
+      },
+    };
+  }
+
   if (name === "log") {
     return {
       name: "log",

@@ -1,0 +1,167 @@
+openapi: 3.1.0
+info:
+  title: AI Service Now Vision API
+  description: Agentic API for creating and managing service requests and workflows.
+  version: "1.0.0"
+servers:
+  - url: https://api.yourdomain.com
+    description: Production server
+  - url: http://localhost:3000
+    description: Local development
+components:
+  securitySchemes:
+    AgentApiKey:
+      type: http
+      scheme: bearer
+      description: |
+        Agent API key prefixed with `gk_`. Scoped per-tenant and request-type.
+        Example: `Bearer gk_1234567890`
+    ChatIngestSecret:
+      type: apiKey
+      in: header
+      name: X-Chat-Ingest-Secret
+      description: |
+        Shared secret for Slack/Teams bots or generic chat ingest channels.
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Human-readable error message.
+        code:
+          type: string
+          description: Machine-readable error code (e.g., `rate_limit`, `unauthorized`, `validation_error`).
+        details:
+          type: object
+          description: Detailed validation failures.
+
+    CreateRequestPayload:
+      type: object
+      required:
+        - requestTypeSlug
+        - requesterEmail
+        - payload
+      properties:
+        requestTypeSlug:
+          type: string
+          description: Unique identifier for the service catalog item.
+        requesterEmail:
+          type: string
+          format: email
+          description: Email of the user making the request.
+        payload:
+          type: object
+          description: JSON object mapping to the catalog item's required fields.
+          additionalProperties: true
+          
+    ChatIngestPayload:
+      type: object
+      required:
+        - requesterEmail
+      properties:
+        requestTypeSlug:
+          type: string
+          description: Optional. Unique identifier for the service catalog item. If omitted, `message` must be provided for intent detection.
+        requesterEmail:
+          type: string
+          format: email
+          description: Email of the user interacting in the chat.
+        payload:
+          type: object
+          description: Optional. Explicitly parsed payload fields.
+          additionalProperties: true
+        message:
+          type: string
+          description: Optional. The natural language message from the user. Used for AI intent and payload extraction if `requestTypeSlug` is omitted.
+
+paths:
+  /api/v1/requests:
+    post:
+      summary: Create a new service request
+      description: |
+        Idempotent endpoint to programmatically create catalog requests.
+        Requires a valid Agent API Key.
+      security:
+        - AgentApiKey: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          schema:
+            type: string
+          required: false
+          description: Optional idempotency key for safe retries.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestPayload'
+      responses:
+        '201':
+          description: Request created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique request ID (e.g. `req_1234`).
+                  status:
+                    type: string
+                    description: Initial status, typically `pending_approval`.
+                  requestTypeSlug:
+                    type: string
+        '400':
+          description: Bad request or validation failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Invalid or missing API key.
+        '403':
+          description: Forbidden. API key does not have permission for this request type.
+        '422':
+          description: Payload validation failed against the catalog schema.
+        '429':
+          description: Too many requests (rate limited).
+
+  /api/v1/ingest/chat:
+    post:
+      summary: Ingest a chat message to create a request
+      description: |
+        Endpoint for Slack/Teams bots. Can accept an explicit request payload OR 
+        a natural language message which triggers AI intent detection.
+      security:
+        - ChatIngestSecret: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatIngestPayload'
+      responses:
+        '201':
+          description: Request created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  requestTypeSlug:
+                    type: string
+        '400':
+          description: Bad request or validation failure.
+        '401':
+          description: Unauthorized. Invalid or missing chat secret.
+        '422':
+          description: Ambiguous intent or missing required parameters.
+        '429':
+          description: Too many requests.

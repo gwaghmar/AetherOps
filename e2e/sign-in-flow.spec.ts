@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Sign in flow", () => {
   test("sign up, sign out, sign in again", async ({ page }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
 
     const ts = Date.now();
     const email = `signin-${ts}@example.com`;

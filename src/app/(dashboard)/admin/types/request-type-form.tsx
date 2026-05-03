@@ -19,6 +19,7 @@ export function RequestTypeForm(props: {
     description: string | null;
     fieldSchema: unknown;
     riskDefaults: unknown;
+    connectorId: string | null;
   };
 }) {
   const [slug, setSlug] = useState(props.initial?.slug ?? "");
@@ -36,6 +37,9 @@ export function RequestTypeForm(props: {
       ? JSON.stringify(props.initial.riskDefaults, null, 2)
       : "{}",
   );
+  const [connectorId, setConnectorId] = useState(
+    props.initial?.connectorId ?? "",
+  );
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -46,6 +50,7 @@ export function RequestTypeForm(props: {
   const idDesc = `${uid}-desc`;
   const idFs = `${uid}-fs`;
   const idRd = `${uid}-rd`;
+  const idConn = `${uid}-conn`;
   const errorId = `${uid}-error`;
 
   return (
@@ -64,6 +69,7 @@ export function RequestTypeForm(props: {
               description: description || undefined,
               fieldSchemaJson,
               riskDefaultsJson,
+              connectorId: connectorId || null,
             });
           } else if (props.initial) {
             await adminUpdateRequestType({
@@ -73,6 +79,7 @@ export function RequestTypeForm(props: {
               description: description || undefined,
               fieldSchemaJson,
               riskDefaultsJson,
+              connectorId: connectorId || null,
             });
           }
           const verb = props.mode === "create" ? "created" : "updated";
@@ -158,6 +165,31 @@ export function RequestTypeForm(props: {
           aria-describedby={error ? errorId : undefined}
           className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-950"
         />
+      </div>
+      <div>
+        <label htmlFor={idConn} className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          Provisioning Connector
+        </label>
+        <select
+          id={idConn}
+          value={connectorId}
+          onChange={(e) => setConnectorId(e.target.value)}
+          className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-sm outline-none ring-zinc-500/10 focus:ring-2 dark:border-zinc-800 dark:bg-zinc-950"
+        >
+          <option value="">Default (PROVISION_CONNECTOR env)</option>
+          <option value="stub">Stub (no-op)</option>
+          <option value="manual_ticketing">Manual Action Required</option>
+          <option value="github">GitHub</option>
+          <option value="aws">AWS</option>
+          <option value="slack">Slack</option>
+          <option value="linear">Linear</option>
+          <option value="vercel">Vercel</option>
+          <option value="openai">OpenAI</option>
+          <option value="notion">Notion</option>
+          <option value="stripe">Stripe</option>
+          <option value="http_webhook">HTTP Webhook</option>
+          <option value="log">Log to Console</option>
+        </select>
       </div>
       {error && (
         <p id={errorId} className="text-sm text-red-600" role="alert">

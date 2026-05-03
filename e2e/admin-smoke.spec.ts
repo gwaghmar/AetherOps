@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Dashboard after sign-up", () => {
   test("reaches home; admin nav only when first user in DB", async ({ page }) => {
-    test.skip(!process.env.DATABASE_URL?.trim(), "DATABASE_URL");
 
     const ts = Date.now();
     const email = `admin-smoke-${ts}@example.com`;

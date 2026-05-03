@@ -7,6 +7,8 @@ import {
   requestType,
 } from "@/db/schema";
 import { requireRole } from "@/lib/session";
+import Link from "next/link";
+import { Cpu } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -105,6 +107,16 @@ export default async function AnalyticsPage() {
           Request volume, approval metrics, and type breakdown for your
           organisation.
         </p>
+      </div>
+
+      <div className="flex justify-end">
+        <Link
+          href="/analytics/ai"
+          className="inline-flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 transition-colors hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+        >
+          <Cpu className="h-4 w-4" />
+          View AI Cost & Usage
+        </Link>
       </div>
 
       {/* KPI row */}

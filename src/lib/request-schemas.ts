@@ -68,7 +68,7 @@ export function buildPayloadSchema(fields: FieldDefinition[]) {
         break;
       }
       default: {
-        let str = z.string().trim();
+        const str = z.string().trim();
         s = required ? str.min(1, `${f.label} is required`) : (str as z.ZodTypeAny).optional();
       }
     }

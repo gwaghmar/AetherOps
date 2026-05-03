@@ -1,4 +1,4 @@
-﻿import { count, desc, eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { request as requestTable, requestType } from "@/db/schema";
 import { requireSession } from "@/lib/session";
@@ -95,6 +95,7 @@ export default async function AdminTypesPage() {
                   description: t.description,
                   fieldSchema: t.fieldSchema,
                   riskDefaults: t.riskDefaults,
+                  connectorId: t.connectorId,
                 }}
               />
             </details>

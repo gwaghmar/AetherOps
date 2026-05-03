@@ -74,5 +74,7 @@ export function isApproverAllowedForRequest(input: {
   if (assignedApproverId) {
     return assignedApproverId === approverUserId;
   }
-  return true;
+  // Fail-closed: when no routing or assignment data exists, deny rather than
+  // allowing any org approver to approve. Admins bypass this check separately.
+  return false;
 }

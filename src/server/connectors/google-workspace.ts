@@ -1,15 +1,11 @@
 import type { ProvisionContext } from "./types";
 import { withProvisionLifecycle, withRevokeLifecycle } from "@/server/fulfillment";
 
+import { getCredential } from "@/server/credential-vault";
+
 /**
  * Google Workspace connector: adds a user to a Google Group via the
  * Directory API, which triggers downstream app access via IdP group sync.
- *
- * Required env:
- * - GOOGLE_SERVICE_ACCOUNT_KEY: base64-encoded JSON service account key with
- *   domain-wide delegation and Directory API scopes
- * - GOOGLE_WORKSPACE_DOMAIN: the primary domain (e.g., "company.com")
- * - GOOGLE_ADMIN_EMAIL: an admin email for domain-wide delegation impersonation
  *
  * Expected payload fields:
  * - email: user email to add to the group
@@ -17,13 +13,14 @@ import { withProvisionLifecycle, withRevokeLifecycle } from "@/server/fulfillmen
  * - role (optional): "MEMBER" | "MANAGER" | "OWNER" (defaults to "MEMBER")
  */
 export async function runGoogleWorkspaceProvision(ctx: ProvisionContext): Promise<void> {
-  const keyB64 = process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.trim();
-  const domain = process.env.GOOGLE_WORKSPACE_DOMAIN?.trim();
-  const adminEmail = process.env.GOOGLE_ADMIN_EMAIL?.trim();
+  const creds = await getCredential<{ keyB64: string, domain: string, adminEmail: string }>(ctx.organizationId, "google_workspace");
+  const keyB64 = creds?.keyB64 || process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.trim();
+  const domain = creds?.domain || process.env.GOOGLE_WORKSPACE_DOMAIN?.trim();
+  const adminEmail = creds?.adminEmail || process.env.GOOGLE_ADMIN_EMAIL?.trim();
 
   if (!keyB64 || !domain || !adminEmail) {
     throw new Error(
-      "GOOGLE_SERVICE_ACCOUNT_KEY, GOOGLE_WORKSPACE_DOMAIN, and GOOGLE_ADMIN_EMAIL must be set for the google_workspace connector",
+      "GOOGLE_SERVICE_ACCOUNT_KEY, GOOGLE_WORKSPACE_DOMAIN, and GOOGLE_ADMIN_EMAIL must be set in vault or env for the google_workspace connector",
     );
   }
 
@@ -74,13 +71,14 @@ export async function runGoogleWorkspaceProvision(ctx: ProvisionContext): Promis
  * Revoke Google Workspace access: removes the user from the specified group.
  */
 export async function runGoogleWorkspaceRevoke(ctx: ProvisionContext): Promise<void> {
-  const keyB64 = process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.trim();
-  const domain = process.env.GOOGLE_WORKSPACE_DOMAIN?.trim();
-  const adminEmail = process.env.GOOGLE_ADMIN_EMAIL?.trim();
+  const creds = await getCredential<{ keyB64: string, domain: string, adminEmail: string }>(ctx.organizationId, "google_workspace");
+  const keyB64 = creds?.keyB64 || process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.trim();
+  const domain = creds?.domain || process.env.GOOGLE_WORKSPACE_DOMAIN?.trim();
+  const adminEmail = creds?.adminEmail || process.env.GOOGLE_ADMIN_EMAIL?.trim();
 
   if (!keyB64 || !domain || !adminEmail) {
     throw new Error(
-      "GOOGLE_SERVICE_ACCOUNT_KEY, GOOGLE_WORKSPACE_DOMAIN, and GOOGLE_ADMIN_EMAIL must be set for the google_workspace connector",
+      "GOOGLE_SERVICE_ACCOUNT_KEY, GOOGLE_WORKSPACE_DOMAIN, and GOOGLE_ADMIN_EMAIL must be set in vault or env for the google_workspace connector",
     );
   }
 

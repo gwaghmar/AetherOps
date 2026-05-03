@@ -40,9 +40,11 @@ function emptyValuesForSchema(schema: FieldSchemaJson | null): Record<string, st
 export function NewRequestForm({
   types,
   initialTypeId = null,
+  initialValues = {},
 }: {
   types: RequestTypeOption[];
   initialTypeId?: string | null;
+  initialValues?: Record<string, string>;
 }) {
   const lockedFromUrl =
     Boolean(initialTypeId) && types.some((t) => t.id === initialTypeId);
@@ -51,13 +53,15 @@ export function NewRequestForm({
   );
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>(initialValues);
   const [suggestHint, setSuggestHint] = useState("");
   const [suggestMsg, setSuggestMsg] = useState<string | null>(null);
   const [suggestPending, setSuggestPending] = useState(false);
   const [similarRequests, setSimilarRequests] = useState<SimilarRequest[]>([]);
   const [similarLoading, setSimilarLoading] = useState(false);
   const [duration, setDuration] = useState<string>("permanent"); // hours or "permanent"
+  const [isEmergencyOverride, setIsEmergencyOverride] = useState(false);
+  const [overrideReason, setOverrideReason] = useState("");
 
 
   const selected = types.find((t) => t.id === typeId) ?? types[0];
@@ -133,6 +137,8 @@ export function NewRequestForm({
                 requestTypeId: typeId,
                 payload,
                 expiresAt,
+                isEmergencyOverride,
+                overrideReason: isEmergencyOverride ? overrideReason : undefined,
               });
 
               if (!res.ok) {
@@ -278,7 +284,8 @@ export function NewRequestForm({
                 id={`${formId}-duration`}
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                disabled={isEmergencyOverride}
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950 disabled:opacity-50"
               >
                 <option value="4">4 hours (Just-in-Time)</option>
                 <option value="24">24 hours (1 day)</option>
@@ -286,9 +293,54 @@ export function NewRequestForm({
                 <option value="720">30 days (1 month)</option>
                 <option value="permanent">Permanent / Indefinite</option>
               </select>
-              <p className="mt-1 text-xs text-zinc-500">
-                Access will be automatically revoked after this period.
-              </p>
+              {isEmergencyOverride ? (
+                <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                  Break-Glass is strictly limited to 4 hours maximum.
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-zinc-500">
+                  Access will be automatically revoked after this period.
+                </p>
+              )}
+            </div>
+
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/40 dark:bg-red-950/20">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isEmergencyOverride}
+                  onChange={(e) => {
+                    setIsEmergencyOverride(e.target.checked);
+                    if (e.target.checked) setDuration("4");
+                  }}
+                  className="mt-0.5 h-4 w-4 rounded border-red-300 text-red-600 focus:ring-red-600 dark:border-red-800 dark:bg-zinc-900"
+                />
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-red-900 dark:text-red-300">
+                    Break-Glass Emergency
+                  </span>
+                  <span className="mt-0.5 text-xs text-red-800 dark:text-red-400">
+                    Bypasses all approvals for immediate provisioning. Generates high-severity audit alerts.
+                  </span>
+                </div>
+              </label>
+
+              {isEmergencyOverride && (
+                <div className="mt-4 pl-7">
+                  <label htmlFor={`${formId}-override-reason`} className="text-xs font-medium text-red-900 dark:text-red-300">
+                    Emergency Justification (Required)
+                  </label>
+                  <textarea
+                    id={`${formId}-override-reason`}
+                    required
+                    rows={2}
+                    placeholder="e.g. Incident INC-1234, P1 DB outage"
+                    value={overrideReason}
+                    onChange={(e) => setOverrideReason(e.target.value)}
+                    className="mt-1 block w-full rounded-md border border-red-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-red-800/50 dark:bg-zinc-950 dark:text-zinc-100"
+                  />
+                </div>
+              )}
             </div>
 
 

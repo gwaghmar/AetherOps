@@ -9,6 +9,8 @@ import { triageRequestAsync } from "@/server/ai/triage";
 import { deliverOrgWebhook } from "@/server/webhooks";
 import { getPublicAppUrl } from "@/lib/env";
 import { sendRequestCreatedNotifications } from "@/server/notifications/request-created";
+import { enqueueFulfillmentJob, processFulfillmentJobById } from "@/server/fulfillment-queue";
+import { approval } from "@/db/schema";
 
 /** Insert a request after payload is validated against the request type schema. */
 export async function createRequestCore(input: {
@@ -24,6 +26,8 @@ export async function createRequestCore(input: {
   auditMetadata?: Record<string, unknown>;
   idempotencyKey?: string | null;
   expiresAt?: Date | null;
+  isEmergencyOverride?: boolean;
+  overrideReason?: string;
 }) {
   await evaluatePolicyOrThrow({
     organizationId: input.organizationId,
@@ -46,17 +50,40 @@ export async function createRequestCore(input: {
     requestTypeId: input.requestTypeId,
     requesterId: input.requesterId,
     assignedApproverId: primaryApproverId,
-    status: "pending_approval",
+    status: input.isEmergencyOverride ? "approved" : "pending_approval",
     payload: input.payload,
     routingApproverIds: routingSnapshot,
     idempotencyKey: input.idempotencyKey ?? null,
     expiresAt: input.expiresAt ?? null,
+    isEmergencyOverride: input.isEmergencyOverride ?? false,
+    overrideReason: input.overrideReason ?? null,
   };
 
+  let jobId: string | null = null;
   try {
-    await db.insert(requestTable).values(insertValues);
-  } catch (err: any) {
-    if (err.code === "23505" && input.idempotencyKey) {
+    if (input.isEmergencyOverride) {
+      await db.transaction(async (tx) => {
+        await tx.insert(requestTable).values(insertValues);
+        await tx.insert(approval).values({
+          id: randomUUID(),
+          requestId: id,
+          approverId: input.requesterId, // Self-approved break-glass
+          decision: "emergency_approved",
+          comment: input.overrideReason,
+        });
+        jobId = await enqueueFulfillmentJob({ organizationId: input.organizationId, requestId: id, actorId: input.requesterId }, tx);
+      });
+    } else {
+      await db.insert(requestTable).values(insertValues);
+    }
+  } catch (err: unknown) {
+    if (
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code === "23505" &&
+      input.idempotencyKey
+    ) {
       // Unique constraint violation (RLY-01)
       const [existing] = await db
         .select({ id: requestTable.id })
@@ -101,32 +128,53 @@ export async function createRequestCore(input: {
 
   const reviewUrl = `${getPublicAppUrl().replace(/\/$/, "")}/requests/${id}`;
 
-  void deliverOrgWebhook({
-    organizationId: input.organizationId,
-    event: "request.submitted",
-    data: {
+  if (input.isEmergencyOverride) {
+    void deliverOrgWebhook({
+      organizationId: input.organizationId,
+      event: "request.emergency_approved",
+      data: { requestId: id, adminUserId: input.requesterId, reason: input.overrideReason },
+    });
+    
+    await recordAuditEvent({
+      organizationId: input.organizationId,
+      actorId: input.requesterId,
+      entityType: "request",
+      entityId: id,
+      action: "emergency_override_approved",
+      metadata: { reason: input.overrideReason },
+    });
+    
+    if (jobId) {
+      void processFulfillmentJobById(jobId);
+    }
+  } else {
+    void deliverOrgWebhook({
+      organizationId: input.organizationId,
+      event: "request.submitted",
+      data: {
+        requestId: id,
+        requestTypeSlug: input.typeSlug,
+        requesterId: input.requesterId,
+        requesterEmail: requester?.email ?? null,
+        assignedApproverId: primaryApproverId,
+        routingApproverIds: routingSnapshot,
+        reviewUrl,
+      },
+    });
+
+    void sendRequestCreatedNotifications({
       requestId: id,
+      organizationId: input.organizationId,
       requestTypeSlug: input.typeSlug,
       requesterId: input.requesterId,
-      requesterEmail: requester?.email ?? null,
-      assignedApproverId: primaryApproverId,
-      routingApproverIds: routingSnapshot,
+      requesterEmail: requester?.email ?? "",
+      requesterName: requester?.name ?? "",
+      requesterDepartment: requester?.department ?? null,
+      requesterManagerUserId: requester?.managerUserId ?? null,
+      approverUserIds: approverIds,
       reviewUrl,
-    },
-  });
-
-  void sendRequestCreatedNotifications({
-    requestId: id,
-    organizationId: input.organizationId,
-    requestTypeSlug: input.typeSlug,
-    requesterId: input.requesterId,
-    requesterEmail: requester?.email ?? "",
-    requesterName: requester?.name ?? "",
-    requesterDepartment: requester?.department ?? null,
-    requesterManagerUserId: requester?.managerUserId ?? null,
-    approverUserIds: approverIds,
-    reviewUrl,
-  });
+    });
+  }
 
   void triageRequestAsync({
     requestId: id,

@@ -24,10 +24,13 @@ function originOf(url: string): string {
 const e2ePublicOrigin = originOf(baseURL);
 
 const hasDb = Boolean(process.env.DATABASE_URL?.trim());
+if (!hasDb) {
+  throw new Error("DATABASE_URL must be provided to run E2E specs. Failing fast.");
+}
 
 export default defineConfig({
   testDir: "e2e",
-  globalSetup: hasDb ? "./e2e/global-setup.ts" : undefined,
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: false,
   workers: 1,
   timeout: 120_000,
@@ -41,17 +44,15 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
-  webServer: hasDb
-    ? {
-        command: "npm run dev",
-        url: baseURL,
-        reuseExistingServer: !process.env.CI,
-        timeout: 180_000,
-        env: {
-          ...process.env,
-          BETTER_AUTH_URL: e2ePublicOrigin,
-          NEXT_PUBLIC_APP_URL: e2ePublicOrigin,
-        },
-      }
-    : undefined,
+  webServer: {
+    command: "npm run dev",
+    url: baseURL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 180_000,
+    env: {
+      ...process.env,
+      BETTER_AUTH_URL: e2ePublicOrigin,
+      NEXT_PUBLIC_APP_URL: e2ePublicOrigin,
+    },
+  },
 });

@@ -168,6 +168,16 @@ export default async function RequestDetailPage({
               reason={row.request.aiTriageReason}
             />
           )}
+          {isRequester && row.request.status === "fulfilled" && row.request.expiresAt && (
+            <Link
+              href={`/requests/new?typeId=${row.request.requestTypeId}&${new URLSearchParams(
+                Object.entries(row.request.payload as Record<string, string>)
+              ).toString()}`}
+              className="ml-auto rounded-lg border border-zinc-200 bg-white px-3 py-1 text-xs font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+            >
+              Renew Access
+            </Link>
+          )}
         </div>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Requester: {row.requesterName} ({row.requesterEmail})

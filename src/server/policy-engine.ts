@@ -12,9 +12,17 @@ type PolicyInput = {
 function policyFailOpenEnabled(): boolean {
   const mode = process.env.POLICY_ENGINE_FAIL_MODE?.trim().toLowerCase();
   if (mode === "closed") return false;
-  if (mode === "open") return true;
+  if (mode === "open") {
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "[policy-engine] WARNING: POLICY_ENGINE_FAIL_MODE=open in production — policy failures will allow requests through. This should only be used during planned maintenance.",
+      );
+    }
+    return true;
+  }
   return process.env.NODE_ENV !== "production";
 }
+
 
 /**
  * Optional HTTP policy adapter (OPA / OpenFGA-style sidecar, custom service).

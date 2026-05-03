@@ -11,6 +11,8 @@ import {
   getOrgLanguageModel,
   isTestAiMock,
 } from "@/server/ai/client";
+import { TRIAGE_SYSTEM, buildTriagePrompt } from "@/server/ai/prompts";
+import { user } from "@/db/schema";
 
 export type TriageRisk = "low" | "medium" | "high" | "critical";
 
@@ -51,18 +53,30 @@ export async function triageRequestAsync(input: {
       try {
         const { model } = await getOrgLanguageModel(organizationId);
 
-        const payloadText = Object.entries(payload)
-          .map(([k, v]) => `${k}: ${String(v).slice(0, 200)}`)
-          .join("\n");
+        const [requester] = await db
+          .select({
+            email: user.email,
+            name: user.name,
+            department: user.department,
+          })
+          .from(user)
+          .where(eq(user.id, (await db.select({ requesterId: requestTable.requesterId }).from(requestTable).where(eq(requestTable.id, requestId)).limit(1))[0]?.requesterId ?? ""));
 
         const { object } = await generateObject({
           model,
           schema: triageOutputSchema,
-          system: `You are an IT governance triage assistant. Classify the risk of a service request as one of: low, medium, high, critical. Base your classification on the request type, payload content, and any admin-configured risk hints. Keep the reason to one concise sentence.`,
-          prompt: `Request type: ${requestTypeTitle} (slug: ${requestTypeSlug})
-Admin risk hints: ${JSON.stringify(riskDefaults ?? {})}
-Request payload:
-${payloadText}`,
+          system: TRIAGE_SYSTEM,
+          prompt: buildTriagePrompt({
+            requestTypeTitle,
+            requestTypeSlug,
+            riskDefaults,
+            payload,
+            requesterInfo: requester ? {
+              email: requester.email,
+              name: requester.name ?? "",
+              department: requester.department,
+            } : undefined,
+          }),
         });
 
         risk = object.risk;
