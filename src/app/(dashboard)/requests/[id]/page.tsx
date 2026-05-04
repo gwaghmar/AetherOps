@@ -19,6 +19,7 @@ import { TriageBadge } from "@/components/triage-badge";
 import { ApproverRecommendation } from "@/components/approver-recommendation";
 import { ApprovalPanel } from "./approval-panel";
 import { NeedsInfoResubmit } from "./needs-info-resubmit";
+import { WorkflowVisualizer } from "@/components/workflow-visualizer";
 
 export default async function RequestDetailPage({
   params,
@@ -205,6 +206,11 @@ export default async function RequestDetailPage({
             ),
           )}
         </dl>
+      </section>
+
+      <section>
+        <h2 className="text-sm font-medium text-zinc-500 mb-3">Workflow Status</h2>
+        <WorkflowVisualizer request={row.request} />
       </section>
 
       {canApprove && (
