@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { eq } from "drizzle-orm";
 import { ensureOrganizationOnboardingRow } from "@/app/actions/ai-org";
 import { HomeCopilot } from "@/components/home-copilot";
@@ -8,6 +8,9 @@ import { organizationOnboarding } from "@/db/schema";
 import { fetchOrgCatalogTiles } from "@/server/org-catalog";
 import { getRecentUserTickets } from "@/server/recent-tickets";
 import { requireSession } from "@/lib/session";
+import { BentoGrid, BentoCard } from "@/components/magicui/bento-grid";
+import { Clock, Zap, Activity, CheckCircle, ShieldCheck, ShieldAlert } from "lucide-react";
+import { SparklesText } from "@/components/magicui/sparkles-text";
 
 export const dynamic = "force-dynamic";
 
@@ -48,83 +51,117 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Home</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Welcome back, {session.user.name}. Browse by category below—each tile
-          opens the right request form.
+    <div className="space-y-10 max-w-7xl mx-auto pb-12">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
+          Welcome back, {session.user.name}.
+        </h1>
+        <p className="text-neutral-500 max-w-2xl text-lg">
+          Your AI operations are running smoothly. Browse the catalog or ask the AI to provision what you need instantly.
         </p>
       </div>
 
       {isAdmin && (
-        <div className="rounded-lg border border-violet-200 bg-violet-50/80 px-4 py-3 text-sm text-violet-900 dark:border-violet-900/60 dark:bg-violet-950/30 dark:text-violet-200">
-          <p className="font-medium">Seeing extra admin links?</p>
-          <p className="mt-1 text-violet-800/90 dark:text-violet-300/90">
-            That’s normal for an admin. To preview a regular user’s layout,
-            sign in with a non-admin account—or a private window.
-          </p>
+        <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-4 shadow-sm flex gap-3 items-start">
+          <ShieldCheck className="w-5 h-5 text-neutral-700 mt-0.5" />
+          <div>
+            <p className="font-semibold text-neutral-900">Admin View Active</p>
+            <p className="mt-1 text-sm text-neutral-600">
+              You are seeing all configuration options. To preview the standard employee view, log in with a non-admin account.
+            </p>
+          </div>
         </div>
       )}
 
       {!orgId ? (
-        <p className="text-red-600">Your account has no organization.</p>
+        <div className="rounded-xl bg-red-50 p-6 border border-red-100 flex items-center gap-3">
+          <ShieldAlert className="w-6 h-6 text-red-600" />
+          <p className="text-red-800 font-medium text-lg">Your account has no organization assigned.</p>
+        </div>
       ) : (
         <>
           {onboardingIncomplete && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100">
-              <p className="font-medium">Finish organization setup</p>
-              <p className="mt-1 text-amber-900/90 dark:text-amber-200/90">
-                Run the guided wizard to connect AI, seed your catalog, and
-                invite your team.
+            <div className="rounded-xl border border-[--yc-orange] bg-orange-50/50 px-5 py-4 shadow-sm">
+              <p className="font-semibold text-neutral-900">Complete Organization Setup</p>
+              <p className="mt-1 text-sm text-neutral-600">
+                Run the guided wizard to connect AI, seed your catalog, and invite your team.
               </p>
               <Link
                 href="/onboarding"
-                className="mt-2 inline-block font-medium text-amber-950 underline dark:text-amber-50"
+                className="mt-3 inline-flex items-center justify-center rounded-full bg-[--yc-orange] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-[#E65C00] active:scale-95"
               >
-                Open onboarding
+                Open Onboarding
               </Link>
             </div>
           )}
 
+          {/* New Dashboard Analytics (Bento Grid) */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4 text-neutral-900 flex items-center gap-2">
+              <Activity className="w-5 h-5 text-[--yc-orange]" />
+              Platform Pulse
+            </h2>
+            <BentoGrid className="auto-rows-[16rem]">
+              <BentoCard
+                name="Time Saved"
+                description="Estimated human hours saved by AI automation this month."
+                Icon={Clock}
+                className="col-span-3 lg:col-span-1"
+              >
+                <div className="absolute bottom-6 right-6 flex items-baseline gap-1">
+                  <span className="text-5xl font-bold tracking-tighter text-neutral-900">42</span>
+                  <span className="text-lg font-medium text-neutral-500">hrs</span>
+                </div>
+              </BentoCard>
+
+              <BentoCard
+                name="AI Agents Active"
+                description="Live policies and fulfillment bots currently running."
+                Icon={Zap}
+                className="col-span-3 lg:col-span-1"
+              >
+                <div className="absolute bottom-6 right-6">
+                  <SparklesText text="12 Online" className="text-3xl font-bold tracking-tight text-[--yc-orange]" />
+                </div>
+              </BentoCard>
+
+              <BentoCard
+                name="Recent Successes"
+                description="Latest automated fulfillments across your organization."
+                Icon={CheckCircle}
+                className="col-span-3 lg:col-span-1"
+              >
+                <div className="mt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-neutral-600 truncate">AWS Read-Only Provisioned</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-neutral-600 truncate">Linear Engineering Access</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm opacity-60">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-neutral-600 truncate">Slack Guest Invite Sent</span>
+                  </div>
+                </div>
+              </BentoCard>
+            </BentoGrid>
+          </section>
+
           {catalog.length === 0 && isAdmin && (
-            <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm dark:border-zinc-700 dark:bg-zinc-900/50">
-              <p className="font-medium text-zinc-800 dark:text-zinc-100">
-                No catalog yet
-              </p>
-              <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-                Use{" "}
-                <Link href="/onboarding" className="underline">
-                  onboarding
-                </Link>{" "}
-                to generate types with AI or apply a template, or add types in{" "}
-                <Link href="/admin/types" className="underline">
-                  Admin → Catalog
-                </Link>
-                .
+            <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-4 text-sm mt-8">
+              <p className="font-semibold text-neutral-900">No Catalog Available</p>
+              <p className="mt-1 text-neutral-600">
+                Use <Link href="/onboarding" className="text-[--yc-orange] hover:underline font-medium">onboarding</Link> to generate types with AI or apply a template.
               </p>
             </div>
           )}
 
-          <section aria-label="Service catalog by category">
-            <h2 className="sr-only">Service catalog by category</h2>
+          <section aria-label="Service catalog by category" className="mt-12">
+            <h2 className="text-xl font-semibold mb-6 text-neutral-900">Service Catalog</h2>
             <CatalogGroupedTiles catalog={catalog} />
           </section>
-
-          <div className="flex flex-wrap gap-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-            <Link
-              href="/requests"
-              className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800/80"
-            >
-              All my requests
-            </Link>
-            <Link
-              href="/requests/new"
-              className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800/80"
-            >
-              New request (pick in form)
-            </Link>
-          </div>
 
           <HomeCopilot
             recentTickets={recentForCopilot}

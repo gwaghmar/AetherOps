@@ -2,18 +2,22 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #171717; /* Charcoal Black */
+  --yc-orange: #FF6600;
+  --yc-orange-dim: rgba(255, 102, 0, 0.6);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-yc-orange: var(--yc-orange);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* For YC theme we keep dark mode stark and contrasting */
     --background: #0a0a0a;
     --foreground: #ededed;
   }
@@ -34,7 +38,7 @@ body {
 
 :where(input, textarea, select, button, a):focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgba(99, 102, 241, 0.6); /* Indigo ring like Linear */
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--yc-orange-dim); /* YC Orange ring */
 }
 
 :where(input, textarea, select, button):disabled {
