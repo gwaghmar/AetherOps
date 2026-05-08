@@ -33,7 +33,7 @@ function StatCard({
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: "linear-gradient(135deg, rgba(255,102,0,0.03) 0%, transparent 60%)",
+          background: "linear-gradient(135deg, color-mix(in srgb, var(--accent) 3%, transparent) 0%, transparent 60%)",
         }}
       />
       <p
