@@ -8,11 +8,61 @@ import { organizationOnboarding } from "@/db/schema";
 import { fetchOrgCatalogTiles } from "@/server/org-catalog";
 import { getRecentUserTickets } from "@/server/recent-tickets";
 import { requireSession } from "@/lib/session";
-import { BentoGrid, BentoCard } from "@/components/magicui/bento-grid";
-import { Clock, Zap, Activity, CheckCircle, ShieldCheck, ShieldAlert } from "lucide-react";
+import { ShieldCheck, ShieldAlert } from "lucide-react";
 import { SparklesText } from "@/components/magicui/sparkles-text";
 
 export const dynamic = "force-dynamic";
+
+function StatCard({
+  label,
+  value,
+  change,
+  sparkle = false,
+}: {
+  label: string;
+  value: string;
+  change?: string;
+  sparkle?: boolean;
+}) {
+  return (
+    <div
+      className="relative overflow-hidden rounded-lg p-[13px_15px] border"
+      style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+    >
+      {/* Magic UI: subtle orange gradient wash */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,102,0,0.03) 0%, transparent 60%)",
+        }}
+      />
+      <p
+        className="text-[10.5px] font-medium uppercase tracking-[0.01em] mb-[5px]"
+        style={{ color: "var(--ink-3)" }}
+      >
+        {label}
+      </p>
+      {sparkle ? (
+        <SparklesText
+          text={value}
+          className="text-[25px] font-semibold tracking-[-0.04em] leading-none tabular-nums"
+        />
+      ) : (
+        <p
+          className="text-[25px] font-semibold tracking-[-0.04em] leading-none tabular-nums"
+          style={{ color: "var(--ink)" }}
+        >
+          {value}
+        </p>
+      )}
+      {change && (
+        <p className="text-[11px] mt-1" style={{ color: "var(--ink-3)" }}>
+          <span style={{ color: "var(--accent)", fontWeight: 500 }}>{change}</span>
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default async function HomePage() {
   const session = await requireSession();
@@ -20,17 +70,10 @@ export default async function HomePage() {
   const role = session.user.role;
   const isAdmin = role === "admin";
 
-  const catalog = orgId
-    ? await fetchOrgCatalogTiles(orgId)
-    : [];
+  const catalog = orgId ? await fetchOrgCatalogTiles(orgId) : [];
 
   let onboardingIncomplete = false;
-  let recentForCopilot: {
-    kind: "request" | "change";
-    id: string;
-    title: string;
-    status: string;
-  }[] = [];
+  let recentForCopilot: { kind: "request" | "change"; id: string; title: string; status: string }[] = [];
 
   if (orgId) {
     await ensureOrganizationOnboardingRow(orgId);
@@ -42,133 +85,116 @@ export default async function HomePage() {
     onboardingIncomplete = isAdmin && !onb?.wizardCompletedAt;
 
     const recent = await getRecentUserTickets(session.user.id, orgId, 3);
-    recentForCopilot = recent.map((t) => ({
-      kind: t.kind,
-      id: t.id,
-      title: t.title,
-      status: t.status,
-    }));
+    recentForCopilot = recent.map((t) => ({ kind: t.kind, id: t.id, title: t.title, status: t.status }));
   }
 
   return (
-    <div className="space-y-10 max-w-7xl mx-auto pb-12">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
-          Welcome back, {session.user.name}.
-        </h1>
-        <p className="text-neutral-500 max-w-2xl text-lg">
-          Your AI operations are running smoothly. Browse the catalog or ask the AI to provision what you need instantly.
-        </p>
-      </div>
+    <div className="dot-grid relative min-h-full -m-6 md:-m-7 p-6 md:p-7">
+      <div className="relative z-10 space-y-8 max-w-4xl">
 
-      {isAdmin && (
-        <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-4 shadow-sm flex gap-3 items-start">
-          <ShieldCheck className="w-5 h-5 text-neutral-700 mt-0.5" />
-          <div>
-            <p className="font-semibold text-neutral-900">Admin View Active</p>
-            <p className="mt-1 text-sm text-neutral-600">
-              You are seeing all configuration options. To preview the standard employee view, log in with a non-admin account.
-            </p>
+        {/* Page header */}
+        <div>
+          <h1
+            className="text-[17px] font-semibold tracking-[-0.03em]"
+            style={{ color: "var(--ink)" }}
+          >
+            Welcome back, {session.user.name ?? session.user.email}.
+          </h1>
+          <p className="text-[12px] mt-1" style={{ color: "var(--ink-2)" }}>
+            Your AI operations are running — browse the catalog or ask the AI to provision instantly.
+          </p>
+        </div>
+
+        {/* Admin notice */}
+        {isAdmin && (
+          <div
+            className="rounded-lg border px-4 py-3 flex gap-3 items-start text-[12px]"
+            style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink-2)" }}
+          >
+            <ShieldCheck className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "var(--ink-3)" }} />
+            <span>
+              <strong style={{ color: "var(--ink)" }}>Admin view active.</strong>{" "}
+              Log in as a non-admin to preview the standard employee view.
+            </span>
           </div>
-        </div>
-      )}
+        )}
 
-      {!orgId ? (
-        <div className="rounded-xl bg-red-50 p-6 border border-red-100 flex items-center gap-3">
-          <ShieldAlert className="w-6 h-6 text-red-600" />
-          <p className="text-red-800 font-medium text-lg">Your account has no organization assigned.</p>
-        </div>
-      ) : (
-        <>
-          {onboardingIncomplete && (
-            <div className="rounded-xl border border-[--yc-orange] bg-orange-50/50 px-5 py-4 shadow-sm">
-              <p className="font-semibold text-neutral-900">Complete Organization Setup</p>
-              <p className="mt-1 text-sm text-neutral-600">
-                Run the guided wizard to connect AI, seed your catalog, and invite your team.
-              </p>
-              <Link
-                href="/onboarding"
-                className="mt-3 inline-flex items-center justify-center rounded-full bg-[--yc-orange] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-[#E65C00] active:scale-95"
+        {/* No org error */}
+        {!orgId ? (
+          <div
+            className="rounded-lg border px-4 py-3 flex items-center gap-3"
+            style={{ background: "var(--surface)", borderColor: "var(--status-denied)", color: "var(--status-denied)" }}
+          >
+            <ShieldAlert className="w-5 h-5 flex-shrink-0" />
+            <p className="text-[13px] font-medium">Your account has no organization assigned.</p>
+          </div>
+        ) : (
+          <>
+            {/* Onboarding prompt */}
+            {onboardingIncomplete && (
+              <div
+                className="rounded-lg border px-4 py-3"
+                style={{ background: "var(--surface)", borderColor: "var(--accent)" }}
               >
-                Open Onboarding
-              </Link>
+                <p className="text-[13px] font-semibold" style={{ color: "var(--ink)" }}>
+                  Complete organization setup
+                </p>
+                <p className="text-[12px] mt-1" style={{ color: "var(--ink-2)" }}>
+                  Run the guided wizard to connect AI, seed your catalog, and invite your team.
+                </p>
+                <Link
+                  href="/onboarding"
+                  className="mt-3 inline-flex items-center rounded-md px-3 py-1.5 text-[12px] font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ background: "var(--accent)" }}
+                >
+                  Open onboarding
+                </Link>
+              </div>
+            )}
+
+            {/* Stat cards — 3 columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <StatCard label="Time saved" value="42h" change="↑ 12% this month" />
+              <StatCard label="Agents active" value="12" change="All healthy" sparkle />
+              <StatCard label="Open requests" value="3" change="2 need action" />
             </div>
-          )}
 
-          {/* New Dashboard Analytics (Bento Grid) */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4 text-neutral-900 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-[--yc-orange]" />
-              Platform Pulse
-            </h2>
-            <BentoGrid className="auto-rows-[16rem]">
-              <BentoCard
-                name="Time Saved"
-                description="Estimated human hours saved by AI automation this month."
-                Icon={Clock}
-                className="col-span-3 lg:col-span-1"
+            {/* Empty catalog hint */}
+            {catalog.length === 0 && isAdmin && (
+              <div
+                className="rounded-lg border px-4 py-3 text-[12px]"
+                style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink-2)" }}
               >
-                <div className="absolute bottom-6 right-6 flex items-baseline gap-1">
-                  <span className="text-5xl font-bold tracking-tighter text-neutral-900">42</span>
-                  <span className="text-lg font-medium text-neutral-500">hrs</span>
-                </div>
-              </BentoCard>
+                <p className="font-semibold" style={{ color: "var(--ink)" }}>No catalog available</p>
+                <p className="mt-1">
+                  Use{" "}
+                  <Link href="/onboarding" className="font-medium hover:underline" style={{ color: "var(--accent)" }}>
+                    onboarding
+                  </Link>{" "}
+                  to generate types with AI or apply a template.
+                </p>
+              </div>
+            )}
 
-              <BentoCard
-                name="AI Agents Active"
-                description="Live policies and fulfillment bots currently running."
-                Icon={Zap}
-                className="col-span-3 lg:col-span-1"
+            {/* Service catalog */}
+            <section aria-label="Service catalog">
+              <h2
+                className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-3"
+                style={{ color: "var(--ink-3)" }}
               >
-                <div className="absolute bottom-6 right-6">
-                  <SparklesText text="12 Online" className="text-3xl font-bold tracking-tight text-[--yc-orange]" />
-                </div>
-              </BentoCard>
+                Service catalog
+              </h2>
+              <CatalogGroupedTiles catalog={catalog} />
+            </section>
 
-              <BentoCard
-                name="Recent Successes"
-                description="Latest automated fulfillments across your organization."
-                Icon={CheckCircle}
-                className="col-span-3 lg:col-span-1"
-              >
-                <div className="mt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-neutral-600 truncate">AWS Read-Only Provisioned</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-neutral-600 truncate">Linear Engineering Access</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm opacity-60">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-neutral-600 truncate">Slack Guest Invite Sent</span>
-                  </div>
-                </div>
-              </BentoCard>
-            </BentoGrid>
-          </section>
-
-          {catalog.length === 0 && isAdmin && (
-            <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-4 text-sm mt-8">
-              <p className="font-semibold text-neutral-900">No Catalog Available</p>
-              <p className="mt-1 text-neutral-600">
-                Use <Link href="/onboarding" className="text-[--yc-orange] hover:underline font-medium">onboarding</Link> to generate types with AI or apply a template.
-              </p>
-            </div>
-          )}
-
-          <section aria-label="Service catalog by category" className="mt-12">
-            <h2 className="text-xl font-semibold mb-6 text-neutral-900">Service Catalog</h2>
-            <CatalogGroupedTiles catalog={catalog} />
-          </section>
-
-          <HomeCopilot
-            recentTickets={recentForCopilot}
-            onboardingIncomplete={onboardingIncomplete}
-          />
-        </>
-      )}
+            {/* AI Copilot */}
+            <HomeCopilot
+              recentTickets={recentForCopilot}
+              onboardingIncomplete={onboardingIncomplete}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }
