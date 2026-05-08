@@ -31,7 +31,7 @@ function CatalogTile({ tile, featured = false }: { tile: CatalogTileLike; featur
         if (!featured) {
           const el = e.currentTarget as HTMLElement;
           el.style.borderColor = "#D4D4D0";
-          el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.05)";
+          el.style.boxShadow = "var(--shadow-hover)";
         }
       }}
       onMouseLeave={(e) => {

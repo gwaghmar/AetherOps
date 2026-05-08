@@ -21,6 +21,8 @@
   --status-approved: #3D9970;
   --status-denied:   #E55353;
 
+  --shadow-hover:    0 2px 8px rgba(0,0,0,0.05);
+
   /* legacy aliases kept so old code doesn't hard-crash before sweep */
   --background:      var(--canvas);
   --foreground:      var(--ink);
@@ -44,6 +46,7 @@
     --accent:          #FF6600;
     --accent-dim:      rgba(255,102,0,0.15);
     --accent-hover:    #FF7A20;
+    --shadow-hover:    0 2px 8px rgba(0,0,0,0.15);
   }
 }
 
@@ -60,6 +63,7 @@
   --accent:          #FF6600;
   --accent-dim:      rgba(255,102,0,0.15);
   --accent-hover:    #FF7A20;
+  --shadow-hover:    0 2px 8px rgba(0,0,0,0.15);
 }
 
 /* ─── Tailwind 4 token registration ────────────── */
