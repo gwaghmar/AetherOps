@@ -112,12 +112,16 @@ async function executeProvisioning(job: typeof fulfillmentJob.$inferSelect): Pro
     const nextStatus = exhausted ? "failed" : "pending";
 
     if (exhausted) {
-      // If provision failed, mark request failed. If revoke failed, maybe keep same status or mark failed_revocation?
-      // For now, if provision fails we mark failed. If revoke fails, we can add a new status or just keep it as is.
       if (type === "provision") {
         await db
           .update(requestTable)
           .set({ status: "failed", updatedAt: new Date() })
+          .where(eq(requestTable.id, job.requestId));
+      } else {
+        // Revoke exhausted all attempts — surface as revocation_failed so it doesn't stay stuck in revocation_pending
+        await db
+          .update(requestTable)
+          .set({ status: "revocation_failed", updatedAt: new Date() })
           .where(eq(requestTable.id, job.requestId));
       }
 

@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 
 export function CreateCampaignButton() {
   const [loading, setLoading] = useState(false);
-  const { showToast } = useToast();
+  const { toast } = useToast();
 
   async function handleCreate() {
     if (!window.confirm("Start a new quarterly access review campaign? This will gather all active provisioning requests and assign them for review.")) {
@@ -18,12 +18,12 @@ export function CreateCampaignButton() {
     try {
       const result = await createCampaignAction();
       if (result.ok) {
-        showToast(`Campaign started with ${result?.itemsCount} items to review.`, "success");
+        toast(`Campaign started with ${result?.itemsCount} items to review.`, "success");
       } else {
-        showToast("Failed to start campaign.", "error");
+        toast("Failed to start campaign.", "error");
       }
     } catch (e) {
-      showToast("An unexpected error occurred.", "error");
+      toast("An unexpected error occurred.", "error");
     } finally {
       setLoading(false);
     }

@@ -18,24 +18,24 @@ type App = {
 };
 
 export function AppRegistryList({ apps }: { apps: App[] }) {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ingestingId, setIngestingId] = useState<string | null>(null);
 
   async function handleIngest(appId: string, url: string | null) {
     if (!url) {
-      showToast("No setup guide URL provided for this app.", "error");
+      toast("No setup guide URL provided for this app.", "error");
       return;
     }
     setIngestingId(appId);
     try {
       const res = await ingestVendorDocsAction(appId, url);
       if (res.ok) {
-        showToast("Successfully ingested and summarized vendor docs using AI.", "success");
+        toast("Successfully ingested and summarized vendor docs using AI.", "success");
       }
     } catch (err) {
-      showToast("Failed to ingest docs. Ensure the URL is accessible.", "error");
+      toast("Failed to ingest docs. Ensure the URL is accessible.", "error");
     } finally {
       setIngestingId(null);
     }
@@ -57,11 +57,11 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
         setupGuideUrl: fd.get("setupGuideUrl") as string,
       });
       if (res.ok) {
-        showToast("App added to registry", "success");
+        toast("App added to registry", "success");
         setShowForm(false);
       }
     } catch (err) {
-      showToast("Failed to add app", "error");
+      toast("Failed to add app", "error");
     } finally {
       setLoading(false);
     }

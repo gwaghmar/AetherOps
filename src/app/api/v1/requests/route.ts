@@ -34,6 +34,7 @@ const bodySchema = z.object({
   requestTypeSlug: z.string().min(1).max(64),
   requesterEmail: z.string().email(),
   payload: z.record(z.string(), z.unknown()),
+  durationHours: z.number().int().min(1).max(8760).optional(),
 });
 
 export async function POST(req: Request) {
@@ -136,6 +137,17 @@ export async function POST(req: Request) {
     );
   }
 
+  let expiresAt: Date | null = null;
+  if (parsed.data.durationHours) {
+    expiresAt = new Date(Date.now() + parsed.data.durationHours * 60 * 60 * 1000);
+    if (expiresAt <= new Date()) {
+      return Response.json(
+        { error: "durationHours must result in a future expiry", code: "validation_error" },
+        { status: 400 },
+      );
+    }
+  }
+
   let id: string;
   try {
     const res = await createRequestCore({
@@ -150,6 +162,7 @@ export async function POST(req: Request) {
       auditActorId: null,
       auditMetadata: { apiKeyId: ctx.apiKeyId },
       idempotencyKey: req.headers.get("idempotency-key"),
+      expiresAt,
     });
     id = res.id;
   } catch (e) {

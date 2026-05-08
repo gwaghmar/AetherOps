@@ -6,7 +6,7 @@ import { useToast } from "@/components/toast";
 import { Lock } from "lucide-react";
 
 export function VaultForm() {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -19,13 +19,13 @@ export function VaultForm() {
     try {
       const result = await storeVaultCredentialAction(connectorId, payload);
       if (result.ok) {
-        showToast("Credential securely stored in vault", "success");
+        toast("Credential securely stored in vault", "success");
         (e.target as HTMLFormElement).reset();
       } else {
-        showToast(result.error || "Failed to store credential", "error");
+        toast(result.error || "Failed to store credential", "error");
       }
     } catch (err) {
-      showToast("An unexpected error occurred", "error");
+      toast("An unexpected error occurred", "error");
     } finally {
       setLoading(false);
     }

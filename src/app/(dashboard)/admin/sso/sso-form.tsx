@@ -17,7 +17,7 @@ export function SsoForm({
   scimTokenExists: boolean;
   scimUrl: string;
 }) {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [domain, setDomain] = useState(initialDomain);
   const [issuer, setIssuer] = useState(initialIssuer);
   const [xml, setXml] = useState(initialXml);
@@ -32,10 +32,10 @@ export function SsoForm({
     try {
       const res = await saveSamlConfigAction(domain, issuer, xml);
       if (res.ok) {
-        showToast("SAML Configuration saved successfully", "success");
+        toast("SAML Configuration saved successfully", "success");
       }
     } catch (err) {
-      showToast("Failed to save SAML configuration", "error");
+      toast("Failed to save SAML configuration", "error");
     } finally {
       setLoading(false);
     }
@@ -50,10 +50,10 @@ export function SsoForm({
       const res = await generateScimTokenAction();
       if (res.ok) {
         setGeneratedToken(res.token);
-        showToast("SCIM Token generated. Save this token immediately.", "success");
+        toast("SCIM Token generated. Save this token immediately.", "success");
       }
     } catch (err) {
-      showToast("Failed to generate SCIM token", "error");
+      toast("Failed to generate SCIM token", "error");
     } finally {
       setScimLoading(false);
     }

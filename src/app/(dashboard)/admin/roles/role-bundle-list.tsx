@@ -19,7 +19,7 @@ export function RoleBundleList({
   availableTypes: any[], 
   allUsers: any[] 
 }) {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [showCreate, setShowCreate] = useState(false);
   const [applying, setApplying] = useState<string | null>(null);
 
@@ -28,36 +28,36 @@ export function RoleBundleList({
     const fd = new FormData(e.currentTarget);
     try {
       await createRoleBundleAction(fd.get("name") as string, fd.get("description") as string);
-      showToast("Role bundle created", "success");
+      toast("Role bundle created", "success");
       setShowCreate(false);
       window.location.reload(); 
     } catch (err) {
-      showToast("Failed to create bundle", "error");
+      toast("Failed to create bundle", "error");
     }
   }
 
   async function handleAddType(bundleId: string, typeId: string) {
      try {
        await addTypeToBundleAction(bundleId, typeId);
-       showToast("Request type added to bundle", "success");
+       toast("Request type added to bundle", "success");
        window.location.reload();
      } catch (err) {
-       showToast("Failed to add type", "error");
+       toast("Failed to add type", "error");
      }
   }
 
   async function handleApply(bundleId: string, userId: string) {
     if (!userId) {
-      showToast("Please select a user first", "error");
+      toast("Please select a user first", "error");
       return;
     }
     setApplying(bundleId);
     try {
       const results = await applyBundleToUserAction(userId, bundleId);
       const successCount = results.filter(r => r.ok).length;
-      showToast(`Triggered ${successCount} requests for user.`, "success");
+      toast(`Triggered ${successCount} requests for user.`, "success");
     } catch (err) {
-      showToast("Failed to apply bundle", "error");
+      toast("Failed to apply bundle", "error");
     } finally {
       setApplying(null);
     }

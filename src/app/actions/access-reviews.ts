@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { accessReviewCampaign, accessReviewItem, request, user } from "@/db/app-schema";
+import { accessReviewCampaign, accessReviewItem, request } from "@/db/app-schema";
 import { requireSession } from "@/lib/session";
 import { eq, and, isNull } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
@@ -94,7 +94,12 @@ export async function submitReviewDecisionAction(itemId: string, decision: "keep
   if (decision === "revoke") {
     // We would enqueue a revocation job here
     const { enqueueFulfillmentJob } = await import("@/server/fulfillment-queue");
-    await enqueueFulfillmentJob(item.requestId, "revoke", session.user.id);
+    await enqueueFulfillmentJob({
+      organizationId: item.campaign.organizationId,
+      requestId: item.requestId,
+      actorId: session.user.id,
+      jobType: "revoke",
+    });
   }
 
   revalidatePath("/approvals");

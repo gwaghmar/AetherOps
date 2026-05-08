@@ -12,6 +12,7 @@ import {
 import { requireSession } from "@/lib/session";
 import { requestStatusLabel } from "@/lib/status-labels";
 import { nextActionGuidance } from "@/lib/next-action";
+import { formatAbsoluteDate } from "@/lib/format-date";
 import { isApproverAllowedForRequest } from "@/server/approval-routing";
 import { RequestVisitTracker } from "@/components/request-visit-tracker";
 import { ApproverSummaryPanel } from "@/components/approver-summary-panel";
@@ -139,6 +140,42 @@ export default async function RequestDetailPage({
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">Request</h1>
         <p className="mt-1 font-mono text-xs text-zinc-500">{id}</p>
       </div>
+
+      {row.request.status === "revocation_pending" && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100">
+          <p className="font-semibold">Access revocation in progress</p>
+          <p className="mt-0.5 text-[13px] opacity-90">
+            This access has expired and is being automatically revoked. No action required.
+          </p>
+        </div>
+      )}
+
+      {row.request.status === "revocation_failed" && (
+        <div className="rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-900 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-100">
+          <p className="font-semibold">Revocation failed</p>
+          <p className="mt-0.5 text-[13px] opacity-90">
+            Automatic revocation failed after multiple attempts. Contact your IT administrator to revoke access manually.
+          </p>
+        </div>
+      )}
+
+      {row.request.status === "fulfilled" && row.request.expiresAt && (
+        <div className={`rounded-xl border px-4 py-3 text-sm ${
+          row.request.expiresAt <= new Date()
+            ? "border-red-200 bg-red-50/80 text-red-900 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-100"
+            : "border-amber-200 bg-amber-50/80 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100"
+        }`}>
+          <p className="font-semibold">
+            {row.request.expiresAt <= new Date() ? "Access expired" : "Time-bound access"}
+          </p>
+          <p className="mt-0.5 text-[13px] opacity-90">
+            Expires: <span className="font-mono">{formatAbsoluteDate(row.request.expiresAt)}</span>
+            {row.request.preExpiryNotifiedAt && (
+              <span className="ml-2 text-xs opacity-75">(notification sent)</span>
+            )}
+          </p>
+        </div>
+      )}
 
       {guidance && (
         <div

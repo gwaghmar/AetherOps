@@ -6,7 +6,7 @@ import { useToast } from "@/components/toast";
 import { UserMinus } from "lucide-react";
 
 export function OffboardButton({ userId, userName }: { userId: string, userName: string | null }) {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   async function handleOffboard() {
@@ -17,10 +17,10 @@ export function OffboardButton({ userId, userName }: { userId: string, userName:
     try {
       const res = await offboardUserAction(userId);
       if (res.ok) {
-        showToast(`Successfully offboarded ${userName || "user"}.`, "success");
+        toast(`Successfully offboarded ${userName || "user"}.`, "success");
       }
     } catch (err) {
-      showToast("Failed to offboard user.", "error");
+      toast("Failed to offboard user.", "error");
     } finally {
       setLoading(false);
     }
