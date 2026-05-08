@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Logo } from "@/components/logo";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { SignOutButton } from "@/components/sign-out-button";
