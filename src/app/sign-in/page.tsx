@@ -81,8 +81,6 @@ export default function SignInPage() {
           </h2>
 
           <form
-            method="post"
-            action="#"
             className="space-y-4"
             aria-describedby={error ? errorId : undefined}
             onSubmit={async (e) => {
@@ -111,8 +109,6 @@ export default function SignInPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                aria-invalid={Boolean(error)}
-                aria-describedby={error ? errorId : undefined}
                 className="w-full rounded-md px-3 py-2 text-[12.5px] border"
                 style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink)" }}
               />
@@ -132,8 +128,6 @@ export default function SignInPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                aria-invalid={Boolean(error)}
-                aria-describedby={error ? errorId : undefined}
                 className="w-full rounded-md px-3 py-2 text-[12.5px] border"
                 style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink)" }}
               />
@@ -154,8 +148,8 @@ export default function SignInPage() {
               type="submit"
               disabled={loading}
               aria-busy={loading}
-              className="group flex w-full items-center justify-center gap-2 rounded-md py-2.5 text-[12.5px] font-medium text-white transition-opacity hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
-              style={{ background: "var(--accent)" }}
+              className="group flex w-full items-center justify-center gap-2 rounded-md py-2.5 text-[12.5px] font-medium transition-opacity hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+              style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
             >
               {loading ? "Signing in…" : "Continue with email"}
               {!loading && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />}

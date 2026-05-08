@@ -16,6 +16,7 @@
   --accent:          #FF6600; /* YC orange — single brand accent */
   --accent-dim:      rgba(255,102,0,0.12);
   --accent-hover:    #E85C00;
+  --ink-on-accent:   #FFFFFF; /* text on accent-colored backgrounds */
 
   --status-pending:  #FF6600;
   --status-approved: #3D9970;
