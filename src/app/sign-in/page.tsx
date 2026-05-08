@@ -5,13 +5,10 @@ import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { SocialSignIn } from "@/components/social-sign-in";
-import { getPublicAppName } from "@/lib/env";
+import { Logo } from "@/components/logo";
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
 import { AnimatedBeam } from "@/components/magicui/animated-beam";
-import { User, Brain, LayoutDashboard, Key, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const appName = getPublicAppName();
+import { User, Brain, LayoutDashboard, ArrowRight } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -22,42 +19,48 @@ export default function SignInPage() {
   const errorId = useId();
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-white px-4">
-      {/* Magic UI Background */}
+    <div
+      className="relative flex min-h-screen flex-col items-center justify-center px-4"
+      style={{ background: "var(--surface)" }}
+    >
       <AnimatedGridPattern />
 
-      {/* Main Content Container */}
       <div className="relative z-10 w-full max-w-4xl flex flex-col md:flex-row items-center gap-12 lg:gap-24">
-        
-        {/* Left Side: The Hook & Diagram */}
+
+        {/* Left: hook + diagram */}
         <div className="flex-1 flex flex-col gap-6 text-center md:text-left">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-neutral-900">
-            Operations on <span className="text-[--yc-orange]">Autopilot.</span>
+          <Logo size="lg" wordmark href="/" className="justify-center md:justify-start" />
+          <h1
+            className="text-4xl md:text-[52px] font-semibold tracking-[-0.04em] leading-[1.1]"
+            style={{ color: "var(--ink)" }}
+          >
+            Operations on{" "}
+            <span style={{ color: "var(--accent)" }}>autopilot.</span>
           </h1>
-          <p className="text-lg text-neutral-600 max-w-md mx-auto md:mx-0">
-            {appName} connects your team to the tools they need, instantly governed by AI.
+          <p className="text-[15px] max-w-md mx-auto md:mx-0" style={{ color: "var(--ink-2)" }}>
+            Aether Ops connects your team to the tools they need, instantly governed by AI.
           </p>
 
-          {/* Interactive Diagram: User -> AI -> Output */}
-          <div className="mt-8 bg-neutral-50 border border-neutral-100 rounded-2xl p-6 shadow-sm hidden md:block">
+          {/* Diagram */}
+          <div
+            className="mt-4 rounded-xl p-6 border hidden md:block"
+            style={{ background: "var(--subtle)", borderColor: "var(--line)" }}
+          >
             <div className="flex items-center justify-between relative">
-              <div className="z-10 bg-white p-3 rounded-full shadow-sm border border-neutral-200">
-                <User className="w-6 h-6 text-neutral-700" />
+              <div className="z-10 p-3 rounded-full border" style={{ background: "var(--surface)", borderColor: "var(--line)" }}>
+                <User className="w-6 h-6" style={{ color: "var(--ink-2)" }} />
               </div>
-              
               <div className="flex-1 absolute inset-0 z-0">
                 <AnimatedBeam duration={3} />
               </div>
-
-              <div className="z-10 bg-white p-4 rounded-full shadow-md border border-[--yc-orange]">
-                <Brain className="w-8 h-8 text-[--yc-orange]" />
+              <div className="z-10 p-4 rounded-full border" style={{ background: "var(--surface)", borderColor: "var(--accent)" }}>
+                <Brain className="w-8 h-8" style={{ color: "var(--accent)" }} />
               </div>
-
-              <div className="z-10 bg-white p-3 rounded-full shadow-sm border border-neutral-200">
-                <LayoutDashboard className="w-6 h-6 text-neutral-700" />
+              <div className="z-10 p-3 rounded-full border" style={{ background: "var(--surface)", borderColor: "var(--line)" }}>
+                <LayoutDashboard className="w-6 h-6" style={{ color: "var(--ink-2)" }} />
               </div>
             </div>
-            <div className="flex justify-between mt-4 text-xs font-medium text-neutral-500">
+            <div className="flex justify-between mt-4 text-[11px] font-medium" style={{ color: "var(--ink-3)" }}>
               <span>Request</span>
               <span>AI Policy Engine</span>
               <span>Provisioned</span>
@@ -65,14 +68,17 @@ export default function SignInPage() {
           </div>
         </div>
 
-        {/* Right Side: The Login Card */}
-        <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white/80 backdrop-blur-xl p-8 shadow-xl">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="bg-[--yc-orange] p-2 rounded-lg">
-              <Key className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="text-xl font-semibold tracking-tight">Sign In</h2>
-          </div>
+        {/* Right: login card */}
+        <div
+          className="w-full max-w-sm rounded-xl border p-8 shadow-xl"
+          style={{ background: "color-mix(in srgb, var(--surface) 85%, transparent)", borderColor: "var(--line)", backdropFilter: "blur(20px)" }}
+        >
+          <h2
+            className="text-[17px] font-semibold tracking-[-0.03em] mb-6"
+            style={{ color: "var(--ink)" }}
+          >
+            Sign in
+          </h2>
 
           <form
             method="post"
@@ -83,15 +89,9 @@ export default function SignInPage() {
               e.preventDefault();
               setError(null);
               setLoading(true);
-              const res = await authClient.signIn.email({
-                email,
-                password,
-              });
+              const res = await authClient.signIn.email({ email, password });
               setLoading(false);
-              if (res.error) {
-                setError(res.error.message ?? "Sign in failed");
-                return;
-              }
+              if (res.error) { setError(res.error.message ?? "Sign in failed"); return; }
               router.push("/home");
               router.refresh();
             }}
@@ -99,9 +99,10 @@ export default function SignInPage() {
             <div>
               <label
                 htmlFor="signin-email"
-                className="text-xs font-medium text-neutral-600"
+                className="text-[11px] font-medium block mb-1.5"
+                style={{ color: "var(--ink-2)" }}
               >
-                Work Email
+                Work email
               </label>
               <input
                 id="signin-email"
@@ -112,13 +113,15 @@ export default function SignInPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? errorId : undefined}
-                className="mt-1.5 w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm transition-all focus-visible:ring-2 focus-visible:ring-[--yc-orange-dim]"
+                className="w-full rounded-md px-3 py-2 text-[12.5px] border"
+                style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink)" }}
               />
             </div>
             <div>
               <label
                 htmlFor="signin-password"
-                className="text-xs font-medium text-neutral-600"
+                className="text-[11px] font-medium block mb-1.5"
+                style={{ color: "var(--ink-2)" }}
               >
                 Password
               </label>
@@ -131,15 +134,17 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? errorId : undefined}
-                className="mt-1.5 w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm transition-all focus-visible:ring-2 focus-visible:ring-[--yc-orange-dim]"
+                className="w-full rounded-md px-3 py-2 text-[12.5px] border"
+                style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink)" }}
               />
             </div>
-            
+
             {error && (
               <p
                 id={errorId}
-                className="text-sm text-red-600 bg-red-50 p-2 rounded-md"
+                className="text-[12px] rounded-md p-2"
                 role="alert"
+                style={{ background: "color-mix(in srgb, var(--status-denied) 8%, transparent)", color: "var(--status-denied)" }}
               >
                 {error}
               </p>
@@ -149,31 +154,29 @@ export default function SignInPage() {
               type="submit"
               disabled={loading}
               aria-busy={loading}
-              className="group relative flex w-full items-center justify-center gap-2 rounded-full bg-[--yc-orange] py-2.5 text-sm font-medium text-white shadow-md transition-all hover:bg-[#E65C00] active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
+              className="group flex w-full items-center justify-center gap-2 rounded-md py-2.5 text-[12.5px] font-medium text-white transition-opacity hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+              style={{ background: "var(--accent)" }}
             >
-              {loading ? "Signing in…" : "Continue with Email"}
-              {!loading && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />}
+              {loading ? "Signing in…" : "Continue with email"}
+              {!loading && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />}
             </button>
           </form>
 
-          <div className="my-6 flex items-center gap-3">
-            <div className="flex-1 border-t border-neutral-200" />
-            <span className="text-xs text-neutral-400 font-medium">OR</span>
-            <div className="flex-1 border-t border-neutral-200" />
+          <div className="my-5 flex items-center gap-3">
+            <div className="flex-1 border-t" style={{ borderColor: "var(--line)" }} />
+            <span className="text-[11px] font-medium" style={{ color: "var(--ink-3)" }}>OR</span>
+            <div className="flex-1 border-t" style={{ borderColor: "var(--line)" }} />
           </div>
 
-          {/* Social Sign In usually renders its own buttons, we let it do its thing */}
-          <div className="[&>button]:rounded-full [&>button]:py-2.5">
-            <SocialSignIn callbackURL="/home" />
-          </div>
+          <SocialSignIn callbackURL="/home" />
 
-          <p className="mt-8 text-center text-xs text-neutral-500">
+          <p className="mt-6 text-center text-[11px]" style={{ color: "var(--ink-3)" }}>
             No account?{" "}
-            <Link href="/sign-up" className="font-medium text-neutral-900 hover:text-[--yc-orange] transition-colors">
+            <Link href="/sign-up" className="font-medium hover:underline" style={{ color: "var(--ink)" }}>
               Request access
             </Link>
             {" · "}
-            <Link href="/forgot-password" className="font-medium text-neutral-900 hover:text-[--yc-orange] transition-colors">
+            <Link href="/forgot-password" className="font-medium hover:underline" style={{ color: "var(--ink)" }}>
               Reset password
             </Link>
           </p>
