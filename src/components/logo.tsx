@@ -37,10 +37,11 @@ function LogoMark({ size = "md" }: { size: LogoSize }) {
         viewBox="0 0 44 44"
         fill="none"
         aria-hidden="true"
+        style={{ color: "var(--mark-icon, white)" }}
       >
         <path
           d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z"
-          fill="white"
+          fill="currentColor"
           fillOpacity={0.95}
         />
       </svg>
@@ -71,7 +72,11 @@ export function Logo({ size = "md", wordmark = true, href = "/home", className }
   );
 
   return href ? (
-    <Link href={href} className="inline-flex items-center">
+    <Link
+      href={href}
+      className="inline-flex items-center"
+      aria-label={!wordmark ? "Aether Ops home" : undefined}
+    >
       {inner}
     </Link>
   ) : (
