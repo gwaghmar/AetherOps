@@ -52,14 +52,14 @@ export function NewChangeForm({
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">New change ticket</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           File a governed change (reports, ETL, releases). Starts in{" "}
           <strong>Draft</strong>; move to <strong>On deck</strong> when ready for
           UAT gates.
         </p>
       </div>
       {!selected || !schema ? (
-        <p className="text-red-600">
+        <p style={{ color: "var(--status-denied)" }}>
           No change templates yet. Ask an admin to add some under{" "}
           <Link href="/admin/change-templates" className="underline">
             Change templates
@@ -124,7 +124,8 @@ export function NewChangeForm({
             <div>
               <label
                 htmlFor={`${formId}-template`}
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                className="text-xs font-medium"
+                style={{ color: "var(--ink-2)" }}
               >
                 Template
               </label>
@@ -135,7 +136,8 @@ export function NewChangeForm({
                 onChange={(e) => setTemplateId(e.target.value)}
                 aria-invalid={Boolean(submitError)}
                 aria-describedby={submitError ? submitErrorId : undefined}
-                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
               >
                 {templates.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -144,13 +146,14 @@ export function NewChangeForm({
                 ))}
               </select>
               {selected.description && (
-                <p className="mt-1 text-xs text-zinc-500">{selected.description}</p>
+                <p className="mt-1 text-xs" style={{ color: "var(--ink-3)" }}>{selected.description}</p>
               )}
             </div>
             <div>
               <label
                 htmlFor={`${formId}-title`}
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                className="text-xs font-medium"
+                style={{ color: "var(--ink-2)" }}
               >
                 Short title *
               </label>
@@ -164,13 +167,15 @@ export function NewChangeForm({
                 placeholder="e.g. AP aging report — vendor dimension"
                 aria-invalid={Boolean(submitError)}
                 aria-describedby={submitError ? submitErrorId : undefined}
-                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
               />
             </div>
             <div>
               <label
                 htmlFor="assignedUserId"
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                className="text-xs font-medium"
+                style={{ color: "var(--ink-2)" }}
               >
                 Assign to
               </label>
@@ -181,7 +186,8 @@ export function NewChangeForm({
                 onChange={(e) => setAssigneeId(e.target.value)}
                 aria-invalid={Boolean(submitError)}
                 aria-describedby={submitError ? submitErrorId : undefined}
-                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
               >
                 <option value="">— Unassigned —</option>
                 {members.map((m) => (
@@ -195,7 +201,8 @@ export function NewChangeForm({
               <div key={f.key}>
                 <label
                   htmlFor={`${formId}-field-${f.key}`}
-                  className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  className="text-xs font-medium"
+                  style={{ color: "var(--ink-2)" }}
                 >
                   {f.label}
                   {f.required !== false ? " *" : ""}
@@ -209,7 +216,8 @@ export function NewChangeForm({
                     placeholder={f.placeholder}
                     aria-invalid={Boolean(submitError)}
                     aria-describedby={submitError ? submitErrorId : undefined}
-                    className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                    style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
                   />
                 ) : (
                   <input
@@ -219,13 +227,14 @@ export function NewChangeForm({
                     placeholder={f.placeholder}
                     aria-invalid={Boolean(submitError)}
                     aria-describedby={submitError ? submitErrorId : undefined}
-                    className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                    style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
                   />
                 )}
               </div>
             ))}
             {submitError && (
-              <p id={submitErrorId} className="text-sm text-red-600" role="alert">
+              <p id={submitErrorId} className="text-sm" role="alert" style={{ color: "var(--status-denied)" }}>
                 {submitError}
               </p>
             )}
@@ -233,7 +242,8 @@ export function NewChangeForm({
               type="submit"
               disabled={pending}
               aria-busy={pending}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
             >
               {pending ? "Creating…" : "Create draft"}
             </button>

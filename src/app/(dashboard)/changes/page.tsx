@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { and, desc, eq, lt } from "drizzle-orm";
 import { db } from "@/db";
 import {
@@ -40,7 +40,7 @@ export default async function ChangesListPage({
   const cursor = before ? new Date(before) : null;
 
   if (!orgId) {
-    return <p className="text-red-600">No organization.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
   }
 
   const conditions = [eq(changeTicket.organizationId, orgId)];
@@ -76,17 +76,11 @@ export default async function ChangesListPage({
     ? rows[rows.length - 1]?.ticket.updatedAt?.toISOString()
     : null;
 
-  const linkCls =
-    "rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium dark:border-zinc-700";
-  const activeCls = "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900";
-  const idleCls =
-    "bg-white text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-200";
-
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Change releases</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Governed pipeline: On deck → Prelim UAT → Final UAT → Prod approval →
           Closed.
         </p>
@@ -95,20 +89,35 @@ export default async function ChangesListPage({
       <div className="flex flex-wrap gap-1.5">
         <Link
           href="/changes?view=mine"
-          className={`${linkCls} ${view === "mine" ? activeCls : idleCls}`}
+          className="rounded-lg border px-3 py-1.5 text-sm font-medium transition"
+          style={
+            view === "mine"
+              ? { background: "var(--ink)", color: "var(--ink-on-accent)", borderColor: "var(--ink)" }
+              : { background: "var(--surface)", color: "var(--ink-2)", borderColor: "var(--line)" }
+          }
         >
           Mine
         </Link>
         <Link
           href="/changes?view=assigned"
-          className={`${linkCls} ${view === "assigned" ? activeCls : idleCls}`}
+          className="rounded-lg border px-3 py-1.5 text-sm font-medium transition"
+          style={
+            view === "assigned"
+              ? { background: "var(--ink)", color: "var(--ink-on-accent)", borderColor: "var(--ink)" }
+              : { background: "var(--surface)", color: "var(--ink-2)", borderColor: "var(--line)" }
+          }
         >
           Assigned to me
         </Link>
         {canSeeAll && (
           <Link
             href="/changes?view=all"
-            className={`${linkCls} ${view === "all" ? activeCls : idleCls}`}
+            className="rounded-lg border px-3 py-1.5 text-sm font-medium transition"
+            style={
+              view === "all"
+                ? { background: "var(--ink)", color: "var(--ink-on-accent)", borderColor: "var(--ink)" }
+                : { background: "var(--surface)", color: "var(--ink-2)", borderColor: "var(--line)" }
+            }
           >
             All
           </Link>
@@ -116,7 +125,7 @@ export default async function ChangesListPage({
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm" style={{ color: "var(--ink-3)" }}>
           No tickets in this view.{" "}
           <Link href="/changes/new" className="font-medium underline">
             New change
@@ -124,26 +133,32 @@ export default async function ChangesListPage({
         </p>
       ) : (
         <>
-          <ul className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+          <ul
+            className="divide-y rounded-lg border"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+          >
             {rows.map(({ ticket, templateTitle, assigneeEmail }) => {
               const stageLabel = isChangeTicketStage(ticket.stage)
                 ? STAGE_LABELS[ticket.stage]
                 : ticket.stage;
               return (
-                <li key={ticket.id}>
+                <li key={ticket.id} style={{ borderColor: "var(--line)" }}>
                   <Link
                     href={`/changes/${ticket.id}`}
-                    className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                    className="block px-4 py-2.5 transition-colors hover:opacity-80"
                   >
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs dark:bg-zinc-800">
+                      <span
+                        className="rounded-full px-2 py-0.5 text-xs"
+                        style={{ background: "var(--subtle)" }}
+                      >
                         {stageLabel}
                       </span>
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                      <span className="font-medium" style={{ color: "var(--ink)" }}>
                         {ticket.title}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">
+                    <p className="mt-1 text-xs" style={{ color: "var(--ink-3)" }}>
                       {templateTitle}
                       {assigneeEmail ? ` · Assignee: ${assigneeEmail}` : ""}
                       {ticket.updatedAt
@@ -160,7 +175,8 @@ export default async function ChangesListPage({
               {cursor ? (
                 <Link
                   href={`/changes?view=${view}`}
-                  className="text-sm text-zinc-500 underline"
+                  className="text-sm underline"
+                  style={{ color: "var(--ink-3)" }}
                 >
                   Back to first page
                 </Link>
@@ -169,7 +185,8 @@ export default async function ChangesListPage({
               )}
               <Link
                 href={`/changes?view=${view}&before=${encodeURIComponent(nextCursor)}`}
-                className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="rounded-lg border px-4 py-2 text-sm font-medium hover:opacity-80"
+                style={{ borderColor: "var(--line)", color: "var(--ink-2)" }}
               >
                 Load older tickets
               </Link>

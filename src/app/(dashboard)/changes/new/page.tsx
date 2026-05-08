@@ -10,7 +10,7 @@ export default async function NewChangePage() {
   const session = await requireSession();
   const orgId = session.user.organizationId;
   if (!orgId) {
-    return <p className="text-red-600">No organization.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
   }
 
   const templates = await db

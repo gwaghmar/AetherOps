@@ -25,7 +25,7 @@ export default async function RequestsHubPage({
   const session = await requireSession();
   const orgId = session.user.organizationId;
   if (!orgId) {
-    return <p className="text-red-600">Your account has no organization.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>Your account has no organization.</p>;
   }
 
   const role = session.user.role;
@@ -94,7 +94,7 @@ export default async function RequestsHubPage({
   const now = Date.now();
 
   return (
-    <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
+    <Suspense fallback={<p className="text-sm" style={{ color: "var(--ink-3)" }}>Loading…</p>}>
       <RequestsHub
         catalog={catalog}
         requests={myRequests}

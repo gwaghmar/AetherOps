@@ -89,13 +89,14 @@ export function ChangeTicketPanel({
           return (
             <span
               key={s}
-              className={`rounded-full px-2 py-1 ${
+              className="rounded-full px-2 py-1"
+              style={
                 current
-                  ? "bg-emerald-700 text-white"
+                  ? { background: "var(--status-approved)", color: "var(--ink-on-accent)" }
                   : done
-                    ? "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200"
-                    : "border border-zinc-200 text-zinc-400 dark:border-zinc-700"
-              }`}
+                    ? { background: "var(--subtle)", color: "var(--ink-2)" }
+                    : { border: "1px solid var(--line)", color: "var(--ink-3)" }
+              }
             >
               {STAGE_LABELS[s]}
             </span>
@@ -104,7 +105,10 @@ export function ChangeTicketPanel({
       </nav>
 
       {canUpdateAssignee && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <section
+          className="rounded-lg border p-4"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+        >
           <h2 className="text-sm font-semibold">Assignee</h2>
           <div className="mt-2 flex flex-wrap items-end gap-2">
             <label htmlFor={assigneeSelectId} className="sr-only">
@@ -114,7 +118,8 @@ export function ChangeTicketPanel({
               id={assigneeSelectId}
               value={assigneeId}
               onChange={(e) => setAssigneeId(e.target.value)}
-              className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             >
               <option value="">— Unassigned —</option>
               {members.map((m) => (
@@ -141,7 +146,8 @@ export function ChangeTicketPanel({
                   setPending(false);
                 }
               }}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600"
+              className="rounded-lg border px-3 py-2 text-sm hover:opacity-80"
+              style={{ borderColor: "var(--line)", color: "var(--ink-2)" }}
             >
               Save assignee
             </button>
@@ -150,7 +156,10 @@ export function ChangeTicketPanel({
       )}
 
       {canEditDraft && schema && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <section
+          className="rounded-lg border p-4"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+        >
           <h2 className="text-sm font-semibold">Edit draft</h2>
           <form
             className="mt-3 space-y-3"
@@ -186,7 +195,8 @@ export function ChangeTicketPanel({
             <div>
               <label
                 htmlFor={draftTitleId}
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                className="text-xs font-medium"
+                style={{ color: "var(--ink-2)" }}
               >
                 Title
               </label>
@@ -198,14 +208,16 @@ export function ChangeTicketPanel({
                 required
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? panelErrorId : undefined}
-                className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
               />
             </div>
             {schema.fields.map((f) => (
               <div key={f.key}>
                 <label
                   htmlFor={`${panelBaseId}-draft-${f.key}`}
-                  className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  className="text-xs font-medium"
+                  style={{ color: "var(--ink-2)" }}
                 >
                   {f.label}
                   {f.required !== false ? " *" : ""}
@@ -220,7 +232,8 @@ export function ChangeTicketPanel({
                     placeholder={f.placeholder}
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? panelErrorId : undefined}
-                    className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                    style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
                   />
                 ) : (
                   <input
@@ -231,7 +244,8 @@ export function ChangeTicketPanel({
                     placeholder={f.placeholder}
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? panelErrorId : undefined}
-                    className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                    style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
                   />
                 )}
               </div>
@@ -240,7 +254,8 @@ export function ChangeTicketPanel({
               type="submit"
               disabled={pending}
               aria-busy={pending}
-              className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg px-3 py-2 text-sm font-medium"
+              style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
             >
               Save draft
             </button>
@@ -248,10 +263,13 @@ export function ChangeTicketPanel({
         </section>
       )}
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <section
+        className="rounded-lg border p-4"
+        style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+      >
         <h2 className="text-sm font-semibold">Workflow actions</h2>
         {error && (
-          <p id={panelErrorId} className="mt-2 text-sm text-red-600" role="alert">
+          <p id={panelErrorId} className="mt-2 text-sm" role="alert" style={{ color: "var(--status-denied)" }}>
             {error}
           </p>
         )}
@@ -265,7 +283,8 @@ export function ChangeTicketPanel({
           onChange={(e) => setComment(e.target.value)}
           rows={2}
           aria-describedby={error ? panelErrorId : undefined}
-          className="mt-3 w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-3 w-full rounded-md border px-3 py-2 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
         />
         <div className="mt-3 flex flex-wrap gap-2">
           {canMoveToDeck && (
@@ -284,7 +303,8 @@ export function ChangeTicketPanel({
                   setPending(false);
                 }
               }}
-              className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg px-3 py-2 text-sm font-medium"
+              style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
             >
               Move to On deck
             </button>
@@ -308,7 +328,8 @@ export function ChangeTicketPanel({
                   setPending(false);
                 }
               }}
-              className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-medium text-white"
+              className="rounded-lg px-3 py-2 text-sm font-medium"
+              style={{ background: "var(--status-approved)", color: "var(--ink-on-accent)" }}
             >
               {advanceLabel}
             </button>
