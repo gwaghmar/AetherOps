@@ -46,17 +46,17 @@ function matchesPath(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function NavLink({ href, label }: NavItem) {
+function NavLink({ href, label, className }: NavItem & { className?: string }) {
   const pathname = usePathname();
   const active = matchesPath(pathname, href);
   return (
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`rounded-md px-2 py-1 transition-colors ${
+      className={`rounded-md px-2.5 py-1.5 transition-colors ${className || ""} ${
         active
-          ? "bg-zinc-200/70 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
-          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          ? "bg-zinc-200/80 text-zinc-900 font-medium dark:bg-zinc-800 dark:text-zinc-100"
+          : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/50 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/50"
       }`}
     >
       {label}
@@ -64,7 +64,7 @@ function NavLink({ href, label }: NavItem) {
   );
 }
 
-export function DashboardNav({ role }: { role: Role }) {
+export function DashboardNav({ role, mobile: _mobile }: { role: Role; mobile?: boolean }) {
   const [adminOpen, setAdminOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -121,7 +121,7 @@ export function DashboardNav({ role }: { role: Role }) {
             >
               {adminItems.map((item) => (
                 <div key={item.href} role="menuitem">
-                  <NavLink {...item} />
+                  <NavLink {...item} className="block w-full text-left" />
                 </div>
               ))}
             </div>
