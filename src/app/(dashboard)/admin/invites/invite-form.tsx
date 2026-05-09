@@ -24,7 +24,8 @@ export function InviteForm() {
   return (
     <div className="space-y-4">
       <form
-        className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
+        className="rounded-xl border p-5"
+        style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         aria-describedby={error ? errorId : undefined}
         onSubmit={async (e) => {
           e.preventDefault();
@@ -54,7 +55,7 @@ export function InviteForm() {
         <h2 className="text-sm font-semibold">Create invite</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${formId}-email`} className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            <label htmlFor={`${formId}-email`} className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
               Email address
             </label>
             <input
@@ -66,18 +67,20 @@ export function InviteForm() {
               placeholder="colleague@company.com"
               aria-invalid={Boolean(error)}
               aria-describedby={error ? errorId : undefined}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)" }}
             />
           </div>
           <div>
-            <label htmlFor={`${formId}-role`} className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            <label htmlFor={`${formId}-role`} className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
               Role
             </label>
             <select
               id={`${formId}-role`}
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)" }}
             >
               <option value="requester">Requester</option>
               <option value="approver">Approver</option>
@@ -85,17 +88,18 @@ export function InviteForm() {
             </select>
           </div>
         </div>
-        <label className="mt-3 flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <label className="mt-3 flex items-center gap-2 text-sm" style={{ color: "var(--ink-2)" }}>
           <input
             type="checkbox"
             checked={sendEmail}
             onChange={(e) => setSendEmail(e.target.checked)}
-            className="rounded border-zinc-300"
+            className="rounded"
+            style={{ borderColor: "var(--line)" }}
           />
           Send email invite automatically
         </label>
         {error && (
-          <p id={errorId} className="mt-2 text-sm text-red-600 dark:text-red-400" role="alert">
+          <p id={errorId} className="mt-2 text-sm" style={{ color: "var(--status-denied)" }} role="alert">
             {error}
           </p>
         )}
@@ -103,20 +107,21 @@ export function InviteForm() {
           type="submit"
           disabled={pending}
           aria-busy={pending}
-          className="mt-4 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+          className="mt-4 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+          style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
         >
           {pending ? "Creating…" : "Create invite"}
         </button>
       </form>
 
       {lastUrl && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
-          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100">Invite link ready</p>
-          <p className="mt-1 text-xs text-emerald-800 dark:text-emerald-300">
+        <div className="rounded-lg border p-4" style={{ borderColor: "color-mix(in srgb, var(--status-approved) 25%, transparent)", background: "color-mix(in srgb, var(--status-approved) 8%, transparent)" }}>
+          <p className="text-sm font-medium" style={{ color: "var(--status-approved)" }}>Invite link ready</p>
+          <p className="mt-1 text-xs" style={{ color: "var(--ink-2)" }}>
             Share this link with the invitee. It expires in 14 days.
           </p>
           <div className="mt-2 flex items-center gap-2">
-            <code className="flex-1 overflow-x-auto rounded border border-emerald-200 bg-white px-2 py-1 text-xs dark:border-emerald-800 dark:bg-zinc-900">
+            <code className="flex-1 overflow-x-auto rounded border px-2 py-1 text-xs" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
               {lastUrl}
             </code>
             <button
@@ -126,7 +131,8 @@ export function InviteForm() {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
               }}
-              className="shrink-0 rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:text-emerald-300"
+              className="shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium"
+              style={{ borderColor: "color-mix(in srgb, var(--status-approved) 30%, transparent)", color: "var(--status-approved)" }}
             >
               {copied ? "Copied!" : "Copy"}
             </button>

@@ -37,7 +37,8 @@ export function ChangeTemplateForm(props: {
 
   return (
     <form
-      className="mt-3 space-y-3 rounded-lg border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-950/50"
+      className="mt-3 space-y-3 rounded-lg border p-3"
+      style={{ borderColor: "var(--line)", background: "var(--subtle)" }}
       onSubmit={async (e) => {
         e.preventDefault();
         setError(null);
@@ -79,7 +80,8 @@ export function ChangeTemplateForm(props: {
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             required
-            className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-0.5 w-full rounded border px-2 py-1 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
             pattern="[a-z0-9_-]+"
           />
         </div>
@@ -92,7 +94,8 @@ export function ChangeTemplateForm(props: {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-0.5 w-full rounded border px-2 py-1 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
           />
         </div>
       </div>
@@ -104,7 +107,8 @@ export function ChangeTemplateForm(props: {
           id="ct-desc"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-0.5 w-full rounded border px-2 py-1 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
       </div>
       <div>
@@ -117,14 +121,16 @@ export function ChangeTemplateForm(props: {
           rows={8}
           value={fieldSchemaJson}
           onChange={(e) => setFieldSchemaJson(e.target.value)}
-          className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-0.5 w-full rounded border px-2 py-1 font-mono text-xs"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm" style={{ color: "var(--status-denied)" }}>{error}</p>}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+        className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-50"
+        style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
       >
         {pending
           ? "Saving…"

@@ -18,13 +18,13 @@ export default async function SsoPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 dark:border-zinc-800">
-        <div className="rounded-xl bg-indigo-50 p-2 dark:bg-indigo-900/20">
-          <ShieldCheck className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+      <div className="flex items-center gap-3 border-b pb-4" style={{ borderColor: "var(--line)" }}>
+        <div className="rounded-lg p-2" style={{ background: "color-mix(in srgb, var(--accent) 8%, transparent)" }}>
+          <ShieldCheck className="h-6 w-6" style={{ color: "var(--accent)" }} />
         </div>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Enterprise Auth</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-3)" }}>
             Configure SAML SSO and SCIM 2.0 provisioning for Okta, Entra ID, or Google Workspace.
           </p>
         </div>

@@ -20,18 +20,18 @@ export function AiSettingsForm({ initial }: { initial: Initial }) {
 
   return (
     <div className="max-w-lg space-y-4">
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs" style={{ color: "var(--ink-3)" }}>
         Bring your own API key (OpenAI, OpenRouter, Azure OpenAI-compatible).
         Set optional base URL for OpenRouter (
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
+        <code className="rounded px-1" style={{ background: "var(--subtle)" }}>
           https://openrouter.ai/api/v1
         </code>
         ). If no org key is stored, the server can use{" "}
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
+        <code className="rounded px-1" style={{ background: "var(--subtle)" }}>
           APP_AI_PLATFORM_API_KEY
         </code>{" "}
         when allowed (dev always; production requires{" "}
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
+        <code className="rounded px-1" style={{ background: "var(--subtle)" }}>
           ALLOW_AI_PLATFORM_FALLBACK=true
         </code>
         ).
@@ -60,29 +60,31 @@ export function AiSettingsForm({ initial }: { initial: Initial }) {
         }}
       >
         <div>
-          <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
             Base URL (optional)
           </label>
           <input
             value={baseUrl}
             onChange={(e) => setBaseUrl(e.target.value)}
             placeholder="Default: api.openai.com"
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
             Model id
           </label>
           <input
             value={defaultModel}
             onChange={(e) => setDefaultModel(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
             API key
           </label>
           <input
@@ -95,14 +97,15 @@ export function AiSettingsForm({ initial }: { initial: Initial }) {
                 : "sk-… or OpenRouter key"
             }
             autoComplete="new-password"
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
           />
           {initial.keyLastFour ? (
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-1 text-xs" style={{ color: "var(--ink-3)" }}>
               Stored key ends in …{initial.keyLastFour}
             </p>
           ) : null}
-          <label className="mt-2 flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+          <label className="mt-2 flex items-center gap-2 text-xs" style={{ color: "var(--ink-2)" }}>
             <input
               type="checkbox"
               checked={clearKey}
@@ -113,11 +116,8 @@ export function AiSettingsForm({ initial }: { initial: Initial }) {
         </div>
         {msg && (
           <p
-            className={
-              msg === "Saved."
-                ? "text-sm text-teal-700 dark:text-teal-300"
-                : "text-sm text-red-600 dark:text-red-400"
-            }
+            className="text-sm"
+            style={{ color: msg === "Saved." ? "var(--status-approved)" : "var(--status-denied)" }}
           >
             {msg}
           </p>
@@ -126,7 +126,8 @@ export function AiSettingsForm({ initial }: { initial: Initial }) {
           <button
             type="submit"
             disabled={pending}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-60"
+            style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
           >
             {pending ? "Saving…" : "Save"}
           </button>
@@ -150,7 +151,8 @@ export function AiSettingsForm({ initial }: { initial: Initial }) {
                 }
               });
             }}
-            className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+            className="rounded-lg border px-4 py-2 text-sm font-medium"
+            style={{ borderColor: "var(--line)" }}
           >
             {testPending ? "Testing…" : "Test connection"}
           </button>

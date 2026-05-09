@@ -62,48 +62,52 @@ export function SsoForm({
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* SAML Configuration */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-          <h2 className="font-medium text-zinc-900 dark:text-zinc-100">SAML Configuration</h2>
-          <p className="mt-1 text-xs text-zinc-500">Enable Single Sign-On for your domain.</p>
+      <div className="rounded-xl border shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
+        <div className="border-b px-6 py-4" style={{ borderColor: "var(--line)" }}>
+          <h2 className="font-medium" style={{ color: "var(--ink)" }}>SAML Configuration</h2>
+          <p className="mt-1 text-xs" style={{ color: "var(--ink-3)" }}>Enable Single Sign-On for your domain.</p>
         </div>
         <form onSubmit={handleSaveSaml} className="space-y-4 p-6">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Email Domain</label>
+            <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Email Domain</label>
             <input
               required
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               placeholder="e.g. acme.com"
-              className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700"
+              className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              style={{ borderColor: "var(--line)" }}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">IdP Issuer URL</label>
+            <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>IdP Issuer URL</label>
             <input
               required
               value={issuer}
               onChange={(e) => setIssuer(e.target.value)}
               placeholder="e.g. http://www.okta.com/exk..."
-              className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700"
+              className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              style={{ borderColor: "var(--line)" }}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">IdP Metadata XML</label>
+            <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>IdP Metadata XML</label>
             <textarea
               required
               rows={6}
               value={xml}
               onChange={(e) => setXml(e.target.value)}
               placeholder="Paste your IDP metadata XML here..."
-              className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm font-mono shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700"
+              className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm font-mono shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              style={{ borderColor: "var(--line)" }}
             />
           </div>
           <div className="flex justify-end">
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 dark:focus:ring-offset-zinc-900"
+              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+              style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
             >
               {loading ? "Saving..." : "Save SAML Config"}
             </button>
@@ -112,36 +116,36 @@ export function SsoForm({
       </div>
 
       {/* SCIM Configuration */}
-      <div className="h-fit rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-          <h2 className="font-medium text-zinc-900 dark:text-zinc-100">SCIM 2.0 Provisioning</h2>
-          <p className="mt-1 text-xs text-zinc-500">Automatically sync users from Okta or Entra ID.</p>
+      <div className="h-fit rounded-xl border shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
+        <div className="border-b px-6 py-4" style={{ borderColor: "var(--line)" }}>
+          <h2 className="font-medium" style={{ color: "var(--ink)" }}>SCIM 2.0 Provisioning</h2>
+          <p className="mt-1 text-xs" style={{ color: "var(--ink-3)" }}>Automatically sync users from Okta or Entra ID.</p>
         </div>
         <div className="space-y-4 p-6">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Base URL</label>
-            <code className="mt-1 block w-full overflow-x-auto whitespace-nowrap rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800">
+            <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Base URL</label>
+            <code className="mt-1 block w-full overflow-x-auto whitespace-nowrap rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--subtle)" }}>
               {scimUrl}
             </code>
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Provisioning Token</label>
+            <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Provisioning Token</label>
             {generatedToken ? (
               <div className="mt-1">
-                <code className="block w-full break-all rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400">
+                <code className="block w-full break-all rounded-md border px-3 py-2 text-sm" style={{ borderColor: "color-mix(in srgb, var(--status-approved) 25%, transparent)", background: "color-mix(in srgb, var(--status-approved) 8%, transparent)", color: "var(--status-approved)" }}>
                   {generatedToken}
                 </code>
-                <p className="mt-2 text-xs font-medium text-red-600 dark:text-red-400">
+                <p className="mt-2 text-xs font-medium" style={{ color: "var(--status-denied)" }}>
                   Copy this token now. It will not be shown again.
                 </p>
               </div>
             ) : scimTokenExists ? (
-              <div className="mt-1 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800">
+              <div className="mt-1 rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--subtle)", color: "var(--ink-3)" }}>
                 Token is configured and active.
               </div>
             ) : (
-              <div className="mt-1 text-sm text-zinc-500">No token generated yet.</div>
+              <div className="mt-1 text-sm" style={{ color: "var(--ink-3)" }}>No token generated yet.</div>
             )}
           </div>
 
@@ -149,7 +153,8 @@ export function SsoForm({
             <button
               onClick={handleGenerateScim}
               disabled={scimLoading}
-              className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:focus:ring-offset-zinc-900"
+              className="w-full rounded-lg border px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink-2)" }}
             >
               {scimLoading ? "Generating..." : scimTokenExists ? "Rotate SCIM Token" : "Generate SCIM Token"}
             </button>

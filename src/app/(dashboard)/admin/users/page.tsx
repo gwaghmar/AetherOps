@@ -9,10 +9,10 @@ export default async function AdminUsersPage() {
   const session = await requireSession();
   const role = session.user.role;
   if (role !== "admin") {
-    return <p className="text-red-600">Admin only.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>Admin only.</p>;
   }
   const orgId = session.user.organizationId;
-  if (!orgId) return <p className="text-red-600">No organization.</p>;
+  if (!orgId) return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
 
   const members = await db
     .select({
@@ -29,12 +29,12 @@ export default async function AdminUsersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Assign approvers and additional admins. The first person to sign up
           becomes admin automatically.
         </p>
       </div>
-      <ul className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+      <ul className="divide-y rounded-lg border" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
         {members.map((m) => (
           <li
             key={m.id}
@@ -42,13 +42,13 @@ export default async function AdminUsersPage() {
           >
             <div>
               <div className="font-medium">{m.name || "—"}</div>
-              <div className="text-sm text-zinc-500">{m.email}</div>
-              <div className="text-xs text-zinc-400">
+              <div className="text-sm" style={{ color: "var(--ink-3)" }}>{m.email}</div>
+              <div className="text-xs" style={{ color: "var(--ink-3)" }}>
                 Current: {m.role ?? "requester"}
               </div>
             </div>
             {m.id === session.user.id ? (
-              <span className="text-xs text-zinc-500">This is you</span>
+              <span className="text-xs" style={{ color: "var(--ink-3)" }}>This is you</span>
             ) : (
               <div className="flex items-center gap-3">
                 <UserRoleForm

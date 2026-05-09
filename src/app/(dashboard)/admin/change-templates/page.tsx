@@ -9,10 +9,10 @@ export default async function AdminChangeTemplatesPage() {
   const session = await requireSession();
   const role = session.user.role;
   if (role !== "admin") {
-    return <p className="text-red-600">Admin only.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>Admin only.</p>;
   }
   const orgId = session.user.organizationId;
-  if (!orgId) return <p className="text-red-600">No organization.</p>;
+  if (!orgId) return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
 
   const templates = await db
     .select()
@@ -26,14 +26,14 @@ export default async function AdminChangeTemplatesPage() {
         <h1 className="text-2xl font-semibold tracking-tight">
           Change templates
         </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Define structured fields for report changes, ETL updates, and other
           release work. Slug must be unique per org.
         </p>
       </div>
 
       <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--ink-3)" }}>
           New template
         </h2>
         <ChangeTemplateForm mode="create" />
@@ -43,22 +43,23 @@ export default async function AdminChangeTemplatesPage() {
         {templates.map((t) => (
           <li
             key={t.id}
-            className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+            className="rounded-xl border p-4"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
           >
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <span className="font-medium">{t.title}</span>
-                <span className="ml-2 text-xs text-zinc-500">({t.slug})</span>
+                <span className="ml-2 text-xs" style={{ color: "var(--ink-3)" }}>({t.slug})</span>
               </div>
               <DeleteChangeTemplateButton id={t.id} slug={t.slug} />
             </div>
             {t.description && (
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
                 {t.description}
               </p>
             )}
             <details className="mt-3">
-              <summary className="cursor-pointer text-sm font-medium text-zinc-600">
+              <summary className="cursor-pointer text-sm font-medium" style={{ color: "var(--ink-2)" }}>
                 Edit
               </summary>
               <ChangeTemplateForm

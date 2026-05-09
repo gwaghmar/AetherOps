@@ -30,13 +30,13 @@ export default async function RolesAdminPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 dark:border-zinc-800">
-        <div className="rounded-xl bg-blue-50 p-2 dark:bg-blue-900/20">
-          <Briefcase className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+      <div className="flex items-center gap-3 border-b pb-4" style={{ borderColor: "var(--line)" }}>
+        <div className="rounded-lg p-2" style={{ background: "color-mix(in srgb, var(--accent) 8%, transparent)" }}>
+          <Briefcase className="h-6 w-6" style={{ color: "var(--accent)" }} />
         </div>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Role Bundles & JML</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-3)" }}>
             Define standard access bundles for roles (Engineering, Sales) to automate Joiner/Mover provisioning.
           </p>
         </div>

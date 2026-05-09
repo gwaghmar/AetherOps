@@ -42,7 +42,8 @@ export function UserRoleForm({
         id={`role-${userId}`}
         value={role}
         onChange={(e) => setRole(e.target.value)}
-        className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+        className="rounded-lg border px-2 py-1 text-sm"
+        style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
       >
         {ROLES.map((r) => (
           <option key={r} value={r}>
@@ -53,13 +54,14 @@ export function UserRoleForm({
       <button
         type="submit"
         disabled={pending || role === currentRole}
-        className="rounded-lg border border-zinc-300 px-2 py-1 text-xs font-medium disabled:opacity-40 dark:border-zinc-600"
+        className="rounded-lg border px-2 py-1 text-xs font-medium disabled:opacity-40"
+        style={{ borderColor: "var(--line)", color: "var(--ink-2)" }}
       >
         Update
       </button>
       {msg && (
         <span
-          className={`text-xs ${msg === "Saved." ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+          style={{ fontSize: "0.75rem", color: msg === "Saved." ? "var(--status-approved)" : "var(--status-denied)" }}
         >
           {msg}
         </span>

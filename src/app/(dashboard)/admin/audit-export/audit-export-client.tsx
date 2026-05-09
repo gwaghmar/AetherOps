@@ -35,33 +35,35 @@ export function AuditExportClient() {
   return (
     <div className="max-w-md space-y-4">
       <div>
-        <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
           From (UTC date)
         </label>
         <input
           type="date"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
       </div>
       <div>
-        <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
           To (UTC date)
         </label>
         <input
           type="date"
           value={to}
           onChange={(e) => setTo(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
       </div>
       {rangeError ? (
-        <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+        <p className="rounded-lg border px-3 py-2 text-xs" style={{ borderColor: "color-mix(in srgb, var(--status-pending) 25%, transparent)", background: "color-mix(in srgb, var(--status-pending) 8%, transparent)", color: "var(--status-pending)" }}>
           {rangeError}
         </p>
       ) : (
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs" style={{ color: "var(--ink-3)" }}>
           Exporting {days} day{days === 1 ? "" : "s"} of audit data (max {MAX_RANGE_DAYS} days per export).
           Uses your signed-in session cookie — open links in the same browser.
         </p>
@@ -71,7 +73,10 @@ export function AuditExportClient() {
           href={rangeError ? "#" : csvHref}
           aria-disabled={!!rangeError}
           onClick={rangeError ? (e) => e.preventDefault() : undefined}
-          className={`inline-flex rounded-lg px-4 py-2 text-sm font-medium ${rangeError ? "cursor-not-allowed bg-zinc-300 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-500" : "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"}`}
+          className="inline-flex rounded-lg px-4 py-2 text-sm font-medium"
+          style={rangeError
+            ? { background: "var(--subtle)", color: "var(--ink-3)", cursor: "not-allowed" }
+            : { background: "var(--ink)", color: "var(--ink-on-accent)" }}
         >
           Download CSV
         </a>
@@ -79,7 +84,10 @@ export function AuditExportClient() {
           href={rangeError ? "#" : pdfHref}
           aria-disabled={!!rangeError}
           onClick={rangeError ? (e) => e.preventDefault() : undefined}
-          className={`inline-flex rounded-lg border px-4 py-2 text-sm font-medium ${rangeError ? "cursor-not-allowed border-zinc-200 text-zinc-400 dark:border-zinc-700" : "border-zinc-300 text-zinc-900 dark:border-zinc-600 dark:text-zinc-100"}`}
+          className="inline-flex rounded-lg border px-4 py-2 text-sm font-medium"
+          style={rangeError
+            ? { borderColor: "var(--line)", color: "var(--ink-3)", cursor: "not-allowed" }
+            : { borderColor: "var(--line)", color: "var(--ink)" }}
         >
           Download PDF evidence
         </a>

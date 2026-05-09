@@ -20,21 +20,18 @@ function Row({
   detail?: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 border-b border-zinc-100 py-3 last:border-0 dark:border-zinc-800">
+    <div className="flex items-start justify-between gap-4 border-b py-3 last:border-0" style={{ borderColor: "var(--line)" }}>
       <div>
-        <p className="font-medium text-zinc-900 dark:text-zinc-100">{label}</p>
+        <p className="font-medium" style={{ color: "var(--ink)" }}>{label}</p>
         {detail ? (
-          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-0.5 text-xs" style={{ color: "var(--ink-3)" }}>
             {detail}
           </p>
         ) : null}
       </div>
       <span
-        className={
-          ok
-            ? "shrink-0 text-sm font-medium text-teal-700 dark:text-teal-400"
-            : "shrink-0 text-sm font-medium text-amber-700 dark:text-amber-400"
-        }
+        className="shrink-0 text-sm font-medium"
+        style={{ color: ok ? "var(--status-approved)" : "var(--status-denied)" }}
       >
         {ok ? "OK" : "Needs attention"}
       </span>
@@ -46,11 +43,11 @@ export default async function AdminSetupStatusPage() {
   const session = await requireSession();
   const role = session.user.role;
   if (role !== "admin") {
-    return <p className="text-red-600">Admin only.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>Admin only.</p>;
   }
   const orgId = session.user.organizationId;
   if (!orgId) {
-    return <p className="text-red-600">No organization.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
   }
 
   let aiOk = false;
@@ -102,12 +99,12 @@ export default async function AdminSetupStatusPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Setup status</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Quick health check for this deployment. Yellow items are optional or
           need configuration.
         </p>
       </div>
-      <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-xl border p-4" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
         <Row
           ok={aiOk}
           label="AI (copilot & onboarding generation)"
@@ -133,9 +130,9 @@ export default async function AdminSetupStatusPage() {
           label="Outbound webhook"
           detail="Optional: Admin → Integrations."
         />
-        <div className="pt-2 text-xs text-zinc-500">
+        <div className="pt-2 text-xs" style={{ color: "var(--ink-3)" }}>
           Pending invites (not yet accepted):{" "}
-          <span className="font-medium text-zinc-800 dark:text-zinc-200">
+          <span className="font-medium" style={{ color: "var(--ink)" }}>
             {pendingInvites}
           </span>
         </div>
@@ -143,13 +140,15 @@ export default async function AdminSetupStatusPage() {
       <div className="flex flex-wrap gap-3 text-sm">
         <Link
           href="/onboarding?force=1"
-          className="rounded-lg border border-zinc-200 px-3 py-2 font-medium dark:border-zinc-700"
+          className="rounded-lg border px-3 py-2 font-medium"
+          style={{ borderColor: "var(--line)" }}
         >
           Open onboarding wizard
         </Link>
         <Link
           href="/admin/ai"
-          className="rounded-lg border border-zinc-200 px-3 py-2 font-medium dark:border-zinc-700"
+          className="rounded-lg border px-3 py-2 font-medium"
+          style={{ borderColor: "var(--line)" }}
         >
           AI settings
         </Link>
