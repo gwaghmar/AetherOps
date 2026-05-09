@@ -88,15 +88,15 @@ export default async function AiAnalyticsPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Link href="/analytics" className="text-zinc-500 hover:text-zinc-800 flex items-center gap-1 text-sm transition-colors">
+            <Link href="/analytics" className="flex items-center gap-1 text-sm transition-colors" style={{ color: "var(--ink-3)" }}>
               <ArrowLeft className="h-4 w-4" /> Back to Overview
             </Link>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-            <Cpu className="h-6 w-6 text-indigo-500" />
+            <Cpu className="h-6 w-6" style={{ color: "var(--accent)" }} />
             AI Cost & Usage
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--ink-3)" }}>
             Token consumption, model breakdown, and chargeback estimates.
           </p>
         </div>
@@ -108,17 +108,18 @@ export default async function AiAnalyticsPage() {
           { label: "Total Cost (30d)", value: `$${Number(totalCostVal).toFixed(2)}`, icon: Zap },
           { label: "Active Models", value: modelUsage.length, icon: Cpu },
           { label: "Active Users", value: topUsers.length, icon: Users },
-          { label: "Cost Trend", value: "Up 12%", icon: TrendingUp }, 
+          { label: "Cost Trend", value: "Up 12%", icon: TrendingUp },
         ].map((kpi) => (
           <div
             key={kpi.label}
-            className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+            className="rounded-lg border p-4"
+            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
           >
             <div className="flex items-center justify-between mb-2">
-               <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">{kpi.label}</p>
-               <kpi.icon className="h-3.5 w-3.5 text-zinc-400" />
+              <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--ink-3)" }}>{kpi.label}</p>
+              <kpi.icon className="h-3.5 w-3.5" style={{ color: "var(--ink-3)" }} />
             </div>
-            <p className="text-2xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
+            <p className="text-2xl font-semibold tabular-nums">
               {kpi.value}
             </p>
           </div>
@@ -127,10 +128,10 @@ export default async function AiAnalyticsPage() {
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Daily Cost Chart */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-lg border p-6" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
           <h2 className="text-sm font-semibold mb-6">Daily AI Spend — last 30 days</h2>
           {dailyCost.length === 0 ? (
-            <div className="h-40 flex items-center justify-center text-zinc-400 text-sm italic border border-dashed border-zinc-100 rounded-lg dark:border-zinc-800">
+            <div className="h-40 flex items-center justify-center text-sm italic rounded-lg border border-dashed" style={{ color: "var(--ink-3)", borderColor: "var(--line)" }}>
               No telemetry data ingested yet.
             </div>
           ) : (
@@ -139,10 +140,11 @@ export default async function AiAnalyticsPage() {
                 <div
                   key={d.day}
                   title={`${d.day}: $${Number(d.cost).toFixed(4)}`}
-                  className="flex-1 rounded-t bg-indigo-500 dark:bg-indigo-400 opacity-80 hover:opacity-100 transition-opacity cursor-help"
+                  className="flex-1 rounded-t opacity-80 hover:opacity-100 transition-opacity cursor-help"
                   style={{
                     height: `${Math.round((Number(d.cost) / maxDailyCost) * 100)}%`,
                     minHeight: "2px",
+                    background: "var(--accent)",
                   }}
                 />
               ))}
@@ -151,61 +153,66 @@ export default async function AiAnalyticsPage() {
         </section>
 
         {/* Model Breakdown */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-lg border p-6" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
           <h2 className="text-sm font-semibold mb-6">Model Distribution</h2>
           <div className="space-y-5">
             {modelUsage.map(m => (
-               <div key={m.model} className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-medium text-zinc-700 dark:text-zinc-300">{m.model}</span>
-                    <span className="text-zinc-500">{Number(m.tokens).toLocaleString()} tokens</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                    <div 
-                      className="h-full bg-indigo-500" 
-                      style={{ width: `${Math.min(100, (Number(m.n) / Math.max(1, 10)) * 100)}%` }} 
-                    />
-                  </div>
-               </div>
+              <div key={m.model} className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="font-medium" style={{ color: "var(--ink-2)" }}>{m.model}</span>
+                  <span style={{ color: "var(--ink-3)" }}>{Number(m.tokens).toLocaleString()} tokens</span>
+                </div>
+                <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--subtle)" }}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${Math.min(100, (Number(m.n) / Math.max(1, 10)) * 100)}%`, background: "var(--accent)" }}
+                  />
+                </div>
+              </div>
             ))}
-            {modelUsage.length === 0 && <p className="text-sm text-zinc-400 italic">No usage data found.</p>}
+            {modelUsage.length === 0 && <p className="text-sm italic" style={{ color: "var(--ink-3)" }}>No usage data found.</p>}
           </div>
         </section>
       </div>
 
       {/* Chargeback / Top Users Table */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-lg border p-6" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
         <h2 className="text-sm font-semibold mb-6">Chargeback Heatmap (Top Users)</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead>
-              <tr className="text-zinc-500 border-b border-zinc-100 dark:border-zinc-800">
+              <tr className="border-b" style={{ color: "var(--ink-3)", borderColor: "var(--line)" }}>
                 <th className="pb-3 font-medium">User / Identity</th>
                 <th className="pb-3 font-medium">Total Tokens</th>
                 <th className="pb-3 font-medium text-right">Est. Cost</th>
                 <th className="pb-3 font-medium text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <tbody className="divide-y" style={{ borderColor: "var(--line)" }}>
               {topUsers.map((u) => (
-                <tr key={u.email} className="group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                <tr key={u.email} className="transition-colors" style={{ background: "transparent" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "var(--subtle)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
                   <td className="py-4">
-                    <div className="font-medium text-zinc-900 dark:text-zinc-100">{u.name || "Unknown Agent"}</div>
-                    <div className="text-xs text-zinc-500">{u.email || "system-identity"}</div>
+                    <div className="font-medium">{u.name || "Unknown Agent"}</div>
+                    <div className="text-xs" style={{ color: "var(--ink-3)" }}>{u.email || "system-identity"}</div>
                   </td>
-                  <td className="py-4 tabular-nums text-zinc-600 dark:text-zinc-400">
+                  <td className="py-4 tabular-nums" style={{ color: "var(--ink-2)" }}>
                     {Number(u.tokens).toLocaleString()}
                   </td>
-                  <td className="py-4 text-right tabular-nums font-semibold text-zinc-900 dark:text-zinc-100">
+                  <td className="py-4 text-right tabular-nums font-semibold">
                     ${Number(u.cost).toFixed(2)}
                   </td>
                   <td className="py-4 text-right">
                     {!u.name ? (
-                      <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight"
+                        style={{ background: "color-mix(in srgb, var(--status-denied) 10%, transparent)", color: "var(--status-denied)" }}>
                         Orphan / Zombie
                       </span>
                     ) : (
-                      <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight"
+                        style={{ background: "color-mix(in srgb, var(--status-approved) 10%, transparent)", color: "var(--status-approved)" }}>
                         Active
                       </span>
                     )}
@@ -214,7 +221,7 @@ export default async function AiAnalyticsPage() {
               ))}
               {topUsers.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="py-12 text-center text-zinc-400 italic">No telemetry data found.</td>
+                  <td colSpan={4} className="py-12 text-center italic" style={{ color: "var(--ink-3)" }}>No telemetry data found.</td>
                 </tr>
               )}
             </tbody>

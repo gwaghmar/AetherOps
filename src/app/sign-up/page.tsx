@@ -5,7 +5,7 @@ export default function SignUpPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center text-sm text-zinc-500">
+        <div className="flex min-h-screen items-center justify-center text-sm" style={{ color: "var(--ink-3)" }}>
           Loading…
         </div>
       }

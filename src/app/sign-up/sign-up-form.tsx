@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { finalizeInviteFromToken } from "@/app/actions/ai-org";
 import { authClient } from "@/lib/auth-client";
+import { Logo } from "@/components/logo";
 
 export function SignUpForm() {
   const router = useRouter();
@@ -50,10 +51,13 @@ export function SignUpForm() {
   }, [inviteToken]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
-      <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4" style={{ background: "var(--canvas)" }}>
+      <div className="mb-8">
+        <Logo size="md" wordmark href="/" />
+      </div>
+      <div className="w-full max-w-sm rounded-lg border p-8" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
         <h1 className="text-lg font-semibold tracking-tight">Create account</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-3)" }}>
           {inviteOrgName ? (
             <>
               You&apos;re joining <strong>{inviteOrgName}</strong>. After sign-up
@@ -67,8 +71,6 @@ export function SignUpForm() {
           )}
         </p>
         <form
-          method="post"
-          action="#"
           className="mt-6 space-y-4"
           aria-describedby={error ? errorId : undefined}
           onSubmit={async (e) => {
@@ -104,7 +106,8 @@ export function SignUpForm() {
           <div>
             <label
               htmlFor="signup-name"
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               Name
             </label>
@@ -114,15 +117,15 @@ export function SignUpForm() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? errorId : undefined}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-transparent"
+              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
             />
           </div>
           <div>
             <label
               htmlFor="signup-email"
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               Email
             </label>
@@ -134,15 +137,15 @@ export function SignUpForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               readOnly={inviteLockedEmail}
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? errorId : undefined}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950 read-only:bg-zinc-50 dark:read-only:bg-zinc-900"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-transparent"
+              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
             />
           </div>
           <div>
             <label
               htmlFor="signup-password"
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               Password
             </label>
@@ -154,15 +157,15 @@ export function SignUpForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? errorId : undefined}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-transparent"
+              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
             />
           </div>
           {error && (
             <p
               id={errorId}
-              className="text-sm text-red-600 dark:text-red-400"
+              className="rounded-md px-3 py-2 text-sm"
+              style={{ background: "color-mix(in srgb, var(--status-denied) 8%, transparent)", color: "var(--status-denied)" }}
               role="alert"
             >
               {error}
@@ -172,12 +175,13 @@ export function SignUpForm() {
             type="submit"
             disabled={loading}
             aria-busy={loading}
-            className="w-full rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+            className="w-full rounded-md py-2 text-sm font-medium transition-colors disabled:opacity-50"
+            style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
           >
             {loading ? "Creating…" : "Sign up"}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-zinc-500">
+        <p className="mt-4 text-center text-sm" style={{ color: "var(--ink-3)" }}>
           Already have an account?{" "}
           <Link href="/sign-in" className="underline">
             Sign in
