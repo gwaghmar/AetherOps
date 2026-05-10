@@ -6,7 +6,7 @@
   "crons": [
     {
       "path": "/api/internal/worker/fulfillment",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
