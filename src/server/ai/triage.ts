@@ -51,7 +51,7 @@ export async function triageRequestAsync(input: {
       reason = "Test mock: auto-classified as low risk.";
     } else {
       try {
-        const { model } = await getOrgLanguageModel(organizationId);
+        const { model } = await getOrgLanguageModel(organizationId, "fast");
 
         const [requester] = await db
           .select({

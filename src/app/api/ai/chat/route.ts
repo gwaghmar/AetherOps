@@ -49,7 +49,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { model, usedPlatformFallback } = await getOrgLanguageModel(orgId);
+    const { model, usedPlatformFallback } = await getOrgLanguageModel(orgId, "standard");
     const actorId = session.user.id;
     
     // Inject dynamic contextual awareness of the App Catalog to power MVP

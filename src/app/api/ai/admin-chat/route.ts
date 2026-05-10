@@ -50,7 +50,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { model, usedPlatformFallback } = await getOrgLanguageModel(orgId);
+    const { model, usedPlatformFallback } = await getOrgLanguageModel(orgId, "heavy");
     const actorId = session.user.id;
     const system =
       ADMIN_CATALOG_COPILOT_SYSTEM +
