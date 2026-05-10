@@ -46,23 +46,23 @@ export function EmailApprovalConfirm({
 
   if (status === "done") {
     return (
-      <p className="text-sm text-emerald-800 dark:text-emerald-200">{message}</p>
+      <p className="text-sm" style={{ color: "var(--status-approved)" }}>{message}</p>
     );
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        <strong className="text-zinc-900 dark:text-zinc-100">{typeTitle}</strong>
+      <p className="text-sm" style={{ color: "var(--ink-2)" }}>
+        <strong style={{ color: "var(--ink)" }}>{typeTitle}</strong>
       </p>
       <p className="text-sm">{requesterLine}</p>
       {extraLines.map((line) => (
-        <p key={line} className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p key={line} className="text-sm" style={{ color: "var(--ink-2)" }}>
           {line}
         </p>
       ))}
       {status === "err" ? (
-        <p id={errorId} className="text-sm text-red-600" role="alert">
+        <p id={errorId} className="text-sm" style={{ color: "var(--status-denied)" }} role="alert">
           {message}
         </p>
       ) : null}
@@ -72,10 +72,10 @@ export function EmailApprovalConfirm({
         aria-busy={status === "loading"}
         aria-describedby={status === "err" ? errorId : undefined}
         onClick={() => void submit()}
-        className={
-          !isApprove
-            ? "rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-800 hover:bg-red-50 disabled:opacity-50 dark:border-red-900 dark:bg-zinc-900 dark:text-red-200 dark:hover:bg-red-950/40"
-            : "rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+        className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+        style={!isApprove
+          ? { border: "1px solid color-mix(in srgb, var(--status-denied) 30%, transparent)", background: "color-mix(in srgb, var(--status-denied) 8%, transparent)", color: "var(--status-denied)" }
+          : { background: "var(--status-approved)", color: "#fff" }
         }
       >
         {status === "loading"

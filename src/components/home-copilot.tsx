@@ -214,8 +214,8 @@ export function HomeCopilot({
               onChange={(e) => setInput(e.target.value)}
               aria-label="Ask Copilot"
               placeholder="Ask anything…"
-              className="w-full rounded-lg border px-2 py-1.5 text-sm bg-transparent"
-              style={{ borderColor: "var(--line)" }}
+              className="w-full rounded-lg border px-2 py-1.5 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
             <button
               type="submit"

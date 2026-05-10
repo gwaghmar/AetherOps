@@ -121,8 +121,8 @@ export function SignUpForm() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-transparent"
-              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div>
@@ -141,8 +141,8 @@ export function SignUpForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               readOnly={inviteLockedEmail}
-              className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-transparent"
-              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div>
@@ -161,8 +161,8 @@ export function SignUpForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-transparent"
-              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           {error && (

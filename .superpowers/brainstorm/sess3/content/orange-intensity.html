@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orange Intensity</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', Inter, sans-serif; background: #f0f0f0; padding: 24px; }
+
+  .page-title { text-align: center; margin-bottom: 6px; font-size: 18px; font-weight: 700; color: #111; }
+  .page-subtitle { text-align: center; margin-bottom: 28px; color: #666; font-size: 13px; }
+
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1300px; margin: 0 auto; }
+
+  .card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .card.selected { border-color: #333; box-shadow: 0 0 0 3px rgba(0,0,0,0.15); }
+
+  .card-label {
+    padding: 10px 14px 14px;
+    background: white;
+    border-top: 1px solid #eee;
+  }
+  .card-label h3 { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 2px; }
+  .card-label .hex { font-size: 11px; color: #888; font-family: monospace; margin-bottom: 4px; }
+  .card-label p { font-size: 11px; color: #666; line-height: 1.4; }
+
+  .selected-badge {
+    display: none;
+    position: absolute;
+    top: 8px; right: 8px;
+    background: #333;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .card.selected .selected-badge { display: block; }
+  .card-preview-wrap { position: relative; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px; }
+
+  /* Shared dashboard shell */
+  .dash {
+    font-family: 'DM Sans', Inter, sans-serif;
+    background: #fff;
+    font-size: 11px;
+  }
+  .dash .nav {
+    border-bottom: 1px solid #e8e8e8;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dash .nav .logo { font-weight: 800; font-size: 12px; letter-spacing: -0.3px; }
+  .dash .nav a { color: #555; font-size: 9px; font-weight: 500; text-decoration: none; }
+  .dash .nav a.active { font-weight: 700; }
+  .dash .nav .ml { margin-left: auto; font-size: 9px; color: #aaa; }
+  .dash .content { padding: 12px; background: #FAFAFA; }
+  .dash h1 { font-size: 16px; font-weight: 800; color: #000; letter-spacing: -0.4px; margin-bottom: 3px; }
+  .dash .sub { font-size: 9px; color: #888; margin-bottom: 10px; }
+  .dash .cards-row { display: flex; gap: 6px; margin-bottom: 10px; }
+  .dash .stat-card { background: white; border: 1px solid #e8e8e8; border-radius: 6px; padding: 8px 10px; flex: 1; }
+  .dash .stat-card .stat-label { font-size: 8px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .dash .stat-card .stat-val { font-size: 18px; font-weight: 800; color: #000; line-height: 1; margin: 3px 0 2px; }
+  .dash .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+  .dash .table-header h2 { font-size: 11px; font-weight: 700; color: #111; }
+  .dash .list-item { background: white; border: 1px solid #e8e8e8; border-radius: 5px; padding: 6px 9px; margin-bottom: 3px; display: flex; align-items: center; gap: 7px; }
+  .dash .list-item .title { font-size: 9px; font-weight: 600; color: #111; }
+  .dash .list-item .meta { font-size: 8px; color: #aaa; margin-left: auto; }
+
+  /* Color variants — just change the accent var */
+  .v1 { --accent: #FF6600; --accent-bg: #FFF3E0; --accent-dim: rgba(255,102,0,0.12); }
+  .v2 { --accent: #D4511A; --accent-bg: #FEF0E8; --accent-dim: rgba(212,81,26,0.1); }
+  .v3 { --accent: #B54A10; --accent-bg: #FDEEE8; --accent-dim: rgba(181,74,16,0.08); }
+  .v4 { --accent: #8B3A0E; --accent-bg: #F9EAE3; --accent-dim: rgba(139,58,14,0.08); }
+
+  .dash .nav .logo { color: var(--accent); }
+  .dash .nav a.active { color: var(--accent); }
+  .dash .stat-card .stat-change { font-size: 8px; color: var(--accent); font-weight: 600; }
+  .dash .btn-orange { background: var(--accent); color: white; font-size: 8px; font-weight: 700; padding: 4px 9px; border-radius: 999px; border: none; cursor: pointer; }
+  .dash .list-item .badge { background: var(--accent-bg); color: var(--accent); font-size: 7px; font-weight: 700; padding: 2px 5px; border-radius: 999px; }
+  .dash .list-item .badge.green { background: #E8F5E9; color: #2E7D32; }
+  .dash .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: middle; margin-right: 4px; background: var(--accent); }
+</style>
+<script>
+  function selectCard(el) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const choice = el.dataset.choice;
+    const text = el.querySelector('h3').textContent;
+    try {
+      fetch('/event', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ type:'click', choice, text, timestamp: Date.now() })
+      }).catch(()=>{});
+    } catch(e){}
+  }
+</script>
+</head>
+<body>
+
+<div class="page-title">How subtle should the orange be?</div>
+<div class="page-subtitle">All four use the YC Modern direction — only the orange intensity changes. Click to pick.</div>
+
+<div class="cards">
+
+  <!-- V1: Full YC Orange -->
+  <div class="card" data-choice="a" onclick="selectCard(this)">
+    <div class="card-preview-wrap">
+      <span class="selected-badge">Selected</span>
+      <div class="dash v1">
+        <div class="nav">
+          <span class="logo">Aether Ops</span>
+          <a href="#">Home</a>
+          <a href="#" class="active">Requests</a>
+          <a href="#">Admin</a>
+          <span class="ml">govin@co.ai</span>
+        </div>
+        <div class="content">
+          <h1>Welcome back, Govind.</h1>
+          <div class="sub">Your AI operations are running smoothly.</div>
+          <div class="cards-row">
+            <div class="stat-card"><div class="stat-label">Time Saved</div><div class="stat-val">42h</div><div class="stat-change">↑ +12%</div></div>
+            <div class="stat-card"><div class="stat-label">Agents</div><div class="stat-val">12</div><div class="stat-change">All healthy</div></div>
+            <div class="stat-card"><div class="stat-label">Open</div><div class="stat-val">3</div><div class="stat-change">2 need action</div></div>
+          </div>
+          <div class="table-header"><h2>Recent Requests</h2><button class="btn-orange">+ New</button></div>
+          <div class="list-item"><span class="badge">Pending</span><span class="title">AWS Read Access</span><span class="meta">2h ago</span></div>
+          <div class="list-item"><span class="badge green">Approved</span><span class="title">Linear Engineering</span><span class="meta">1d ago</span></div>
+          <div class="list-item"><span class="badge green">Fulfilled</span><span class="title">Slack Guest Invite</span><span class="meta">3d ago</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <h3>A — Full YC Orange</h3>
+      <div class="hex"><span class="swatch v1"></span>#FF6600 — current</div>
+      <p>Loud, saturated. Maximum brand punch. What's in the codebase now.</p>
+    </div>
+  </div>
+
+  <!-- V2: Warm Terracotta -->
+  <div class="card" data-choice="b" onclick="selectCard(this)">
+    <div class="card-preview-wrap">
+      <span class="selected-badge">Selected</span>
+      <div class="dash v2">
+        <div class="nav">
+          <span class="logo">Aether Ops</span>
+          <a href="#">Home</a>
+          <a href="#" class="active">Requests</a>
+          <a href="#">Admin</a>
+          <span class="ml">govin@co.ai</span>
+        </div>
+        <div class="content">
+          <h1>Welcome back, Govind.</h1>
+          <div class="sub">Your AI operations are running smoothly.</div>
+          <div class="cards-row">
+            <div class="stat-card"><div class="stat-label">Time Saved</div><div class="stat-val">42h</div><div class="stat-change">↑ +12%</div></div>
+            <div class="stat-card"><div class="stat-label">Agents</div><div class="stat-val">12</div><div class="stat-change">All healthy</div></div>
+            <div class="stat-card"><div class="stat-label">Open</div><div class="stat-val">3</div><div class="stat-change">2 need action</div></div>
+          </div>
+          <div class="table-header"><h2>Recent Requests</h2><button class="btn-orange">+ New</button></div>
+          <div class="list-item"><span class="badge">Pending</span><span class="title">AWS Read Access</span><span class="meta">2h ago</span></div>
+          <div class="list-item"><span class="badge green">Approved</span><span class="title">Linear Engineering</span><span class="meta">1d ago</span></div>
+          <div class="list-item"><span class="badge green">Fulfilled</span><span class="title">Slack Guest Invite</span><span class="meta">3d ago</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="tag" style="background:#D4511A;color:white;">Recommended</div>
+      <h3>B — Warm Terracotta</h3>
+      <div class="hex"><span class="swatch v2"></span>#D4511A — one step darker</div>
+      <p>Still clearly orange, but richer and more mature. Reads as confident, not neon.</p>
+    </div>
+  </div>
+
+  <!-- V3: Burnt Orange -->
+  <div class="card" data-choice="c" onclick="selectCard(this)">
+    <div class="card-preview-wrap">
+      <span class="selected-badge">Selected</span>
+      <div class="dash v3">
+        <div class="nav">
+          <span class="logo">Aether Ops</span>
+          <a href="#">Home</a>
+          <a href="#" class="active">Requests</a>
+          <a href="#">Admin</a>
+          <span class="ml">govin@co.ai</span>
+        </div>
+        <div class="content">
+          <h1>Welcome back, Govind.</h1>
+          <div class="sub">Your AI operations are running smoothly.</div>
+          <div class="cards-row">
+            <div class="stat-card"><div class="stat-label">Time Saved</div><div class="stat-val">42h</div><div class="stat-change">↑ +12%</div></div>
+            <div class="stat-card"><div class="stat-label">Agents</div><div class="stat-val">12</div><div class="stat-change">All healthy</div></div>
+            <div class="stat-card"><div class="stat-label">Open</div><div class="stat-val">3</div><div class="stat-change">2 need action</div></div>
+          </div>
+          <div class="table-header"><h2>Recent Requests</h2><button class="btn-orange">+ New</button></div>
+          <div class="list-item"><span class="badge">Pending</span><span class="title">AWS Read Access</span><span class="meta">2h ago</span></div>
+          <div class="list-item"><span class="badge green">Approved</span><span class="title">Linear Engineering</span><span class="meta">1d ago</span></div>
+          <div class="list-item"><span class="badge green">Fulfilled</span><span class="title">Slack Guest Invite</span><span class="meta">3d ago</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <h3>C — Burnt Orange</h3>
+      <div class="hex"><span class="swatch v3"></span>#B54A10 — muted, earthy</div>
+      <p>Subdued and professional. Feels less "startup" — closer to an enterprise SaaS brand.</p>
+    </div>
+  </div>
+
+  <!-- V4: Deep Rust -->
+  <div class="card" data-choice="d" onclick="selectCard(this)">
+    <div class="card-preview-wrap">
+      <span class="selected-badge">Selected</span>
+      <div class="dash v4">
+        <div class="nav">
+          <span class="logo">Aether Ops</span>
+          <a href="#">Home</a>
+          <a href="#" class="active">Requests</a>
+          <a href="#">Admin</a>
+          <span class="ml">govin@co.ai</span>
+        </div>
+        <div class="content">
+          <h1>Welcome back, Govind.</h1>
+          <div class="sub">Your AI operations are running smoothly.</div>
+          <div class="cards-row">
+            <div class="stat-card"><div class="stat-label">Time Saved</div><div class="stat-val">42h</div><div class="stat-change">↑ +12%</div></div>
+            <div class="stat-card"><div class="stat-label">Agents</div><div class="stat-val">12</div><div class="stat-change">All healthy</div></div>
+            <div class="stat-card"><div class="stat-label">Open</div><div class="stat-val">3</div><div class="stat-change">2 need action</div></div>
+          </div>
+          <div class="table-header"><h2>Recent Requests</h2><button class="btn-orange">+ New</button></div>
+          <div class="list-item"><span class="badge">Pending</span><span class="title">AWS Read Access</span><span class="meta">2h ago</span></div>
+          <div class="list-item"><span class="badge green">Approved</span><span class="title">Linear Engineering</span><span class="meta">1d ago</span></div>
+          <div class="list-item"><span class="badge green">Fulfilled</span><span class="title">Slack Guest Invite</span><span class="meta">3d ago</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <h3>D — Deep Rust</h3>
+      <div class="hex"><span class="swatch v4"></span>#8B3A0E — very dark</div>
+      <p>Almost brown. Very subtle — loses the YC connection. Better for secondary text than primary accent.</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

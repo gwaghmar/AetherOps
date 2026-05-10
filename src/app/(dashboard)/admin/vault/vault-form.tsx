@@ -50,8 +50,8 @@ export function VaultForm() {
             type="text"
             required
             placeholder="e.g., github, linear, aws"
-            className="mt-1 block w-full rounded-md border px-3 py-2 text-sm bg-transparent"
-            style={{ borderColor: "var(--line)", color: "var(--ink)" }}
+            className="mt-1 block w-full rounded-md border px-3 py-2 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
           />
         </div>
         <div>
@@ -64,7 +64,7 @@ export function VaultForm() {
             required
             rows={5}
             placeholder='{"apiKey": "...", "secret": "..."}'
-            className="mt-1 block w-full rounded-md border px-3 py-2 text-sm bg-transparent font-mono"
+            className="mt-1 block w-full rounded-md border px-3 py-2 text-sm font-mono"
             style={{ borderColor: "var(--line)", color: "var(--ink)" }}
           />
           <p className="mt-2 text-xs" style={{ color: "var(--ink-3)" }}>

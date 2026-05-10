@@ -18,7 +18,7 @@ export default async function EmailApprovalPage({
 
   if (!t?.trim()) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-sm text-zinc-600">
+      <div className="mx-auto max-w-md px-4 py-16 text-sm" style={{ color: "var(--ink-2)" }}>
         <p>Missing approval link. Open the link from your email.</p>
       </div>
     );
@@ -27,7 +27,7 @@ export default async function EmailApprovalPage({
   const verified = verifyEmailApprovalToken(t);
   if (!verified.ok) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-sm text-red-600">
+      <div className="mx-auto max-w-md px-4 py-16 text-sm" style={{ color: "var(--status-denied)" }}>
         <p>{verified.error}</p>
       </div>
     );
@@ -51,7 +51,7 @@ export default async function EmailApprovalPage({
 
   if (!row) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-sm text-red-600">
+      <div className="mx-auto max-w-md px-4 py-16 text-sm" style={{ color: "var(--status-denied)" }}>
         <p>Request not found.</p>
       </div>
     );
@@ -59,7 +59,7 @@ export default async function EmailApprovalPage({
 
   if (row.request.requesterId === approverUserId) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-sm text-red-600">
+      <div className="mx-auto max-w-md px-4 py-16 text-sm" style={{ color: "var(--status-denied)" }}>
         <p>Invalid approver for this link.</p>
       </div>
     );
@@ -73,7 +73,7 @@ export default async function EmailApprovalPage({
 
   if (!approver) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-sm text-red-600">
+      <div className="mx-auto max-w-md px-4 py-16 text-sm" style={{ color: "var(--status-denied)" }}>
         <p>Approver account not found.</p>
       </div>
     );
@@ -87,17 +87,17 @@ export default async function EmailApprovalPage({
   ].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+    <div className="min-h-screen" style={{ background: "var(--canvas)", color: "var(--ink)" }}>
       <div className="mx-auto max-w-md px-4 py-12">
-        <p className="text-xs font-medium text-zinc-500">{appName}</p>
+        <p className="text-xs font-medium" style={{ color: "var(--ink-3)" }}>{appName}</p>
         <h1 className="mt-2 text-xl font-semibold tracking-tight">
           {action === "approve" ? "Approve request" : "Decline request"}
         </h1>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>
           Confirm you want to record this decision. If you need more context,
           use full review first.
         </p>
-        <div className="mt-8 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mt-8 rounded-xl border p-5" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
           <EmailApprovalConfirm
             token={t}
             isApprove={action === "approve"}
@@ -109,7 +109,8 @@ export default async function EmailApprovalPage({
         <p className="mt-6 text-center text-sm">
           <Link
             href={reviewUrl}
-            className="text-zinc-600 underline dark:text-zinc-400"
+            className="underline"
+            style={{ color: "var(--ink-2)" }}
           >
             Open full review (sign in)
           </Link>

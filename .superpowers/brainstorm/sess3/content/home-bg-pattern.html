@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Background Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Geist', sans-serif; background: #e8e6e2; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+.page-meta { text-align: center; }
+.page-meta h1 { font-size: 14px; font-weight: 600; color: #111; letter-spacing: -0.02em; margin-bottom: 3px; }
+.page-meta p { font-size: 12px; color: #888; }
+
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
+.card {
+  border-radius: 10px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer;
+  transition: all 0.15s; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+.card.selected { border-color: #FF6600; box-shadow: 0 0 0 3px rgba(255,102,0,0.2); }
+.card-label { padding: 10px 14px 14px; background: white; border-top: 1px solid #eee; }
+.card-label h3 { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 3px; }
+.card-label p { font-size: 11px; color: #666; line-height: 1.4; }
+.selected-badge { display: none; position: absolute; top: 8px; right: 8px; background: #FF6600; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.card.selected .selected-badge { display: block; }
+.card-preview { position: relative; overflow: hidden; }
+.tag { display: inline-block; background: #FF6600; color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px; }
+
+/* ── Shared shell pieces ── */
+.shell { font-family: 'Geist', sans-serif; font-size: 11px; position: relative; }
+.shell-nav {
+  height: 40px; border-bottom: 1px solid rgba(0,0,0,0.07);
+  display: flex; align-items: center; padding: 0 14px; gap: 12px;
+  position: relative; z-index: 2;
+}
+.shell-nav .logo { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: -0.03em; color: #111; }
+.shell-nav .logo .mark { width: 20px; height: 20px; background: #FF6600; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+.shell-nav .logo .mark svg { display: block; }
+.shell-nav .logo .ops { color: #FF6600; }
+.shell-nav a { font-size: 10px; color: #888; }
+.shell-nav .ml { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,#FF6600,#FF9500); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white; }
+
+.shell-body { display: flex; position: relative; z-index: 2; }
+.shell-sidebar { width: 140px; border-right: 1px solid rgba(0,0,0,0.06); padding: 8px 6px; flex-shrink: 0; }
+.s-item { padding: 4px 7px; border-radius: 4px; font-size: 10px; color: #666; margin-bottom: 1px; }
+.s-item.active { background: rgba(0,0,0,0.05); color: #111; font-weight: 500; }
+.s-item.active:before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #FF6600; margin-right: 5px; vertical-align: middle; }
+
+.shell-main { flex: 1; padding: 16px; }
+.shell-h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.03em; color: #0f0f0f; margin-bottom: 2px; }
+.shell-sub { font-size: 10px; color: #888; margin-bottom: 12px; }
+.shell-stats { display: flex; gap: 6px; margin-bottom: 12px; }
+.shell-stat { flex: 1; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.07); border-radius: 6px; padding: 8px 10px; backdrop-filter: blur(4px); }
+.shell-stat .lbl { font-size: 8px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.shell-stat .val { font-size: 18px; font-weight: 600; color: #0f0f0f; letter-spacing: -0.04em; line-height: 1; margin-top: 3px; }
+.shell-stat .chg { font-size: 8.5px; color: #FF6600; font-weight: 500; margin-top: 2px; }
+.shell-btn { background: #FF6600; color: white; font-size: 9px; font-weight: 600; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 10px; }
+
+/* ── OPTION A: YC Cream + dot grid ── */
+.bg-a { background: #F6F6EF; }
+.bg-a .shell-nav { background: rgba(246,246,239,0.95); backdrop-filter: blur(8px); }
+.bg-a .shell-sidebar { background: rgba(246,246,239,0.8); }
+.bg-a .shell-main { background: transparent; }
+
+/* CSS dot grid */
+.dot-grid-a {
+  position: absolute; inset: 0; z-index: 1;
+  background-image: radial-gradient(circle, #c8c8b8 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.55;
+}
+
+/* ── OPTION B: Pure white + faint dot grid ── */
+.bg-b { background: #ffffff; }
+.bg-b .shell-nav { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); }
+.bg-b .shell-sidebar { background: rgba(255,255,255,0.8); }
+
+.dot-grid-b {
+  position: absolute; inset: 0; z-index: 1;
+  background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.5;
+}
+
+/* ── OPTION C: White + orange-tinted dot fade from top ── */
+.bg-c { background: #ffffff; }
+.bg-c .shell-nav { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); }
+.bg-c .shell-sidebar { background: rgba(255,255,255,0.75); }
+
+.dot-grid-c {
+  position: absolute; inset: 0; z-index: 1;
+  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.dot-grid-c::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(255,102,0,0.07) 0%, transparent 70%),
+              linear-gradient(to bottom, transparent 30%, white 100%);
+}
+
+</style>
+<script>
+function selectCard(el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  try { fetch('/event', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'click', choice: el.dataset.choice, text: el.querySelector('h3').textContent, timestamp: Date.now() }) }).catch(()=>{}); } catch(e){}
+}
+</script>
+</head>
+<body>
+
+<div class="page-meta">
+  <h1>Home page background — which pattern?</h1>
+  <p>All three use dot patterns. Click to pick.</p>
+</div>
+
+<div class="cards">
+
+  <!-- A: YC Cream + dots -->
+  <div class="card" data-choice="a" onclick="selectCard(this)">
+    <div class="card-preview">
+      <span class="selected-badge">Selected</span>
+      <div class="shell bg-a" style="height:320px">
+        <div class="dot-grid-a"></div>
+        <div class="shell-nav">
+          <div class="logo">
+            <div class="mark"><svg width="12" height="12" viewBox="0 0 44 44" fill="none"><path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white"/></svg></div>
+            Aether <span class="ops">Ops</span>
+          </div>
+          <a>Requests</a><a>Changes</a>
+          <div class="ml">G</div>
+        </div>
+        <div class="shell-body">
+          <div class="shell-sidebar">
+            <div class="s-item active">Home</div>
+            <div class="s-item">My Requests</div>
+            <div class="s-item">Changes</div>
+            <div class="s-item">Catalog</div>
+          </div>
+          <div class="shell-main">
+            <div class="shell-h1">Welcome back, Govind</div>
+            <div class="shell-sub">12 agents active · 2 need attention</div>
+            <div class="shell-stats">
+              <div class="shell-stat"><div class="lbl">Time saved</div><div class="val">42h</div><div class="chg">↑ 12%</div></div>
+              <div class="shell-stat"><div class="lbl">Agents</div><div class="val">12</div><div class="chg">Healthy</div></div>
+              <div class="shell-stat"><div class="lbl">Open</div><div class="val">3</div><div class="chg">2 urgent</div></div>
+            </div>
+            <div class="shell-btn">+ New request</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="tag">YC Classic</div>
+      <h3>A — HN Cream + dot grid</h3>
+      <p>Classic `#F6F6EF` background with a CSS dot grid. Most faithful to the YC / HN aesthetic.</p>
+    </div>
+  </div>
+
+  <!-- B: White + dots -->
+  <div class="card" data-choice="b" onclick="selectCard(this)">
+    <div class="card-preview">
+      <span class="selected-badge">Selected</span>
+      <div class="shell bg-b" style="height:320px">
+        <div class="dot-grid-b"></div>
+        <div class="shell-nav">
+          <div class="logo">
+            <div class="mark"><svg width="12" height="12" viewBox="0 0 44 44" fill="none"><path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white"/></svg></div>
+            Aether <span class="ops">Ops</span>
+          </div>
+          <a>Requests</a><a>Changes</a>
+          <div class="ml">G</div>
+        </div>
+        <div class="shell-body">
+          <div class="shell-sidebar">
+            <div class="s-item active">Home</div>
+            <div class="s-item">My Requests</div>
+            <div class="s-item">Changes</div>
+            <div class="s-item">Catalog</div>
+          </div>
+          <div class="shell-main">
+            <div class="shell-h1">Welcome back, Govind</div>
+            <div class="shell-sub">12 agents active · 2 need attention</div>
+            <div class="shell-stats">
+              <div class="shell-stat"><div class="lbl">Time saved</div><div class="val">42h</div><div class="chg">↑ 12%</div></div>
+              <div class="shell-stat"><div class="lbl">Agents</div><div class="val">12</div><div class="chg">Healthy</div></div>
+              <div class="shell-stat"><div class="lbl">Open</div><div class="val">3</div><div class="chg">2 urgent</div></div>
+            </div>
+            <div class="shell-btn">+ New request</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="tag">Recommended</div>
+      <h3>B — White + subtle dots</h3>
+      <p>Pure white shell, very faint dot grid. Clean and modern — dots hint at structure without competing.</p>
+    </div>
+  </div>
+
+  <!-- C: White + orange glow top + dot fade -->
+  <div class="card" data-choice="c" onclick="selectCard(this)">
+    <div class="card-preview">
+      <span class="selected-badge">Selected</span>
+      <div class="shell bg-c" style="height:320px">
+        <div class="dot-grid-c"></div>
+        <div class="shell-nav">
+          <div class="logo">
+            <div class="mark"><svg width="12" height="12" viewBox="0 0 44 44" fill="none"><path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white"/></svg></div>
+            Aether <span class="ops">Ops</span>
+          </div>
+          <a>Requests</a><a>Changes</a>
+          <div class="ml">G</div>
+        </div>
+        <div class="shell-body">
+          <div class="shell-sidebar">
+            <div class="s-item active">Home</div>
+            <div class="s-item">My Requests</div>
+            <div class="s-item">Changes</div>
+            <div class="s-item">Catalog</div>
+          </div>
+          <div class="shell-main">
+            <div class="shell-h1">Welcome back, Govind</div>
+            <div class="shell-sub">12 agents active · 2 need attention</div>
+            <div class="shell-stats">
+              <div class="shell-stat"><div class="lbl">Time saved</div><div class="val">42h</div><div class="chg">↑ 12%</div></div>
+              <div class="shell-stat"><div class="lbl">Agents</div><div class="val">12</div><div class="chg">Healthy</div></div>
+              <div class="shell-stat"><div class="lbl">Open</div><div class="val">3</div><div class="chg">2 urgent</div></div>
+            </div>
+            <div class="shell-btn">+ New request</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <h3>C — White + orange halo + dot fade</h3>
+      <p>Dots fade to white below the fold. Subtle orange radial glow at top-center — ties the dot pattern to the brand without being loud.</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -85,25 +85,25 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>App Name</label>
-              <input required name="appName" placeholder="e.g. OpenAI Enterprise" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
+              <input required name="appName" placeholder="e.g. OpenAI Enterprise" className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }} />
             </div>
             <div>
               <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Vendor</label>
-              <input required name="vendor" placeholder="e.g. OpenAI" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
+              <input required name="vendor" placeholder="e.g. OpenAI" className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }} />
             </div>
             <div>
               <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Category</label>
-              <input required name="category" placeholder="e.g. AI/Generative" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
+              <input required name="category" placeholder="e.g. AI/Generative" className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }} />
             </div>
             <div>
               <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Vendor Setup Guide URL</label>
-              <input name="setupGuideUrl" placeholder="https://docs.vendor.com/setup" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
+              <input name="setupGuideUrl" placeholder="https://docs.vendor.com/setup" className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }} />
             </div>
           </div>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Connector Type</label>
-              <select name="connectorType" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }}>
+              <select name="connectorType" className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}>
                 <option value="manual_ticketing">Manual Ticketing</option>
                 <option value="SCIM">SCIM 2.0</option>
                 <option value="slack">Slack</option>
@@ -114,14 +114,14 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>SSO Support</label>
-                <select name="ssoSupport" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }}>
+                <select name="ssoSupport" className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Telemetry</label>
-                <select name="telemetrySupport" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }}>
+                <select name="telemetrySupport" className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}>
                   <option value="none">None</option>
                   <option value="full_cost">Cost/Usage</option>
                 </select>
@@ -129,7 +129,7 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
             </div>
             <div>
               <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Known Limits & Rules</label>
-              <textarea name="knownLimits" rows={3} placeholder="Optional. You can use the AI ingest feature later to populate this from the Setup Guide URL." className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
+              <textarea name="knownLimits" rows={3} placeholder="Optional. You can use the AI ingest feature later to populate this from the Setup Guide URL." className="mt-1 block w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }} />
             </div>
           </div>
           <div className="col-span-1 flex justify-end lg:col-span-2">
@@ -175,7 +175,8 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
               <button
                 onClick={() => handleIngest(app.id, app.setupGuideUrl)}
                 disabled={ingestingId === app.id}
-                className="flex items-center gap-1.5 rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-100 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition-colors disabled:opacity-50 hover:opacity-80"
+                style={{ background: "color-mix(in srgb, var(--accent) 10%, transparent)", color: "var(--accent)" }}
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 {ingestingId === app.id ? "Ingesting..." : "AI Ingest Docs"}

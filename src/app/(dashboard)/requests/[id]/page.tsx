@@ -143,7 +143,7 @@ export default async function RequestDetailPage({
       </div>
 
       {row.request.status === "revocation_pending" && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-900">
+        <div className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: "color-mix(in srgb, var(--status-pending) 30%, transparent)", background: "color-mix(in srgb, var(--status-pending) 8%, transparent)", color: "var(--status-pending)" }}>
           <p className="font-semibold">Access revocation in progress</p>
           <p className="mt-0.5 text-[13px] opacity-90">
             This access has expired and is being automatically revoked. No action required.
@@ -152,7 +152,7 @@ export default async function RequestDetailPage({
       )}
 
       {row.request.status === "revocation_failed" && (
-        <div className="rounded-lg border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-900">
+        <div className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: "color-mix(in srgb, var(--status-denied) 30%, transparent)", background: "color-mix(in srgb, var(--status-denied) 8%, transparent)", color: "var(--status-denied)" }}>
           <p className="font-semibold">Revocation failed</p>
           <p className="mt-0.5 text-[13px] opacity-90">
             Automatic revocation failed after multiple attempts. Contact your IT administrator to revoke access manually.
@@ -161,11 +161,13 @@ export default async function RequestDetailPage({
       )}
 
       {row.request.status === "fulfilled" && row.request.expiresAt && (
-        <div className={`rounded-lg border px-4 py-3 text-sm ${
-          row.request.expiresAt <= new Date()
-            ? "border-red-200 bg-red-50/80 text-red-900"
-            : "border-amber-200 bg-amber-50/80 text-amber-900"
-        }`}>
+        <div
+          className="rounded-lg border px-4 py-3 text-sm"
+          style={row.request.expiresAt <= new Date()
+            ? { borderColor: "color-mix(in srgb, var(--status-denied) 30%, transparent)", background: "color-mix(in srgb, var(--status-denied) 8%, transparent)", color: "var(--status-denied)" }
+            : { borderColor: "color-mix(in srgb, var(--status-pending) 30%, transparent)", background: "color-mix(in srgb, var(--status-pending) 8%, transparent)", color: "var(--status-pending)" }
+          }
+        >
           <p className="font-semibold">
             {row.request.expiresAt <= new Date() ? "Access expired" : "Time-bound access"}
           </p>
@@ -180,21 +182,15 @@ export default async function RequestDetailPage({
 
       {guidance && (
         <div
-          className={`rounded-lg border px-4 py-3 text-sm ${
-            guidance.tone === "action"
-              ? "border-cyan-200 bg-cyan-50/80 text-cyan-900"
-              : guidance.tone === "warn"
-                ? "border-amber-200 bg-amber-50/80 text-amber-900"
-                : guidance.tone === "done"
-                  ? "border-emerald-200 bg-emerald-50/80 text-emerald-900"
-                  : ""
-          }`}
+          className="rounded-lg border px-4 py-3 text-sm"
           style={
-            guidance.tone !== "action" &&
-            guidance.tone !== "warn" &&
-            guidance.tone !== "done"
-              ? { borderColor: "var(--line)", background: "var(--subtle)", color: "var(--ink-2)" }
-              : undefined
+            guidance.tone === "action"
+              ? { borderColor: "color-mix(in srgb, var(--accent) 30%, transparent)", background: "color-mix(in srgb, var(--accent) 8%, transparent)", color: "var(--accent)" }
+              : guidance.tone === "warn"
+                ? { borderColor: "color-mix(in srgb, var(--status-pending) 30%, transparent)", background: "color-mix(in srgb, var(--status-pending) 8%, transparent)", color: "var(--status-pending)" }
+                : guidance.tone === "done"
+                  ? { borderColor: "color-mix(in srgb, var(--status-approved) 30%, transparent)", background: "color-mix(in srgb, var(--status-approved) 8%, transparent)", color: "var(--status-approved)" }
+                  : { borderColor: "var(--line)", background: "var(--subtle)", color: "var(--ink-2)" }
           }
         >
           <p className="font-semibold">{guidance.label}</p>

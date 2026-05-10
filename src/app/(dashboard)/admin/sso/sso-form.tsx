@@ -75,8 +75,8 @@ export function SsoForm({
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               placeholder="e.g. acme.com"
-              className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              style={{ borderColor: "var(--line)" }}
+              className="mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div>
@@ -86,8 +86,8 @@ export function SsoForm({
               value={issuer}
               onChange={(e) => setIssuer(e.target.value)}
               placeholder="e.g. http://www.okta.com/exk..."
-              className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              style={{ borderColor: "var(--line)" }}
+              className="mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div>
@@ -98,8 +98,8 @@ export function SsoForm({
               value={xml}
               onChange={(e) => setXml(e.target.value)}
               placeholder="Paste your IDP metadata XML here..."
-              className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm font-mono shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              style={{ borderColor: "var(--line)" }}
+              className="mt-1 block w-full rounded-md border px-3 py-2 text-sm font-mono shadow-sm focus:outline-none"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div className="flex justify-end">

@@ -17,8 +17,8 @@ export default async function AppRegistryPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-3 border-b pb-4" style={{ borderColor: "var(--line)" }}>
-        <div className="rounded-xl bg-purple-50 p-2">
-          <Library className="h-6 w-6 text-purple-600" />
+        <div className="rounded-xl p-2" style={{ background: "color-mix(in srgb, var(--accent) 10%, transparent)" }}>
+          <Library className="h-6 w-6" style={{ color: "var(--accent)" }} />
         </div>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Knowledge Base & App Registry</h1>

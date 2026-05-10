@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YC Design Direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Inter, sans-serif; background: #f5f5f5; padding: 24px; }
+
+  .page-title { text-align: center; margin-bottom: 8px; font-size: 20px; font-weight: 700; color: #111; }
+  .page-subtitle { text-align: center; margin-bottom: 32px; color: #666; font-size: 14px; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
+
+  .card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .card.selected { border-color: #FF6600; box-shadow: 0 0 0 3px rgba(255,102,0,0.2); }
+
+  .card-label {
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid #eee;
+  }
+  .card-label h3 { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 2px; }
+  .card-label p { font-size: 12px; color: #666; line-height: 1.4; }
+
+  .selected-badge {
+    display: none;
+    position: absolute;
+    top: 8px; right: 8px;
+    background: #FF6600;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .card.selected .selected-badge { display: block; }
+  .card-preview-wrap { position: relative; }
+
+  /* ---- DIRECTION A: HN Classic ---- */
+  .dir-a {
+    font-family: Verdana, Geneva, sans-serif;
+    background: #F6F6EF;
+    font-size: 10px;
+  }
+  .dir-a .nav {
+    background: #FF6600;
+    padding: 2px 8px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: #000;
+    font-weight: bold;
+    font-size: 10px;
+  }
+  .dir-a .nav .logo { color: white; font-weight: 900; font-size: 12px; }
+  .dir-a .nav a { color: #000; text-decoration: none; font-size: 9px; }
+  .dir-a .content { padding: 8px; }
+  .dir-a table { border-collapse: collapse; width: 100%; font-size: 9px; }
+  .dir-a td { padding: 2px 4px; vertical-align: top; }
+  .dir-a tr:nth-child(even) td { background: #f6f6ef; }
+  .dir-a tr:nth-child(odd) td { background: #fffbf5; }
+  .dir-a .rank { color: #828282; text-align: right; width: 20px; }
+  .dir-a .hn-row-title { color: #000; font-weight: bold; }
+  .dir-a .hn-row-meta { color: #828282; font-size: 8px; }
+  .dir-a .section-title { font-size: 10px; font-weight: bold; color: #828282; padding: 4px 0 2px; border-bottom: 1px solid #e8e8e8; margin-bottom: 4px; }
+
+  /* ---- DIRECTION B: YC Modern (Recommended) ---- */
+  .dir-b {
+    font-family: 'DM Sans', Inter, sans-serif;
+    background: #fff;
+    font-size: 11px;
+  }
+  .dir-b .nav {
+    background: white;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .dir-b .nav .logo { font-weight: 800; font-size: 13px; color: #FF6600; letter-spacing: -0.5px; }
+  .dir-b .nav a { color: #555; font-size: 10px; font-weight: 500; text-decoration: none; }
+  .dir-b .nav a.active { color: #FF6600; font-weight: 700; }
+  .dir-b .nav .ml { margin-left: auto; }
+  .dir-b .content { padding: 14px; background: #FAFAFA; min-height: 200px; }
+  .dir-b h1 { font-size: 18px; font-weight: 800; color: #000; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 4px; }
+  .dir-b .sub { font-size: 10px; color: #666; margin-bottom: 12px; }
+  .dir-b .cards-row { display: flex; gap: 8px; }
+  .dir-b .stat-card { background: white; border: 1px solid #e8e8e8; border-radius: 8px; padding: 10px 12px; flex: 1; }
+  .dir-b .stat-card .stat-label { font-size: 9px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .dir-b .stat-card .stat-val { font-size: 20px; font-weight: 800; color: #000; line-height: 1; margin: 4px 0 2px; }
+  .dir-b .stat-card .stat-change { font-size: 9px; color: #FF6600; font-weight: 600; }
+  .dir-b .table-header { display: flex; align-items: center; justify-content: space-between; margin: 10px 0 6px; }
+  .dir-b .table-header h2 { font-size: 12px; font-weight: 700; color: #111; }
+  .dir-b .btn-orange { background: #FF6600; color: white; font-size: 9px; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: none; }
+  .dir-b .list-item { background: white; border: 1px solid #e8e8e8; border-radius: 6px; padding: 8px 10px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .dir-b .list-item .badge { background: #FFF3E0; color: #FF6600; font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
+  .dir-b .list-item .badge.green { background: #E8F5E9; color: #2E7D32; }
+  .dir-b .list-item .title { font-size: 10px; font-weight: 600; color: #111; }
+  .dir-b .list-item .meta { font-size: 9px; color: #888; margin-left: auto; }
+
+  /* ---- DIRECTION C: YC Startup Dark ---- */
+  .dir-c {
+    font-family: 'Inter', sans-serif;
+    background: #0A0A0A;
+    font-size: 11px;
+    color: #fff;
+  }
+  .dir-c .nav {
+    background: #0A0A0A;
+    border-bottom: 1px solid #222;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .dir-c .nav .logo { font-weight: 800; font-size: 13px; color: #FF6600; letter-spacing: -0.5px; }
+  .dir-c .nav a { color: #666; font-size: 10px; font-weight: 500; text-decoration: none; }
+  .dir-c .nav a.active { color: #fff; font-weight: 600; }
+  .dir-c .content { padding: 14px; min-height: 200px; }
+  .dir-c h1 { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 4px; }
+  .dir-c .sub { font-size: 10px; color: #555; margin-bottom: 12px; }
+  .dir-c .cards-row { display: flex; gap: 8px; }
+  .dir-c .stat-card { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 10px 12px; flex: 1; }
+  .dir-c .stat-card .stat-label { font-size: 9px; color: #555; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .dir-c .stat-card .stat-val { font-size: 20px; font-weight: 800; color: #fff; line-height: 1; margin: 4px 0 2px; }
+  .dir-c .stat-card .stat-change { font-size: 9px; color: #FF6600; font-weight: 600; }
+  .dir-c .table-header { display: flex; align-items: center; justify-content: space-between; margin: 10px 0 6px; }
+  .dir-c .table-header h2 { font-size: 12px; font-weight: 700; color: #fff; }
+  .dir-c .btn-orange { background: #FF6600; color: white; font-size: 9px; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: none; }
+  .dir-c .list-item { background: #141414; border: 1px solid #222; border-radius: 6px; padding: 8px 10px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .dir-c .list-item .badge { background: rgba(255,102,0,0.15); color: #FF6600; font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
+  .dir-c .list-item .badge.green { background: rgba(46,125,50,0.2); color: #66BB6A; }
+  .dir-c .list-item .title { font-size: 10px; font-weight: 600; color: #e8e8e8; }
+  .dir-c .list-item .meta { font-size: 9px; color: #444; margin-left: auto; }
+
+  .tag { display: inline-block; background: #FF6600; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; }
+</style>
+<script>
+  function selectCard(el) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const choice = el.dataset.choice;
+    const text = el.querySelector('h3').textContent;
+    if (window.recordSelection) window.recordSelection(choice, text);
+  }
+</script>
+</head>
+<body>
+
+<div class="page-title">Which YC design direction fits?</div>
+<div class="page-subtitle">Three distinct interpretations — click to select your preference</div>
+
+<div class="cards">
+
+  <!-- DIRECTION A: HN Classic -->
+  <div class="card" data-choice="a" onclick="selectCard(this)">
+    <div class="card-preview-wrap">
+      <span class="selected-badge">Selected</span>
+      <div class="dir-a">
+        <div class="nav">
+          <span class="logo">Y</span>
+          <a href="#">new</a>
+          <a href="#">past</a>
+          <a href="#">ask</a>
+          <a href="#">submit</a>
+        </div>
+        <div class="content">
+          <div class="section-title">Service Requests</div>
+          <table>
+            <tr><td class="rank">1.</td><td><div class="hn-row-title">AWS Read Access Request</div><div class="hn-row-meta">pending · 2h ago · by govin</div></td></tr>
+            <tr><td class="rank">2.</td><td><div class="hn-row-title">Linear Engineering Invite</div><div class="hn-row-meta">approved · 1d ago · by sarah</div></td></tr>
+            <tr><td class="rank">3.</td><td><div class="hn-row-title">Slack Guest Provisioning</div><div class="hn-row-meta">fulfilled · 3d ago · by mike</div></td></tr>
+            <tr><td class="rank">4.</td><td><div class="hn-row-title">GCP BigQuery Read Role</div><div class="hn-row-meta">pending · 4d ago · by govin</div></td></tr>
+            <tr><td class="rank">5.</td><td><div class="hn-row-title">Datadog Dashboard Access</div><div class="hn-row-meta">denied · 5d ago · by admin</div></td></tr>
+          </table>
+          <div class="section-title" style="margin-top:8px">Catalog</div>
+          <table>
+            <tr><td class="rank">1.</td><td><div class="hn-row-title">Cloud Access</div><div class="hn-row-meta">12 types</div></td></tr>
+            <tr><td class="rank">2.</td><td><div class="hn-row-title">Collaboration Tools</div><div class="hn-row-meta">8 types</div></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <h3>A — HN Classic</h3>
+      <p>Brutalist Hacker News aesthetic. Dense, beige background, orange nav bar, tabular layout. Minimal decoration.</p>
+    </div>
+  </div>
+
+  <!-- DIRECTION B: YC Modern -->
+  <div class="card" data-choice="b" onclick="selectCard(this)">
+    <div class="card-preview-wrap">
+      <span class="selected-badge">Selected</span>
+      <div class="dir-b">
+        <div class="nav">
+          <span class="logo">Aether Ops</span>
+          <a href="#">Home</a>
+          <a href="#" class="active">Requests</a>
+          <a href="#">Changes</a>
+          <span class="ml" style="font-size:9px;color:#888">govin@co.ai</span>
+        </div>
+        <div class="content">
+          <h1>Welcome back, Govind.</h1>
+          <div class="sub">Your AI operations are running smoothly.</div>
+          <div class="cards-row">
+            <div class="stat-card">
+              <div class="stat-label">Time Saved</div>
+              <div class="stat-val">42h</div>
+              <div class="stat-change">↑ +12% this week</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Agents Active</div>
+              <div class="stat-val">12</div>
+              <div class="stat-change">All healthy</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Open Requests</div>
+              <div class="stat-val">3</div>
+              <div class="stat-change">2 need action</div>
+            </div>
+          </div>
+          <div class="table-header">
+            <h2>Recent Requests</h2>
+            <button class="btn-orange">+ New Request</button>
+          </div>
+          <div class="list-item">
+            <span class="badge">Pending</span>
+            <span class="title">AWS Read Access</span>
+            <span class="meta">2h ago</span>
+          </div>
+          <div class="list-item">
+            <span class="badge green">Approved</span>
+            <span class="title">Linear Engineering</span>
+            <span class="meta">1d ago</span>
+          </div>
+          <div class="list-item">
+            <span class="badge green">Fulfilled</span>
+            <span class="title">Slack Guest Invite</span>
+            <span class="meta">3d ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="tag">Recommended</div>
+      <h3>B — YC Modern</h3>
+      <p>Clean white/cream, bold black headings, orange accents and CTAs. DM Sans or Inter. This is how YC-backed startups typically present.</p>
+    </div>
+  </div>
+
+  <!-- DIRECTION C: Dark Startup -->
+  <div class="card" data-choice="c" onclick="selectCard(this)">
+    <div class="card-preview-wrap">
+      <span class="selected-badge">Selected</span>
+      <div class="dir-c">
+        <div class="nav">
+          <span class="logo">Aether Ops</span>
+          <a href="#">Home</a>
+          <a href="#" class="active">Requests</a>
+          <a href="#">Changes</a>
+          <span style="margin-left:auto;font-size:9px;color:#444">govin@co.ai</span>
+        </div>
+        <div class="content">
+          <h1>Welcome back, Govind.</h1>
+          <div class="sub">Your AI operations are running smoothly.</div>
+          <div class="cards-row">
+            <div class="stat-card">
+              <div class="stat-label">Time Saved</div>
+              <div class="stat-val">42h</div>
+              <div class="stat-change">↑ +12% this week</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Agents Active</div>
+              <div class="stat-val">12</div>
+              <div class="stat-change">All healthy</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Open Requests</div>
+              <div class="stat-val">3</div>
+              <div class="stat-change">2 need action</div>
+            </div>
+          </div>
+          <div class="table-header">
+            <h2>Recent Requests</h2>
+            <button class="btn-orange">+ New Request</button>
+          </div>
+          <div class="list-item">
+            <span class="badge">Pending</span>
+            <span class="title">AWS Read Access</span>
+            <span class="meta">2h ago</span>
+          </div>
+          <div class="list-item">
+            <span class="badge green">Approved</span>
+            <span class="title">Linear Engineering</span>
+            <span class="meta">1d ago</span>
+          </div>
+          <div class="list-item">
+            <span class="badge green">Fulfilled</span>
+            <span class="title">Slack Guest Invite</span>
+            <span class="meta">3d ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <h3>C — Dark Startup</h3>
+      <p>Black background, orange accents on dark. Feels like a terminal-native devtools product. Bold but heavy.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Wire up to parent helper if available
+  window.recordSelection = function(choice, text) {
+    try {
+      const evt = { type: 'click', choice, text, timestamp: Date.now() };
+      fetch('/event', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(evt) }).catch(()=>{});
+    } catch(e) {}
+  };
+</script>
+</body>
+</html>

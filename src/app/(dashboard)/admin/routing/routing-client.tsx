@@ -182,8 +182,8 @@ function DeleteRuleButton({ ruleId }: { ruleId: string }) {
       <button
         type="button"
         disabled={pending}
-        className="rounded border border-red-200 px-2 py-0.5 text-xs disabled:opacity-40"
-        style={{ color: "var(--status-denied)" }}
+        className="rounded border px-2 py-0.5 text-xs disabled:opacity-40"
+        style={{ borderColor: "color-mix(in srgb, var(--status-denied) 30%, transparent)", color: "var(--status-denied)" }}
         onClick={async () => {
           setPending(true);
           setErr(null);

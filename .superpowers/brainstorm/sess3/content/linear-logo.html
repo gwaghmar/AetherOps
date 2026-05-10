@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aether Ops — Logo + Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Geist', system-ui, sans-serif;
+  background: #f0efed;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-meta {
+  text-align: center;
+}
+.page-meta h1 { font-size: 14px; font-weight: 600; color: #111; letter-spacing: -0.02em; margin-bottom: 3px; }
+.page-meta p { font-size: 12px; color: #888; }
+
+/* ─── Logo showcase ─── */
+.logo-showcase {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #e2e2e0;
+  border-radius: 10px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.logo-variants {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex: 1;
+}
+
+.logo-variant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.logo-variant-label {
+  font-size: 10px;
+  color: #aaa;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* The logomark — YC-style square with "AO" */
+.logomark {
+  width: 40px;
+  height: 40px;
+  background: #FF6600;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.logomark svg { display: block; }
+
+/* Sizes */
+.logomark.sm { width: 24px; height: 24px; border-radius: 6px; }
+.logomark.lg { width: 56px; height: 56px; border-radius: 12px; }
+.logomark.xl { width: 80px; height: 80px; border-radius: 16px; }
+
+/* Wordmark combo */
+.wordmark-combo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.wordmark-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f0f0f;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.wordmark-text .ops {
+  color: #FF6600;
+}
+
+/* On dark */
+.on-dark {
+  background: #0f0f0f;
+  border-radius: 8px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.on-dark .wordmark-text { color: #f5f5f5; }
+
+.divider { width: 1px; background: #ebebeb; align-self: stretch; }
+
+/* ─── App window ─── */
+.app-window {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e2e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+/* ─── Nav ─── */
+.nav {
+  height: 44px;
+  border-bottom: 1px solid #ebebeb;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: #fff;
+  gap: 0;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 18px;
+}
+.nav-brand .wordmark-text { font-size: 13px; }
+
+.nav-items { display: flex; align-items: center; gap: 1px; flex: 1; }
+.nav-item {
+  font-size: 12.5px;
+  font-weight: 450;
+  color: #6b6b6b;
+  padding: 4px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+}
+.nav-item:hover { background: #f3f3f3; color: #111; }
+.nav-item.active { color: #111; font-weight: 500; }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.nav-cmd {
+  font-size: 11px;
+  color: #bbb;
+  background: #f5f5f5;
+  border: 1px solid #e8e8e8;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-family: 'Geist Mono', monospace;
+}
+.nav-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6600, #FF9500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+}
+
+/* ─── Content ─── */
+.content { display: flex; min-height: 500px; }
+
+/* Sidebar */
+.sidebar {
+  width: 196px;
+  border-right: 1px solid #ebebeb;
+  padding: 10px 8px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.sidebar-section {
+  padding: 14px 8px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #bbb;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 12.5px;
+  font-weight: 450;
+  color: #555;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+}
+.sidebar-item:hover { background: #f5f5f5; color: #111; }
+.sidebar-item.active { background: #f5f5f5; color: #111; font-weight: 500; }
+.sidebar-icon { width: 14px; height: 14px; color: #bbb; flex-shrink: 0; }
+.sidebar-item.active .sidebar-icon { color: #FF6600; }
+.sidebar-badge {
+  margin-left: auto;
+  background: #f0f0f0;
+  border-radius: 3px;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #888;
+  padding: 1px 5px;
+}
+.sidebar-badge.orange { background: rgba(255,102,0,0.1); color: #CC5200; }
+
+/* Main */
+.main { flex: 1; padding: 22px 26px; background: #fafafa; }
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.page-header h1 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #0f0f0f;
+  letter-spacing: -0.03em;
+}
+.page-header p { font-size: 12px; color: #888; margin-top: 3px; letter-spacing: -0.01em; }
+
+.btn-primary {
+  background: #FF6600;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 13px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Geist', sans-serif;
+}
+.btn-secondary {
+  background: #fff;
+  color: #444;
+  font-size: 12px;
+  font-weight: 450;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e2e0;
+  cursor: pointer;
+  font-family: 'Geist', sans-serif;
+}
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-bottom: 18px; }
+.stat-card {
+  background: #fff;
+  border: 1px solid #e8e8e6;
+  border-radius: 8px;
+  padding: 13px 15px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,102,0,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.stat-label { font-size: 10.5px; font-weight: 500; color: #aaa; text-transform: uppercase; letter-spacing: 0.01em; margin-bottom: 5px; }
+.stat-value { font-size: 25px; font-weight: 600; color: #0f0f0f; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat-meta { font-size: 11px; color: #aaa; margin-top: 4px; }
+.stat-meta span { color: #FF6600; font-weight: 500; }
+
+/* Table */
+.table-section { background: #fff; border: 1px solid #e8e8e6; border-radius: 8px; overflow: hidden; }
+.table-toolbar {
+  display: flex; align-items: center;
+  padding: 9px 13px;
+  border-bottom: 1px solid #f0f0ee;
+  gap: 8px;
+}
+.table-toolbar h2 { font-size: 12.5px; font-weight: 600; color: #111; letter-spacing: -0.02em; }
+.table-toolbar .ml { margin-left: auto; }
+.filter-btn {
+  font-size: 11px; color: #888;
+  background: none; border: 1px solid #e8e8e6; border-radius: 5px;
+  padding: 3px 9px; cursor: pointer; font-family: 'Geist', sans-serif;
+  display: flex; align-items: center; gap: 4px;
+}
+
+.table-row {
+  display: flex; align-items: center;
+  padding: 8px 13px;
+  border-bottom: 1px solid #f5f5f3;
+  gap: 10px; cursor: pointer;
+}
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: #fafaf8; }
+
+.row-status { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.row-status.pending { background: #FF6600; box-shadow: 0 0 0 2px rgba(255,102,0,0.15); }
+.row-status.approved { background: #3d9970; box-shadow: 0 0 0 2px rgba(61,153,112,0.15); }
+.row-status.fulfilled { background: #3d9970; opacity: 0.4; }
+.row-status.denied { background: #e55353; box-shadow: 0 0 0 2px rgba(229,83,83,0.12); }
+
+.row-title { font-size: 12.5px; font-weight: 450; color: #111; letter-spacing: -0.01em; flex: 1; }
+.row-type { font-size: 11px; color: #aaa; min-width: 110px; }
+.row-meta { font-size: 11px; color: #ccc; min-width: 54px; text-align: right; }
+
+.badge { font-size: 10.5px; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
+.badge.pending { background: rgba(255,102,0,0.1); color: #CC5200; }
+.badge.approved { background: rgba(61,153,112,0.1); color: #276d4e; }
+.badge.fulfilled { background: #f0f0ee; color: #999; }
+.badge.denied { background: rgba(229,83,83,0.08); color: #c04040; }
+
+/* Catalog */
+.section-label { font-size: 11px; font-weight: 600; color: #bbb; letter-spacing: 0.04em; text-transform: uppercase; margin: 18px 0 8px; }
+.catalog-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.catalog-tile {
+  background: #fff; border: 1px solid #e8e8e6; border-radius: 7px; padding: 11px;
+  cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.catalog-tile:hover { border-color: #d4d4d0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.catalog-tile .icon { width: 26px; height: 26px; background: #f5f5f3; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; margin-bottom: 6px; }
+.catalog-tile .name { font-size: 11.5px; font-weight: 500; color: #111; letter-spacing: -0.02em; margin-bottom: 2px; }
+.catalog-tile .desc { font-size: 10.5px; color: #aaa; line-height: 1.35; }
+
+@keyframes shimmer-border {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+.catalog-tile.featured {
+  border-color: transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(90deg, #ebebeb 0%, #FF6600 50%, #ebebeb 100%) border-box;
+  background-size: 200% auto;
+  animation: shimmer-border 2.5s linear infinite;
+}
+.catalog-tile.featured .icon { background: rgba(255,102,0,0.08); }
+
+</style>
+</head>
+<body>
+
+<div class="page-meta">
+  <h1>Aether Ops — Logo concepts + full dashboard</h1>
+  <p>YC-style logomark with Geist · reply in terminal to confirm or tweak</p>
+</div>
+
+<!-- ─── Logo showcase ─── -->
+<div class="logo-showcase">
+  <div class="logo-variants">
+
+    <!-- The mark alone, sizes -->
+    <div class="logo-variant">
+      <div class="logomark xl">
+        <!-- "AO" mark: stylized A with orbit ring suggestion -->
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+          <!-- Bold geometric A, no crossbar, apex has a small square dot like YC -->
+          <path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white" opacity="0.95"/>
+          <rect x="18" y="27" width="8" height="1.8" rx="0.9" fill="white" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="logo-variant-label">80px</div>
+    </div>
+
+    <div class="logo-variant">
+      <div class="logomark lg">
+        <svg width="30" height="30" viewBox="0 0 44 44" fill="none">
+          <path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white" opacity="0.95"/>
+          <rect x="18" y="27" width="8" height="1.8" rx="0.9" fill="white" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="logo-variant-label">56px</div>
+    </div>
+
+    <div class="logo-variant">
+      <div class="logomark">
+        <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
+          <path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white" opacity="0.95"/>
+          <rect x="18" y="27" width="8" height="1.8" rx="0.9" fill="white" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="logo-variant-label">40px</div>
+    </div>
+
+    <div class="logo-variant">
+      <div class="logomark sm">
+        <svg width="14" height="14" viewBox="0 0 44 44" fill="none">
+          <path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white"/>
+        </svg>
+      </div>
+      <div class="logo-variant-label">24px</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Wordmark combinations -->
+    <div class="logo-variant">
+      <div class="wordmark-combo">
+        <div class="logomark sm">
+          <svg width="14" height="14" viewBox="0 0 44 44" fill="none">
+            <path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white"/>
+          </svg>
+        </div>
+        <span class="wordmark-text">Aether <span class="ops">Ops</span></span>
+      </div>
+      <div class="logo-variant-label">Light bg</div>
+    </div>
+
+    <div class="logo-variant">
+      <div class="on-dark">
+        <div class="logomark sm">
+          <svg width="14" height="14" viewBox="0 0 44 44" fill="none">
+            <path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white"/>
+          </svg>
+        </div>
+        <span class="wordmark-text">Aether <span class="ops">Ops</span></span>
+      </div>
+      <div class="logo-variant-label">Dark bg</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── App window ─── -->
+<div class="app-window">
+  <nav class="nav">
+    <div class="nav-brand">
+      <div class="logomark sm">
+        <svg width="14" height="14" viewBox="0 0 44 44" fill="none">
+          <path d="M22 8L6 36h7.5L22 18l8.5 18H38L22 8z" fill="white"/>
+        </svg>
+      </div>
+      <span class="wordmark-text">Aether <span class="ops">Ops</span></span>
+    </div>
+    <div class="nav-items">
+      <div class="nav-item active">Home</div>
+      <div class="nav-item">Requests</div>
+      <div class="nav-item">Changes</div>
+      <div class="nav-item">Approvals</div>
+      <div class="nav-item">Admin ↓</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-cmd">⌘K</div>
+      <div class="nav-avatar">G</div>
+    </div>
+  </nav>
+
+  <div class="content">
+    <aside class="sidebar">
+      <div class="sidebar-item active">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+        Home
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h10M2 7h7M2 10h4"/></svg>
+        My Requests
+        <span class="sidebar-badge orange">3</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 2"/></svg>
+        Pending Action
+        <span class="sidebar-badge orange">2</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2L2 5v4l5 3 5-3V5L7 2z"/></svg>
+        Changes
+      </div>
+
+      <div class="sidebar-section">Catalog</div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="10" height="8" rx="1"/><path d="M5 3V2M9 3V2"/></svg>
+        Cloud Access
+        <span class="sidebar-badge">12</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="4" r="2"/><circle cx="9" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4h4c2.2 0 4 1.8 4 4"/></svg>
+        Collaboration
+        <span class="sidebar-badge">8</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M7 5v4M5 7h4"/></svg>
+        AI Tools
+        <span class="sidebar-badge">5</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-header">
+        <div>
+          <h1>Welcome back, Govind</h1>
+          <p>12 agents active · 2 requests need your attention</p>
+        </div>
+        <div style="display:flex;gap:7px;align-items:center">
+          <button class="btn-secondary">Browse catalog</button>
+          <button class="btn-primary">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2v8M2 6h8"/></svg>
+            New request
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Time saved</div>
+          <div class="stat-value">42h</div>
+          <div class="stat-meta"><span>↑ 12%</span> vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Agents active</div>
+          <div class="stat-value">12</div>
+          <div class="stat-meta">All healthy · 2m ago</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Open requests</div>
+          <div class="stat-value">3</div>
+          <div class="stat-meta"><span>2 need action</span> from you</div>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h2>Recent requests</h2>
+          <div class="ml" style="display:flex;gap:6px">
+            <button class="filter-btn">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3h10M3 6h6M5 9h2"/></svg>
+              Filter
+            </button>
+            <button class="filter-btn">Status ↓</button>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="row-status pending"></div>
+          <div class="row-title">AWS Read-Only Access</div>
+          <div class="row-type">Cloud Access</div>
+          <span class="badge pending">Pending</span>
+          <div class="row-meta">2h ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status pending"></div>
+          <div class="row-title">Datadog Dashboard — Engineering</div>
+          <div class="row-type">Observability</div>
+          <span class="badge pending">Pending</span>
+          <div class="row-meta">6h ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status approved"></div>
+          <div class="row-title">Linear Engineering Invite</div>
+          <div class="row-type">Collaboration</div>
+          <span class="badge approved">Approved</span>
+          <div class="row-meta">1d ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status fulfilled"></div>
+          <div class="row-title">Slack Guest Provisioning</div>
+          <div class="row-type">Collaboration</div>
+          <span class="badge fulfilled">Fulfilled</span>
+          <div class="row-meta">3d ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status denied"></div>
+          <div class="row-title">GCP BigQuery Write Role</div>
+          <div class="row-type">Cloud Access</div>
+          <span class="badge denied">Denied</span>
+          <div class="row-meta">5d ago</div>
+        </div>
+      </div>
+
+      <div class="section-label">Quick request</div>
+      <div class="catalog-strip">
+        <div class="catalog-tile featured">
+          <div class="icon">☁️</div>
+          <div class="name">Cloud Access</div>
+          <div class="desc">AWS, GCP, Azure roles</div>
+        </div>
+        <div class="catalog-tile">
+          <div class="icon">💬</div>
+          <div class="name">Slack Invite</div>
+          <div class="desc">Channels &amp; workspaces</div>
+        </div>
+        <div class="catalog-tile">
+          <div class="icon">📋</div>
+          <div class="name">Linear Access</div>
+          <div class="desc">Teams &amp; projects</div>
+        </div>
+        <div class="catalog-tile">
+          <div class="icon">🤖</div>
+          <div class="name">AI Tool Access</div>
+          <div class="desc">GPT-4, Claude, Gemini</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+</body>
+</html>

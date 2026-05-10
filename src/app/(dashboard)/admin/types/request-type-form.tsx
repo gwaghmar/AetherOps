@@ -136,8 +136,8 @@ export function RequestTypeForm(props: {
           onChange={(e) => setDescription(e.target.value)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className="mt-0.5 w-full rounded border px-2 py-1 text-sm bg-transparent"
-          style={{ borderColor: "var(--line)" }}
+          className="mt-0.5 w-full rounded border px-2 py-1 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
         />
       </div>
       <div>

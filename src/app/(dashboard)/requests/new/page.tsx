@@ -20,7 +20,7 @@ export default async function NewRequestPage({
   const session = await requireSession();
   const orgId = session.user.organizationId;
   if (!orgId) {
-    return <p className="text-red-600">Your account has no organization.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>Your account has no organization.</p>;
   }
 
   const types = await db
@@ -35,10 +35,10 @@ export default async function NewRequestPage({
 
   if (types.length === 0) {
     return (
-      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+      <div className="rounded-lg border p-4 text-sm" style={{ borderColor: "color-mix(in srgb, var(--status-pending) 30%, transparent)", background: "color-mix(in srgb, var(--status-pending) 8%, transparent)", color: "var(--status-pending)" }}>
         <p className="font-medium">No request types yet.</p>
         <p className="mt-1">
-          Run <code className="rounded bg-amber-100 px-1 dark:bg-amber-900/80">npm run db:seed</code>{" "}
+          Run <code className="rounded px-1" style={{ background: "color-mix(in srgb, var(--status-pending) 15%, transparent)" }}>npm run db:seed</code>{" "}
           after migrations, then refresh.
         </p>
       </div>

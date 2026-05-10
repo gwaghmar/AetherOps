@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear-Inspired — Aether Ops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Page wrapper ─── */
+body {
+  font-family: 'Geist', system-ui, sans-serif;
+  background: #f0efed;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-height: 100vh;
+}
+
+.page-meta {
+  text-align: center;
+}
+.page-meta h1 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.page-meta p {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ─── The simulated app window ─── */
+.app-window {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e2e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+/* ─── Nav ─── */
+.nav {
+  height: 44px;
+  border-bottom: 1px solid #ebebeb;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 0;
+  background: #fff;
+}
+
+.nav-logo {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #111;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-logo .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #C85A00;
+}
+
+.nav-items {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+.nav-item {
+  font-size: 12.5px;
+  font-weight: 450;
+  color: #6b6b6b;
+  padding: 4px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 0.1s, color 0.1s;
+}
+.nav-item:hover { background: #f3f3f3; color: #111; }
+.nav-item.active {
+  color: #111;
+  font-weight: 500;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.nav-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #C85A00, #E8860A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0;
+}
+.nav-cmd {
+  font-size: 11px;
+  color: #bbb;
+  background: #f5f5f5;
+  border: 1px solid #e8e8e8;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-family: 'Geist Mono', monospace;
+  letter-spacing: 0;
+}
+
+/* ─── Content shell ─── */
+.content {
+  display: flex;
+  min-height: 540px;
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+  width: 196px;
+  border-right: 1px solid #ebebeb;
+  padding: 12px 8px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.sidebar-section {
+  padding: 14px 8px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #bbb;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 12.5px;
+  font-weight: 450;
+  color: #555;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+}
+.sidebar-item:hover { background: #f5f5f5; color: #111; }
+.sidebar-item.active {
+  background: #f5f5f5;
+  color: #111;
+  font-weight: 500;
+}
+.sidebar-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  flex-shrink: 0;
+}
+.sidebar-item.active .sidebar-icon { color: #C85A00; }
+.sidebar-badge {
+  margin-left: auto;
+  background: #f0f0f0;
+  border-radius: 3px;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #888;
+  padding: 1px 5px;
+}
+.sidebar-badge.orange {
+  background: rgba(200, 90, 0, 0.1);
+  color: #C85A00;
+}
+
+/* ─── Main ─── */
+.main {
+  flex: 1;
+  padding: 24px 28px;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+/* ─── Page header ─── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.page-header-left h1 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #0f0f0f;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.page-header-left p {
+  font-size: 12px;
+  color: #888;
+  margin-top: 3px;
+  letter-spacing: -0.01em;
+}
+.btn-primary {
+  background: #C85A00;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 13px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Geist', sans-serif;
+  transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.88; }
+.btn-secondary {
+  background: #fff;
+  color: #444;
+  font-size: 12px;
+  font-weight: 450;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e2e0;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  font-family: 'Geist', sans-serif;
+}
+
+/* ─── Stats row ─── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.stat-card {
+  background: #fff;
+  border: 1px solid #e8e8e6;
+  border-radius: 8px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Magic UI: subtle shimmer gradient on stat cards */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(200,90,0,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.stat-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #aaa;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: #0f0f0f;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-meta {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 4px;
+  letter-spacing: -0.01em;
+}
+.stat-meta span {
+  color: #C85A00;
+  font-weight: 500;
+}
+
+/* ─── Table section ─── */
+.table-section {
+  background: #fff;
+  border: 1px solid #e8e8e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0ee;
+  gap: 8px;
+}
+.table-toolbar h2 {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: -0.02em;
+}
+.table-toolbar .ml { margin-left: auto; }
+.filter-btn {
+  font-size: 11px;
+  color: #888;
+  background: none;
+  border: 1px solid #e8e8e6;
+  border-radius: 5px;
+  padding: 3px 9px;
+  cursor: pointer;
+  font-family: 'Geist', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.table-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid #f5f5f3;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.08s;
+}
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: #fafaf8; }
+
+.row-status {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.row-status.pending { background: #E8860A; box-shadow: 0 0 0 2px rgba(232,134,10,0.15); }
+.row-status.approved { background: #3d9970; box-shadow: 0 0 0 2px rgba(61,153,112,0.15); }
+.row-status.fulfilled { background: #3d9970; opacity: 0.5; }
+.row-status.denied { background: #e55353; box-shadow: 0 0 0 2px rgba(229,83,83,0.12); }
+
+.row-title {
+  font-size: 12.5px;
+  font-weight: 450;
+  color: #111;
+  letter-spacing: -0.01em;
+  flex: 1;
+}
+.row-type {
+  font-size: 11px;
+  color: #aaa;
+  letter-spacing: -0.01em;
+  min-width: 110px;
+}
+.row-meta {
+  font-size: 11px;
+  color: #ccc;
+  letter-spacing: -0.01em;
+  min-width: 54px;
+  text-align: right;
+}
+
+.badge {
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: -0.01em;
+}
+.badge.pending { background: rgba(232,134,10,0.1); color: #B86800; }
+.badge.approved { background: rgba(61,153,112,0.1); color: #276d4e; }
+.badge.fulfilled { background: #f0f0ee; color: #999; }
+.badge.denied { background: rgba(229,83,83,0.08); color: #c04040; }
+
+/* ─── Catalog strip ─── */
+.catalog-strip {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.catalog-tile {
+  background: #fff;
+  border: 1px solid #e8e8e6;
+  border-radius: 7px;
+  padding: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.catalog-tile:hover {
+  border-color: #d4d4d0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.catalog-tile .icon {
+  width: 26px;
+  height: 26px;
+  background: #f5f5f3;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+.catalog-tile .name {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #111;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+.catalog-tile .desc {
+  font-size: 10.5px;
+  color: #aaa;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+/* ─── Magic UI: shimmer border on active card ─── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.catalog-tile.featured {
+  position: relative;
+  border-color: transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(90deg, #e8e8e6, #C85A00, #e8e6e6) border-box;
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+.catalog-tile.featured .icon { background: rgba(200,90,0,0.08); }
+
+/* ─── Section title ─── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #bbb;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-top: 20px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="page-meta">
+  <h1>Linear-Inspired — Geist font, YC orange (#C85A00), Magic UI accents</h1>
+  <p>Is this the direction? Reply here and I'll move to the next design question.</p>
+</div>
+
+<div class="app-window">
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <span class="dot"></span>
+      Aether Ops
+    </div>
+    <div class="nav-items">
+      <div class="nav-item active">Home</div>
+      <div class="nav-item">Requests</div>
+      <div class="nav-item">Changes</div>
+      <div class="nav-item">Approvals</div>
+      <div class="nav-item">Admin ↓</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-cmd">⌘K</div>
+      <div class="nav-avatar">G</div>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-item active">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+        Home
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h10M2 7h7M2 10h4"/></svg>
+        My Requests
+        <span class="sidebar-badge orange">3</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 2"/></svg>
+        Pending Action
+        <span class="sidebar-badge orange">2</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2L2 5v4l5 3 5-3V5L7 2z"/></svg>
+        Changes
+      </div>
+
+      <div class="sidebar-section">Catalog</div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="10" height="8" rx="1"/><path d="M5 3V2M9 3V2"/></svg>
+        Cloud Access
+        <span class="sidebar-badge">12</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="4" r="2"/><circle cx="9" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4h4c2.2 0 4 1.8 4 4"/></svg>
+        Collaboration
+        <span class="sidebar-badge">8</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M7 5v4M5 7h4"/></svg>
+        AI Tools
+        <span class="sidebar-badge">5</span>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Welcome back, Govind</h1>
+          <p>Your AI operations are running — 12 agents active, 2 requests need attention.</p>
+        </div>
+        <div style="display:flex;gap:7px;align-items:center">
+          <button class="btn-secondary">Browse catalog</button>
+          <button class="btn-primary">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v8M2 6h8"/></svg>
+            New request
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Time saved</div>
+          <div class="stat-value">42h</div>
+          <div class="stat-meta"><span>↑ 12%</span> this month vs last</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Agents active</div>
+          <div class="stat-value">12</div>
+          <div class="stat-meta">All healthy · last check 2m ago</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Open requests</div>
+          <div class="stat-value">3</div>
+          <div class="stat-meta"><span>2 need action</span> from you</div>
+        </div>
+      </div>
+
+      <!-- Requests table -->
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h2>Recent requests</h2>
+          <div class="ml" style="display:flex;gap:6px">
+            <button class="filter-btn">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3h10M3 6h6M5 9h2"/></svg>
+              Filter
+            </button>
+            <button class="filter-btn">Status ↓</button>
+          </div>
+        </div>
+
+        <div class="table-row">
+          <div class="row-status pending"></div>
+          <div class="row-title">AWS Read-Only Access</div>
+          <div class="row-type">Cloud Access</div>
+          <span class="badge pending">Pending</span>
+          <div class="row-meta">2h ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status pending"></div>
+          <div class="row-title">Datadog Dashboard — Engineering</div>
+          <div class="row-type">Observability</div>
+          <span class="badge pending">Pending</span>
+          <div class="row-meta">6h ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status approved"></div>
+          <div class="row-title">Linear Engineering Invite</div>
+          <div class="row-type">Collaboration</div>
+          <span class="badge approved">Approved</span>
+          <div class="row-meta">1d ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status fulfilled"></div>
+          <div class="row-title">Slack Guest Provisioning</div>
+          <div class="row-type">Collaboration</div>
+          <span class="badge fulfilled">Fulfilled</span>
+          <div class="row-meta">3d ago</div>
+        </div>
+        <div class="table-row">
+          <div class="row-status denied"></div>
+          <div class="row-title">GCP BigQuery Write Role</div>
+          <div class="row-type">Cloud Access</div>
+          <span class="badge denied">Denied</span>
+          <div class="row-meta">5d ago</div>
+        </div>
+      </div>
+
+      <!-- Catalog strip -->
+      <div class="section-label">Quick request</div>
+      <div class="catalog-strip">
+        <div class="catalog-tile featured">
+          <div class="icon">☁️</div>
+          <div class="name">Cloud Access</div>
+          <div class="desc">AWS, GCP, Azure roles</div>
+        </div>
+        <div class="catalog-tile">
+          <div class="icon">💬</div>
+          <div class="name">Slack Invite</div>
+          <div class="desc">Channels &amp; workspaces</div>
+        </div>
+        <div class="catalog-tile">
+          <div class="icon">📋</div>
+          <div class="name">Linear Access</div>
+          <div class="desc">Teams &amp; projects</div>
+        </div>
+        <div class="catalog-tile">
+          <div class="icon">🤖</div>
+          <div class="name">AI Tool Access</div>
+          <div class="desc">GPT-4, Claude, Gemini</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+</body>
+</html>

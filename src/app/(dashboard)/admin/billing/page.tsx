@@ -92,7 +92,7 @@ export default async function BillingPage() {
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">{plan.name}</h3>
                   {isCurrent && (
-                    <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700">
+                    <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "color-mix(in srgb, var(--accent) 10%, transparent)", color: "var(--accent)" }}>
                       Current
                     </span>
                   )}

@@ -133,8 +133,8 @@ export function AdminCatalogCopilot() {
               onChange={(e) => setInput(e.target.value)}
               aria-label="Ask catalog copilot"
               placeholder="Ask about the catalog…"
-              className="w-full rounded-lg border px-2 py-1.5 text-sm bg-transparent"
-              style={{ borderColor: "var(--line)" }}
+              className="w-full rounded-lg border px-2 py-1.5 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
             <button
               type="submit"

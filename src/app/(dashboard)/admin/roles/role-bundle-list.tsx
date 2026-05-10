@@ -79,11 +79,11 @@ export function RoleBundleList({
          <form onSubmit={handleCreate} className="p-6 rounded-xl border space-y-4 shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
             <div>
               <label className="block text-xs font-semibold uppercase mb-1" style={{ color: "var(--ink-3)" }}>Bundle Name</label>
-              <input name="name" placeholder="e.g. Engineering" required className="w-full rounded-md border p-2 text-sm bg-transparent" style={{ borderColor: "var(--line)" }} />
+              <input name="name" placeholder="e.g. Engineering" required className="w-full rounded-md border p-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }} />
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase mb-1" style={{ color: "var(--ink-3)" }}>Description</label>
-              <input name="description" placeholder="Standard access for all engineers" className="w-full rounded-md border p-2 text-sm bg-transparent" style={{ borderColor: "var(--line)" }} />
+              <input name="description" placeholder="Standard access for all engineers" className="w-full rounded-md border p-2 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }} />
             </div>
             <button type="submit" className="w-full rounded-md py-2 text-sm font-semibold transition-colors" style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}>
               Create Role Bundle

@@ -35,18 +35,18 @@ export function NeedsInfoResubmit({
 
   if (!schema) {
     return (
-      <p className="text-sm text-red-600">
+      <p className="text-sm" style={{ color: "var(--status-denied)" }}>
         Cannot edit — invalid field schema for this type.
       </p>
     );
   }
 
   return (
-    <section className="rounded-xl border border-amber-200 bg-amber-50/80 p-5 dark:border-amber-900 dark:bg-amber-950/30">
-      <h2 className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+    <section className="rounded-xl border p-5" style={{ borderColor: "color-mix(in srgb, var(--status-pending) 30%, transparent)", background: "color-mix(in srgb, var(--status-pending) 8%, transparent)" }}>
+      <h2 className="text-sm font-semibold" style={{ color: "var(--status-pending)" }}>
         More information needed
       </h2>
-      <p className="mt-1 text-sm text-amber-800/90 dark:text-amber-200/80">
+      <p className="mt-1 text-sm" style={{ color: "var(--status-pending)" }}>
         Update the fields below and resubmit for approval.
       </p>
       <form
@@ -84,7 +84,7 @@ export function NeedsInfoResubmit({
           <div key={f.key}>
             <label
               htmlFor={`resubmit-${f.key}`}
-              className="text-xs font-medium text-zinc-700 dark:text-zinc-300"
+              className="text-xs font-medium" style={{ color: "var(--ink-2)" }}
             >
               {f.label}
               {f.required !== false ? " *" : ""}
@@ -98,7 +98,8 @@ export function NeedsInfoResubmit({
                 defaultValue={String(initialPayload[f.key] ?? "")}
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? errorId : undefined}
-                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
               />
             ) : (
               <input
@@ -108,13 +109,14 @@ export function NeedsInfoResubmit({
                 defaultValue={String(initialPayload[f.key] ?? "")}
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? errorId : undefined}
-                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
               />
             )}
           </div>
         ))}
         {error && (
-          <p id={errorId} className="text-sm text-red-600" role="alert">
+          <p id={errorId} className="text-sm" style={{ color: "var(--status-denied)" }} role="alert">
             {error}
           </p>
         )}
@@ -122,7 +124,8 @@ export function NeedsInfoResubmit({
           type="submit"
           disabled={pending}
           aria-busy={pending}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+          style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
         >
           {pending ? "Submitting…" : "Resubmit for approval"}
         </button>
