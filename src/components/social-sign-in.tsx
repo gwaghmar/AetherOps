@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
+import { createClient } from "@/lib/supabase/client";
 
 const providers = [
   {
@@ -37,7 +37,7 @@ const providers = [
     ),
   },
   {
-    id: "microsoft" as const,
+    id: "azure" as const,
     label: "Continue with Microsoft",
     logo: (
       <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden>
@@ -62,9 +62,12 @@ export function SocialSignIn({
           key={p.id}
           type="button"
           onClick={async () => {
-            await authClient.signIn.social({
+            const supabase = createClient();
+            await supabase.auth.signInWithOAuth({
               provider: p.id,
-              callbackURL,
+              options: {
+                redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(callbackURL)}`,
+              },
             });
           }}
           className="flex w-full items-center justify-center gap-2.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"

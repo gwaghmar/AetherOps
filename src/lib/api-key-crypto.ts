@@ -4,16 +4,16 @@ const PREFIX = "gk";
 
 /**
  * Dedicated pepper for API key hashing.
- * Uses API_KEY_PEPPER if set; falls back to BETTER_AUTH_SECRET so existing
+ * Uses API_KEY_PEPPER if set; falls back to SUPABASE_SERVICE_ROLE_KEY so existing
  * hashes remain valid during migration.  In production, set API_KEY_PEPPER
- * to a separate secret so rotating BETTER_AUTH_SECRET doesn't invalidate keys.
+ * to a separate secret so rotating SUPABASE_SERVICE_ROLE_KEY doesn't invalidate keys.
  */
 function pepper() {
   const dedicated = process.env.API_KEY_PEPPER?.trim();
   if (dedicated) return dedicated;
-  const fallback = process.env.BETTER_AUTH_SECRET;
+  const fallback = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (fallback) return fallback;
-  throw new Error("API_KEY_PEPPER (or BETTER_AUTH_SECRET as fallback) is not set");
+  throw new Error("API_KEY_PEPPER (or SUPABASE_SERVICE_ROLE_KEY as fallback) is not set");
 }
 
 export function hashApiKey(plaintext: string) {

@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { useId, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Suspense } from "react";
-import { authClient } from "@/lib/auth-client";
+import { createClient } from "@/lib/supabase/client";
 
 function ResetPasswordForm() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -17,33 +15,15 @@ function ResetPasswordForm() {
   const [done, setDone] = useState(false);
   const errorId = useId();
 
-  if (!token) {
-    return (
-      <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h1 className="text-lg font-semibold tracking-tight text-red-600">
-          Invalid reset link
-        </h1>
-        <p className="mt-2 text-sm text-zinc-500">
-          This link is missing a token. Please request a new reset link.
-        </p>
-        <p className="mt-4 text-center text-sm">
-          <Link href="/forgot-password" className="underline">
-            Request new link
-          </Link>
-        </p>
-      </div>
-    );
-  }
-
   if (done) {
     return (
-      <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="w-full max-w-sm rounded-xl border p-8 shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
         <h1 className="text-lg font-semibold tracking-tight">Password updated</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>
           Your password has been reset. You can now sign in with your new password.
         </p>
         <p className="mt-4 text-center text-sm">
-          <Link href="/sign-in" className="underline">
+          <Link href="/sign-in" className="underline" style={{ color: "var(--ink-2)" }}>
             Sign in
           </Link>
         </p>
@@ -52,12 +32,10 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="w-full max-w-sm rounded-xl border p-8 shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
       <h1 className="text-lg font-semibold tracking-tight">Set new password</h1>
-      <p className="mt-1 text-sm text-zinc-500">Enter and confirm your new password.</p>
+      <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>Enter and confirm your new password.</p>
       <form
-        method="post"
-        action="#"
         className="mt-6 space-y-4"
         aria-describedby={error ? errorId : undefined}
         onSubmit={async (e) => {
@@ -72,13 +50,11 @@ function ResetPasswordForm() {
             return;
           }
           setLoading(true);
-          const res = await authClient.resetPassword({
-            newPassword: password,
-            token,
-          });
+          const supabase = createClient();
+          const { error: err } = await supabase.auth.updateUser({ password });
           setLoading(false);
-          if (res.error) {
-            setError(res.error.message ?? "Reset failed. Link may have expired.");
+          if (err) {
+            setError(err.message ?? "Reset failed. Link may have expired.");
             return;
           }
           setDone(true);
@@ -88,7 +64,8 @@ function ResetPasswordForm() {
         <div>
           <label
             htmlFor="reset-password"
-            className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+            className="text-xs font-medium"
+            style={{ color: "var(--ink-2)" }}
           >
             New password
           </label>
@@ -102,13 +79,15 @@ function ResetPasswordForm() {
             onChange={(e) => setPassword(e.target.value)}
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm bg-transparent"
+            style={{ borderColor: "var(--line)", color: "var(--ink)" }}
           />
         </div>
         <div>
           <label
             htmlFor="reset-confirm"
-            className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+            className="text-xs font-medium"
+            style={{ color: "var(--ink-2)" }}
           >
             Confirm new password
           </label>
@@ -121,15 +100,12 @@ function ResetPasswordForm() {
             onChange={(e) => setConfirm(e.target.value)}
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm bg-transparent"
+            style={{ borderColor: "var(--line)", color: "var(--ink)" }}
           />
         </div>
         {error && (
-          <p
-            id={errorId}
-            className="text-sm text-red-600 dark:text-red-400"
-            role="alert"
-          >
+          <p id={errorId} className="text-sm" role="alert" style={{ color: "var(--status-denied)" }}>
             {error}
           </p>
         )}
@@ -137,7 +113,8 @@ function ResetPasswordForm() {
           type="submit"
           disabled={loading}
           aria-busy={loading}
-          className="w-full rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+          className="w-full rounded-lg py-2 text-sm font-medium disabled:opacity-50"
+          style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
         >
           {loading ? "Updating…" : "Update password"}
         </button>
@@ -148,12 +125,8 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
-      <Suspense
-        fallback={
-          <div className="text-sm text-zinc-500">Loading…</div>
-        }
-      >
+    <div className="flex min-h-screen flex-col items-center justify-center px-4" style={{ background: "var(--canvas)" }}>
+      <Suspense fallback={<div className="text-sm" style={{ color: "var(--ink-2)" }}>Loading…</div>}>
         <ResetPasswordForm />
       </Suspense>
     </div>

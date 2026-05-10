@@ -13,10 +13,9 @@ export function assertProductionEnv(): void {
 
   const base = z.object({
     DATABASE_URL: z.string().min(1),
-    BETTER_AUTH_SECRET: z
-      .string()
-      .min(32, "must be at least 32 characters (use openssl rand -base64 32)"),
-    BETTER_AUTH_URL: z.string().url(),
+    NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
     NEXT_PUBLIC_APP_URL: z.string().url(),
   });
 
@@ -79,50 +78,9 @@ export function assertProductionEnv(): void {
 
   if (!process.env.API_KEY_PEPPER?.trim()) {
     console.warn(
-      "[env] API_KEY_PEPPER is not set. Falling back to BETTER_AUTH_SECRET for API key hashing. " +
-      "Set API_KEY_PEPPER to a dedicated secret so rotating BETTER_AUTH_SECRET does not invalidate API keys.",
+      "[env] API_KEY_PEPPER is not set. Set it to a dedicated secret for API key hashing.",
     );
   }
-}
-
-function addLocalLoopbackAliases(origins: Set<string>): void {
-  if (isProduction()) return;
-  const extras: string[] = [];
-  for (const o of origins) {
-    try {
-      const u = new URL(o);
-      if (u.hostname === "localhost") {
-        u.hostname = "127.0.0.1";
-        extras.push(u.origin);
-      } else if (u.hostname === "127.0.0.1") {
-        u.hostname = "localhost";
-        extras.push(u.origin);
-      }
-    } catch {
-      // ignore invalid URLs
-    }
-  }
-  for (const e of extras) origins.add(e);
-}
-
-/**
- * Trusted origins for Better Auth (CSRF / callbacks). Non-production falls back to localhost.
- */
-export function getTrustedAuthOrigins(): string[] {
-  const set = new Set(
-    [process.env.BETTER_AUTH_URL, process.env.NEXT_PUBLIC_APP_URL].filter(
-      (u): u is string => Boolean(u?.trim()),
-    ),
-  );
-  addLocalLoopbackAliases(set);
-  const list = [...set];
-  if (list.length > 0) return list;
-  if (isProduction()) {
-    throw new Error(
-      "BETTER_AUTH_URL and/or NEXT_PUBLIC_APP_URL must be set in production",
-    );
-  }
-  return ["http://localhost:3000"];
 }
 
 /** Public site URL for server-side auth client base URL fallback. */

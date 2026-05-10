@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useId, useState } from "react";
-import { getPublicAppName } from "@/lib/env";
-
-const appName = getPublicAppName();
+import { createClient } from "@/lib/supabase/client";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -15,15 +13,15 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
-        <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex min-h-screen flex-col items-center justify-center px-4" style={{ background: "var(--canvas)" }}>
+        <div className="w-full max-w-sm rounded-xl border p-8 shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
           <h1 className="text-lg font-semibold tracking-tight">Check your email</h1>
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>
             We sent a password reset link to <strong>{email}</strong>. Check
             your inbox and follow the link to set a new password.
           </p>
-          <p className="mt-4 text-center text-sm text-zinc-500">
-            <Link href="/sign-in" className="underline">
+          <p className="mt-4 text-center text-sm">
+            <Link href="/sign-in" className="underline" style={{ color: "var(--ink-2)" }}>
               Back to sign in
             </Link>
           </p>
@@ -33,40 +31,30 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
-      <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4" style={{ background: "var(--canvas)" }}>
+      <div className="w-full max-w-sm rounded-xl border p-8 shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
         <h1 className="text-lg font-semibold tracking-tight">Forgot password</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Enter your {appName} email and we&#39;ll send you a reset link.
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
+          Enter your email and we&apos;ll send you a reset link.
         </p>
         <form
-          method="post"
-          action="#"
           className="mt-6 space-y-4"
           aria-describedby={error ? errorId : undefined}
           onSubmit={async (e) => {
             e.preventDefault();
             setError(null);
             setLoading(true);
-            const res = await fetch("/api/auth/request-password-reset", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, redirectTo: "/reset-password" }),
+            const supabase = createClient();
+            const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+              redirectTo: `${window.location.origin}/reset-password`,
             });
-            const data = await res.json().catch(() => ({}));
             setLoading(false);
-            if (!res.ok) {
-              setError((data as { message?: string }).message ?? "Failed to send reset email");
-              return;
-            }
+            if (err) { setError(err.message); return; }
             setSent(true);
           }}
         >
           <div>
-            <label
-              htmlFor="forgot-email"
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
-            >
+            <label htmlFor="forgot-email" className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
               Email
             </label>
             <input
@@ -76,17 +64,12 @@ export default function ForgotPasswordPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? errorId : undefined}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm bg-transparent"
+              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
             />
           </div>
           {error && (
-            <p
-              id={errorId}
-              className="text-sm text-red-600 dark:text-red-400"
-              role="alert"
-            >
+            <p id={errorId} className="text-sm" role="alert" style={{ color: "var(--status-denied)" }}>
               {error}
             </p>
           )}
@@ -94,13 +77,14 @@ export default function ForgotPasswordPage() {
             type="submit"
             disabled={loading}
             aria-busy={loading}
-            className="w-full rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+            className="w-full rounded-lg py-2 text-sm font-medium disabled:opacity-50"
+            style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
           >
             {loading ? "Sending…" : "Send reset link"}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-zinc-500">
-          <Link href="/sign-in" className="underline">
+        <p className="mt-4 text-center text-sm">
+          <Link href="/sign-in" className="underline" style={{ color: "var(--ink-2)" }}>
             Back to sign in
           </Link>
         </p>

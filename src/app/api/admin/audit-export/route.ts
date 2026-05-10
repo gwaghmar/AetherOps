@@ -1,6 +1,5 @@
-import { auth } from "@/lib/auth";
+import { getSession, type AppRole } from "@/lib/session";
 import { assertAuditExportRangeOrThrow } from "@/lib/audit-export-limit";
-import type { AppRole } from "@/lib/session";
 import { queryAuditExportRows } from "@/server/audit-export";
 
 export const runtime = "nodejs";
@@ -17,18 +16,16 @@ function csvEscape(value: unknown): string {
 }
 
 export async function GET(req: Request) {
-  const session = await auth.api.getSession({
-    headers: req.headers,
-  });
+  const session = await getSession();
   if (!session) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const role = ((session.user as { role?: string }).role ?? "requester") as AppRole;
+  const role = (session.user.role ?? "requester") as AppRole;
   if (role !== "admin") {
     return new Response("Forbidden", { status: 403 });
   }
 
-  const orgId = (session.user as { organizationId?: string | null }).organizationId;
+  const orgId = session.user.organizationId;
   if (!orgId) {
     return new Response("User has no organization", { status: 403 });
   }

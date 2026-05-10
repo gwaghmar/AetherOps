@@ -2,7 +2,8 @@
 
 import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { createClient } from "@/lib/supabase/client";
+import { updateProfileName } from "@/app/actions/profile";
 import { useToast } from "@/components/toast";
 
 export function ProfileForm({
@@ -40,13 +41,14 @@ export function ProfileForm({
           onSubmit={async (e) => {
             e.preventDefault();
             setNameLoading(true);
-            const res = await authClient.updateUser({ name: name.trim() || undefined });
-            setNameLoading(false);
-            if (res.error) {
-              toast(res.error.message ?? "Update failed", "error");
-            } else {
+            try {
+              await updateProfileName(name.trim() || initialName);
               toast("Name updated", "success");
               router.refresh();
+            } catch (err) {
+              toast(err instanceof Error ? err.message : "Update failed", "error");
+            } finally {
+              setNameLoading(false);
             }
           }}
         >
@@ -121,15 +123,12 @@ export function ProfileForm({
               return;
             }
             setPwLoading(true);
-            const res = await authClient.changePassword({
-              currentPassword,
-              newPassword,
-              revokeOtherSessions: false,
-            });
+            const supabase = createClient();
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
             setPwLoading(false);
-            if (res.error) {
-              setPwError(res.error.message ?? "Password change failed");
-              toast(res.error.message ?? "Password change failed", "error");
+            if (error) {
+              setPwError(error.message ?? "Password change failed");
+              toast(error.message ?? "Password change failed", "error");
             } else {
               toast("Password updated", "success");
               setCurrentPassword("");

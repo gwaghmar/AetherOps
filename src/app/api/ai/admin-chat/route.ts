@@ -1,6 +1,5 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { getSession } from "@/lib/session";
 import {
   AiNotConfiguredError,
   getOrgLanguageModel,
@@ -12,13 +11,11 @@ import { recordAuditEvent } from "@/server/audit";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
   if (!session?.user) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const role = ((session.user as { role?: string }).role ?? "requester");
+  const role = session.user.role ?? "requester";
   if (role !== "admin") {
     return new Response("Forbidden", { status: 403 });
   }

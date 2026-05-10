@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { createClient } from "@/lib/supabase/client";
 import { SocialSignIn } from "@/components/social-sign-in";
 import { Logo } from "@/components/logo";
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
@@ -87,9 +87,10 @@ export default function SignInPage() {
               e.preventDefault();
               setError(null);
               setLoading(true);
-              const res = await authClient.signIn.email({ email, password });
+              const supabase = createClient();
+              const { error } = await supabase.auth.signInWithPassword({ email, password });
               setLoading(false);
-              if (res.error) { setError(res.error.message ?? "Sign in failed"); return; }
+              if (error) { setError(error.message ?? "Sign in failed"); return; }
               router.push("/home");
               router.refresh();
             }}

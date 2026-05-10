@@ -22,7 +22,7 @@ function getEncryptionKey(): Buffer {
   }
 
   // Fallback for local development
-  const fallback = process.env.BETTER_AUTH_SECRET || "dev-secret-do-not-use-in-prod";
+  const fallback = process.env.SUPABASE_SERVICE_ROLE_KEY || "dev-secret-do-not-use-in-prod";
   return crypto.createHash("sha256").update(fallback).digest();
 }
 

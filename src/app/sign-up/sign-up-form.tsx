@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { finalizeInviteFromToken } from "@/app/actions/ai-org";
-import { authClient } from "@/lib/auth-client";
+import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/logo";
 
 export function SignUpForm() {
@@ -77,14 +77,18 @@ export function SignUpForm() {
             e.preventDefault();
             setError(null);
             setLoading(true);
-            const res = await authClient.signUp.email({
-              name,
+            const supabase = createClient();
+            const { error: err } = await supabase.auth.signUp({
               email,
               password,
+              options: {
+                data: { full_name: name },
+                emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+              },
             });
             setLoading(false);
-            if (res.error) {
-              setError(res.error.message ?? "Sign up failed");
+            if (err) {
+              setError(err.message ?? "Sign up failed");
               return;
             }
             if (inviteToken) {

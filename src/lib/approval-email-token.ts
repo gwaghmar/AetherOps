@@ -12,7 +12,7 @@ export type EmailApprovalTokenPayload = {
 function signingSecret(): string | null {
   const s =
     process.env.APPROVAL_EMAIL_SECRET?.trim() ||
-    process.env.BETTER_AUTH_SECRET?.trim();
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
   if (!s || s.length < 16) return null;
   return s;
 }

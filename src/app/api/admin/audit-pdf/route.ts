@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { getSession } from "@/lib/session";
 import { assertAuditExportRangeOrThrow } from "@/lib/audit-export-limit";
 import { buildAuditEvidencePdf } from "@/server/audit-pdf";
 import { queryAuditExportRows } from "@/server/audit-export";
@@ -6,18 +6,16 @@ import { queryAuditExportRows } from "@/server/audit-export";
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
-  const session = await auth.api.getSession({
-    headers: req.headers,
-  });
+  const session = await getSession();
   if (!session) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const role = (session.user as { role?: string }).role ?? "requester";
+  const role = session.user.role ?? "requester";
   if (role !== "admin") {
     return new Response("Forbidden", { status: 403 });
   }
 
-  const orgId = (session.user as { organizationId?: string | null }).organizationId;
+  const orgId = session.user.organizationId;
   if (!orgId) {
     return new Response("User has no organization", { status: 403 });
   }
