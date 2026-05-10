@@ -75,7 +75,7 @@ export function Logo({ size = "md", wordmark = true, href = "/home", className }
     <Link
       href={href}
       className="inline-flex items-center"
-      aria-label={!wordmark ? "Aether Ops home" : undefined}
+      aria-label={!wordmark ? "GrantOps home" : undefined}
     >
       {inner}
     </Link>
