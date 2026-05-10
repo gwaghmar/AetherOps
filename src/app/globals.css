@@ -31,25 +31,8 @@
   --yc-orange-dim:   var(--accent-dim);
 }
 
-/* ─── Dark mode tokens ──────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --canvas:          #0A0A0A;
-    --surface:         #111113;
-    --subtle:          #161618;
-    --line:            #232326;
-    --line-dim:        #1C1C1F;
-
-    --ink:             #F5F5F5;
-    --ink-2:           #8B8B8F;
-    --ink-3:           #4A4A4F;
-
-    --accent:          #FF6600;
-    --accent-dim:      rgba(255,102,0,0.15);
-    --accent-hover:    #FF7A20;
-    --shadow-hover:    0 2px 8px rgba(0,0,0,0.15);
-  }
-}
+/* ─── Dark mode tokens — explicit toggle only ───── */
+/* System dark mode intentionally NOT auto-applied; light is the default. */
 
 /* Manual dark toggle support */
 [data-theme="dark"] {
