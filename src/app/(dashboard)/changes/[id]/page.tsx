@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { and, asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
@@ -109,30 +109,37 @@ export default async function ChangeTicketDetailPage({
       <div>
         <Link
           href="/changes"
-          className="text-xs font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+          className="text-xs font-medium hover:opacity-70"
+          style={{ color: "var(--ink-3)" }}
         >
           ← Change releases
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">
           {ticket.title}
         </h1>
-        <p className="mt-1 font-mono text-xs text-zinc-500">{id}</p>
+        <p className="mt-1 font-mono text-xs" style={{ color: "var(--ink-3)" }}>{id}</p>
       </div>
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+      <section
+        className="rounded-lg border p-5"
+        style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+      >
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs dark:bg-zinc-800">
+          <span
+            className="rounded-full px-2 py-0.5 text-xs"
+            style={{ background: "var(--subtle)" }}
+          >
             {STAGE_LABELS[stage]}
           </span>
-          <span className="text-sm text-zinc-500">{templateTitle}</span>
+          <span className="text-sm" style={{ color: "var(--ink-3)" }}>{templateTitle}</span>
         </div>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>
           Requester: {requesterName} ({requesterEmail})
         </p>
         <dl className="mt-4 space-y-2 text-sm">
           {Object.entries(ticket.payload).map(([k, v]) => (
             <div key={k}>
-              <dt className="text-xs uppercase tracking-wide text-zinc-500">
+              <dt className="text-xs uppercase tracking-wide" style={{ color: "var(--ink-3)" }}>
                 {k}
               </dt>
               <dd className="mt-0.5 whitespace-pre-wrap">{String(v)}</dd>
@@ -157,14 +164,18 @@ export default async function ChangeTicketDetailPage({
       />
 
       <section>
-        <h2 className="text-sm font-medium text-zinc-500">Audit trail</h2>
-        <ul className="mt-2 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        <h2 className="text-sm font-medium" style={{ color: "var(--ink-3)" }}>Audit trail</h2>
+        <ul
+          className="mt-2 divide-y rounded-lg border"
+          style={{ borderColor: "var(--line)" }}
+        >
           {events.map((e) => (
-            <li key={e.id} className="px-3 py-2 text-sm">
+            <li key={e.id} className="px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }}>
               <time
                 dateTime={e.createdAt?.toISOString?.() ?? undefined}
                 title={e.createdAt ? new Date(e.createdAt).toLocaleString() : ""}
-                className="text-xs text-zinc-500"
+                className="text-xs"
+                style={{ color: "var(--ink-3)" }}
               >
                 {e.createdAt
                   ? new Date(e.createdAt).toLocaleString(undefined, {
@@ -181,7 +192,8 @@ export default async function ChangeTicketDetailPage({
                 <pre
                   tabIndex={0}
                   aria-label="Event metadata"
-                  className="mt-1 max-h-32 overflow-auto text-xs text-zinc-600 dark:text-zinc-400"
+                  className="mt-1 max-h-32 overflow-auto text-xs"
+                  style={{ color: "var(--ink-2)" }}
                 >
                   {JSON.stringify(e.metadata, null, 2)}
                 </pre>

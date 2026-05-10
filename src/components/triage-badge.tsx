@@ -1,28 +1,25 @@
 import type { TriageRisk } from "@/server/ai/triage";
 
-const variantMap: Record<
-  TriageRisk,
-  { label: string; className: string }
-> = {
+const variantStyle: Record<TriageRisk, { label: string; background: string; color: string }> = {
   low: {
     label: "Low risk",
-    className:
-      "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+    background: "color-mix(in srgb, var(--status-approved) 10%, transparent)",
+    color: "var(--status-approved)",
   },
   medium: {
     label: "Medium risk",
-    className:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+    background: "color-mix(in srgb, var(--status-pending) 10%, transparent)",
+    color: "var(--status-pending)",
   },
   high: {
     label: "High risk",
-    className:
-      "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
+    background: "color-mix(in srgb, var(--status-pending) 15%, transparent)",
+    color: "var(--status-pending)",
   },
   critical: {
     label: "Critical risk",
-    className:
-      "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
+    background: "color-mix(in srgb, var(--status-denied) 10%, transparent)",
+    color: "var(--status-denied)",
   },
 };
 
@@ -33,7 +30,7 @@ export function TriageBadge({
   risk: string;
   reason?: string | null;
 }) {
-  const variant = variantMap[risk as TriageRisk];
+  const variant = variantStyle[risk as TriageRisk];
   if (!variant) return null;
 
   return (
@@ -42,12 +39,13 @@ export function TriageBadge({
       title={reason ?? undefined}
     >
       <span
-        className={`rounded-full px-2 py-0.5 text-xs font-medium ${variant.className}`}
+        className="rounded-full px-2 py-0.5 text-xs font-medium"
+        style={{ background: variant.background, color: variant.color }}
       >
         ✦ {variant.label}
       </span>
       {reason && (
-        <span className="max-w-xs truncate text-xs text-zinc-500 dark:text-zinc-400">
+        <span className="max-w-xs truncate text-xs" style={{ color: "var(--ink-3)" }}>
           {reason}
         </span>
       )}

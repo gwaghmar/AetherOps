@@ -18,24 +18,24 @@ type App = {
 };
 
 export function AppRegistryList({ apps }: { apps: App[] }) {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ingestingId, setIngestingId] = useState<string | null>(null);
 
   async function handleIngest(appId: string, url: string | null) {
     if (!url) {
-      showToast("No setup guide URL provided for this app.", "error");
+      toast("No setup guide URL provided for this app.", "error");
       return;
     }
     setIngestingId(appId);
     try {
       const res = await ingestVendorDocsAction(appId, url);
       if (res.ok) {
-        showToast("Successfully ingested and summarized vendor docs using AI.", "success");
+        toast("Successfully ingested and summarized vendor docs using AI.", "success");
       }
     } catch (err) {
-      showToast("Failed to ingest docs. Ensure the URL is accessible.", "error");
+      toast("Failed to ingest docs. Ensure the URL is accessible.", "error");
     } finally {
       setIngestingId(null);
     }
@@ -57,11 +57,11 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
         setupGuideUrl: fd.get("setupGuideUrl") as string,
       });
       if (res.ok) {
-        showToast("App added to registry", "success");
+        toast("App added to registry", "success");
         setShowForm(false);
       }
     } catch (err) {
-      showToast("Failed to add app", "error");
+      toast("Failed to add app", "error");
     } finally {
       setLoading(false);
     }
@@ -70,39 +70,40 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Registered Applications</h2>
+        <h2 className="text-lg font-medium" style={{ color: "var(--ink)" }}>Registered Applications</h2>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-lg px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:opacity-90"
+          style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
         >
           {showForm ? "Cancel" : "Add Application"}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="grid gap-6 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:grid-cols-2">
+        <form onSubmit={handleSubmit} className="grid gap-6 rounded-xl border p-6 shadow-sm lg:grid-cols-2" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">App Name</label>
-              <input required name="appName" placeholder="e.g. OpenAI Enterprise" className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+              <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>App Name</label>
+              <input required name="appName" placeholder="e.g. OpenAI Enterprise" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Vendor</label>
-              <input required name="vendor" placeholder="e.g. OpenAI" className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+              <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Vendor</label>
+              <input required name="vendor" placeholder="e.g. OpenAI" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Category</label>
-              <input required name="category" placeholder="e.g. AI/Generative" className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+              <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Category</label>
+              <input required name="category" placeholder="e.g. AI/Generative" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Vendor Setup Guide URL</label>
-              <input name="setupGuideUrl" placeholder="https://docs.vendor.com/setup" className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+              <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Vendor Setup Guide URL</label>
+              <input name="setupGuideUrl" placeholder="https://docs.vendor.com/setup" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
             </div>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Connector Type</label>
-              <select name="connectorType" className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
+              <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Connector Type</label>
+              <select name="connectorType" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }}>
                 <option value="manual_ticketing">Manual Ticketing</option>
                 <option value="SCIM">SCIM 2.0</option>
                 <option value="slack">Slack</option>
@@ -112,27 +113,27 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">SSO Support</label>
-                <select name="ssoSupport" className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
+                <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>SSO Support</label>
+                <select name="ssoSupport" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }}>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Telemetry</label>
-                <select name="telemetrySupport" className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
+                <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Telemetry</label>
+                <select name="telemetrySupport" className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }}>
                   <option value="none">None</option>
                   <option value="full_cost">Cost/Usage</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Known Limits & Rules</label>
-              <textarea name="knownLimits" rows={3} placeholder="Optional. You can use the AI ingest feature later to populate this from the Setup Guide URL." className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+              <label className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>Known Limits & Rules</label>
+              <textarea name="knownLimits" rows={3} placeholder="Optional. You can use the AI ingest feature later to populate this from the Setup Guide URL." className="mt-1 block w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--line)" }} />
             </div>
           </div>
           <div className="col-span-1 flex justify-end lg:col-span-2">
-            <button disabled={loading} type="submit" className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900">
+            <button disabled={loading} type="submit" className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50" style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}>
               {loading ? "Saving..." : "Save to Registry"}
             </button>
           </div>
@@ -141,40 +142,40 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {apps.map(app => (
-          <div key={app.id} className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+          <div key={app.id} className="flex flex-col justify-between rounded-xl border p-5 shadow-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
             <div>
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{app.appName}</h3>
-                  <p className="text-xs text-zinc-500">{app.vendor} • {app.category}</p>
+                  <h3 className="font-semibold" style={{ color: "var(--ink)" }}>{app.appName}</h3>
+                  <p className="text-xs" style={{ color: "var(--ink-3)" }}>{app.vendor} • {app.category}</p>
                 </div>
-                <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: "var(--subtle)", color: "var(--ink-2)" }}>
                   {app.connectorType}
                 </span>
               </div>
-              
-              <div className="mt-4 flex flex-wrap gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+
+              <div className="mt-4 flex flex-wrap gap-2 text-xs" style={{ color: "var(--ink-2)" }}>
                 <span className="flex items-center gap-1"><Key className="h-3 w-3" /> SSO: {app.ssoSupport === "true" ? "Yes" : "No"}</span>
                 <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Telemetry: {app.telemetrySupport}</span>
               </div>
 
               {app.knownLimits && (
-                <div className="mt-4 rounded-md bg-zinc-50 p-3 text-xs text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                <div className="mt-4 rounded-md p-3 text-xs" style={{ background: "var(--subtle)", color: "var(--ink-2)" }}>
                   <p className="font-medium mb-1">KB / AI Rules:</p>
                   <p className="line-clamp-3 leading-relaxed">{app.knownLimits}</p>
                 </div>
               )}
             </div>
 
-            <div className="mt-6 flex items-center justify-between border-t border-zinc-100 pt-4 dark:border-zinc-800">
-              <a href={app.setupGuideUrl || "#"} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+            <div className="mt-6 flex items-center justify-between border-t pt-4" style={{ borderColor: "var(--line)" }}>
+              <a href={app.setupGuideUrl || "#"} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs font-medium" style={{ color: "var(--accent)" }}>
                 <Globe className="h-3.5 w-3.5" />
                 Docs
               </a>
               <button
                 onClick={() => handleIngest(app.id, app.setupGuideUrl)}
                 disabled={ingestingId === app.id}
-                className="flex items-center gap-1.5 rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-100 disabled:opacity-50 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50"
+                className="flex items-center gap-1.5 rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-100 disabled:opacity-50"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 {ingestingId === app.id ? "Ingesting..." : "AI Ingest Docs"}
@@ -183,8 +184,8 @@ export function AppRegistryList({ apps }: { apps: App[] }) {
           </div>
         ))}
         {apps.length === 0 && !showForm && (
-          <div className="col-span-full rounded-xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-800">
-            <p className="text-sm text-zinc-500">No applications registered in the Knowledge Base.</p>
+          <div className="col-span-full rounded-xl border border-dashed p-8 text-center" style={{ borderColor: "var(--line)" }}>
+            <p className="text-sm" style={{ color: "var(--ink-3)" }}>No applications registered in the Knowledge Base.</p>
           </div>
         )}
       </div>

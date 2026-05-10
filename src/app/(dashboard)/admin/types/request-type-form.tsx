@@ -55,7 +55,8 @@ export function RequestTypeForm(props: {
 
   return (
     <form
-      className="mt-3 space-y-3 rounded-lg border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-950/50"
+      className="mt-3 space-y-3 rounded-lg border p-3"
+      style={{ borderColor: "var(--line)", background: "var(--subtle)" }}
       aria-describedby={error ? errorId : undefined}
       onSubmit={async (e) => {
         e.preventDefault();
@@ -104,7 +105,8 @@ export function RequestTypeForm(props: {
             required
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
-            className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-0.5 w-full rounded border px-2 py-1 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             pattern="[a-z0-9_-]+"
           />
         </div>
@@ -119,7 +121,8 @@ export function RequestTypeForm(props: {
             required
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
-            className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="mt-0.5 w-full rounded border px-2 py-1 text-sm"
+            style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
           />
         </div>
       </div>
@@ -133,7 +136,8 @@ export function RequestTypeForm(props: {
           onChange={(e) => setDescription(e.target.value)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-0.5 w-full rounded border px-2 py-1 text-sm bg-transparent"
+          style={{ borderColor: "var(--line)" }}
         />
       </div>
       <div>
@@ -148,7 +152,8 @@ export function RequestTypeForm(props: {
           onChange={(e) => setFieldSchemaJson(e.target.value)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-0.5 w-full rounded border px-2 py-1 font-mono text-xs"
+          style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
         />
       </div>
       <div>
@@ -163,18 +168,20 @@ export function RequestTypeForm(props: {
           onChange={(e) => setRiskDefaultsJson(e.target.value)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className="mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-0.5 w-full rounded border px-2 py-1 font-mono text-xs"
+          style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
         />
       </div>
       <div>
-        <label htmlFor={idConn} className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <label htmlFor={idConn} className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
           Provisioning Connector
         </label>
         <select
           id={idConn}
           value={connectorId}
           onChange={(e) => setConnectorId(e.target.value)}
-          className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-sm outline-none ring-zinc-500/10 focus:ring-2 dark:border-zinc-800 dark:bg-zinc-950"
+          className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm outline-none"
+          style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
         >
           <option value="">Default (PROVISION_CONNECTOR env)</option>
           <option value="stub">Stub (no-op)</option>
@@ -192,7 +199,7 @@ export function RequestTypeForm(props: {
         </select>
       </div>
       {error && (
-        <p id={errorId} className="text-sm text-red-600" role="alert">
+        <p id={errorId} className="text-sm" style={{ color: "var(--status-denied)" }} role="alert">
           {error}
         </p>
       )}
@@ -200,7 +207,8 @@ export function RequestTypeForm(props: {
         type="submit"
         disabled={pending}
         aria-busy={pending}
-        className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+        className="rounded-md px-3 py-1.5 text-sm font-medium disabled:opacity-50"
+        style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
       >
         {pending ? "Saving…" : props.mode === "create" ? "Create type" : "Save"}
       </button>

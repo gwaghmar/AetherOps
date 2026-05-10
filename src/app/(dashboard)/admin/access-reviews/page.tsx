@@ -19,14 +19,14 @@ export default async function AccessReviewsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between border-b border-zinc-200 pb-4 dark:border-zinc-800">
+      <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: "var(--line)" }}>
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-blue-50 p-2 dark:bg-blue-900/20">
-            <ClipboardCheck className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          <div className="rounded-lg p-2" style={{ background: "color-mix(in srgb, var(--accent) 8%, transparent)" }}>
+            <ClipboardCheck className="h-6 w-6" style={{ color: "var(--accent)" }} />
           </div>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Access Reviews</h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm" style={{ color: "var(--ink-3)" }}>
               Manage quarterly campaigns to re-certify user access.
             </p>
           </div>
@@ -36,10 +36,10 @@ export default async function AccessReviewsPage() {
 
       <div className="grid gap-4">
         {campaigns.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-zinc-300 p-12 text-center dark:border-zinc-800">
-            <ClipboardCheck className="mx-auto h-8 w-8 text-zinc-400" />
+          <div className="rounded-xl border border-dashed p-12 text-center" style={{ borderColor: "var(--line)" }}>
+            <ClipboardCheck className="mx-auto h-8 w-8" style={{ color: "var(--ink-3)" }} />
             <h3 className="mt-4 text-sm font-medium">No campaigns found</h3>
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="mt-1 text-sm" style={{ color: "var(--ink-3)" }}>
               Start your first access review campaign to certify tenant permissions.
             </p>
           </div>
@@ -53,20 +53,23 @@ export default async function AccessReviewsPage() {
             return (
               <div
                 key={campaign.id}
-                className="flex flex-col justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-zinc-300 sm:flex-row sm:items-center dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+                className="flex flex-col justify-between gap-4 rounded-lg border p-6 shadow-sm transition-all sm:flex-row sm:items-center"
+                style={{ borderColor: "var(--line)", background: "var(--surface)" }}
               >
                 <div>
                   <div className="flex items-center gap-3">
                     <h3 className="text-lg font-semibold">{campaign.title}</h3>
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
-                      isCompleted 
-                        ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20"
-                        : "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20"
-                    }`}>
+                    <span
+                      className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                      style={isCompleted
+                        ? { background: "color-mix(in srgb, var(--status-approved) 10%, transparent)", color: "var(--status-approved)" }
+                        : { background: "color-mix(in srgb, var(--accent) 10%, transparent)", color: "var(--accent)" }
+                      }
+                    >
                       {isCompleted ? "Completed" : "Active"}
                     </span>
                   </div>
-                  <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+                  <div className="mt-2 flex items-center gap-4 text-sm" style={{ color: "var(--ink-3)" }}>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-4 w-4" />
                       Due {new Date(campaign.dueDate).toLocaleDateString()}
@@ -75,17 +78,18 @@ export default async function AccessReviewsPage() {
                       {completedItems} of {totalItems} reviewed
                     </div>
                   </div>
-                  <div className="mt-3 w-full overflow-hidden rounded-full bg-zinc-100 sm:w-64 dark:bg-zinc-800">
+                  <div className="mt-3 w-full overflow-hidden rounded-full sm:w-64" style={{ background: "var(--subtle)" }}>
                     <div 
-                      className={`h-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : 'bg-blue-500'}`}
-                      style={{ width: `${progress}%` }}
+                      className="h-1.5 rounded-full"
+                      style={{ width: `${progress}%`, background: isCompleted ? "var(--status-approved)" : "var(--accent)" }}
                     />
                   </div>
                 </div>
                 <div>
                   <Link
                     href={`/approvals`}
-                    className="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                    className="inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
                   >
                     View Pending Approvals
                   </Link>

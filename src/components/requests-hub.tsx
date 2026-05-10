@@ -59,31 +59,32 @@ function Timeline({
         {steps.map((s, i) => (
           <div key={s.key} className="flex flex-1 items-center gap-1">
             <div
-              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold transition-all duration-500 ease-out ${
-                s.active
-                  ? "border-cyan-500/60 bg-cyan-500/10 text-cyan-700 shadow-[0_0_12px_-2px_rgba(6,182,212,0.5)] dark:border-cyan-400/50 dark:bg-cyan-950/40 dark:text-cyan-200"
-                  : s.done
-                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"
-                    : "border-zinc-200 bg-zinc-50 text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
-              }`}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold transition-all duration-500 ease-out"
+              style={s.active
+                ? { borderColor: "color-mix(in srgb, var(--accent) 60%, transparent)", background: "color-mix(in srgb, var(--accent) 10%, transparent)", color: "var(--accent)" }
+                : s.done
+                  ? { borderColor: "color-mix(in srgb, var(--status-approved) 40%, transparent)", background: "color-mix(in srgb, var(--status-approved) 10%, transparent)", color: "var(--status-approved)" }
+                  : { borderColor: "var(--line)", background: "var(--subtle)", color: "var(--ink-3)" }
+              }
             >
               {i + 1}
             </div>
             {i < steps.length - 1 ? (
               <div
-                className={`h-px min-w-[12px] flex-1 rounded transition-colors duration-500 ${
-                  s.done && steps[i + 1]?.done
-                    ? "bg-emerald-400/50"
+                className="h-px min-w-[12px] flex-1 rounded transition-colors duration-500"
+                style={{
+                  background: s.done && steps[i + 1]?.done
+                    ? "color-mix(in srgb, var(--status-approved) 50%, transparent)"
                     : s.active
-                      ? "bg-gradient-to-r from-cyan-500/40 to-zinc-200 dark:to-zinc-700"
-                      : "bg-zinc-200 dark:bg-zinc-700"
-                }`}
+                      ? "linear-gradient(to right, color-mix(in srgb, var(--accent) 40%, transparent), var(--subtle))"
+                      : "var(--subtle)"
+                }}
               />
             ) : null}
           </div>
         ))}
       </div>
-      <div className="mt-1.5 grid grid-cols-3 gap-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+      <div className="mt-1.5 grid grid-cols-3 gap-1 text-[10px]" style={{ color: "var(--ink-3)" }}>
         {steps.map((s) => (
           <span key={s.key} className="truncate text-center">
             {s.label}
@@ -127,9 +128,9 @@ export function RequestsHub({
   return (
     <div className="space-y-8">
       {isAdmin && (
-        <div className="rounded-lg border border-violet-200 bg-violet-50/80 px-4 py-3 text-sm text-violet-900 dark:border-violet-900/60 dark:bg-violet-950/30 dark:text-violet-200">
-          <p className="font-medium">Seeing extra admin links?</p>
-          <p className="mt-1 text-violet-800/90 dark:text-violet-300/90">
+        <div className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: "color-mix(in srgb, var(--accent) 25%, transparent)", background: "color-mix(in srgb, var(--accent) 6%, transparent)", color: "var(--ink-2)" }}>
+          <p className="font-medium" style={{ color: "var(--ink)" }}>Seeing extra admin links?</p>
+          <p className="mt-1">
             That’s normal for an admin. To preview a regular user’s home, sign
             out and sign in with a non-admin account—or use a private window
             with a second test user.
@@ -139,17 +140,17 @@ export function RequestsHub({
 
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Requests</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Start something from the catalog below. Your recent items appear
           under it—use the search field in the header to filter this list.
         </p>
       </div>
 
       <section aria-label="Service catalog">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--ink-3)" }}>
           Start a request
         </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Grouped by category—the same layout as Home.
         </p>
         <div className="mt-4">
@@ -159,17 +160,18 @@ export function RequestsHub({
 
       <section aria-label="Your requests">
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--ink-3)" }}>
             Your requests
           </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Filter with the search box in the header (reference, type, status,
           or approver).
           {listPagination?.cursorActive ? (
             <span className="ml-2">
               <Link
                 href="/requests"
-                className="font-medium text-zinc-900 underline dark:text-zinc-100"
+                className="font-medium underline"
+                style={{ color: "var(--ink)" }}
               >
                 Back to first page
               </Link>
@@ -180,13 +182,13 @@ export function RequestsHub({
 
         <ul className="mt-3 space-y-2.5">
           {filtered.length === 0 ? (
-            <li className="rounded-2xl border border-dashed border-zinc-200 px-4 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800">
+            <li className="rounded-xl border border-dashed px-4 py-8 text-center text-sm" style={{ borderColor: "var(--line)", color: "var(--ink-3)" }}>
               {requests.length === 0 ? (
                 <>
                   No requests yet. Choose a tile above to start one, or{" "}
                   <Link
                     href="/requests/new"
-                    className="font-medium text-zinc-900 underline dark:text-zinc-100"
+                    className="font-medium underline" style={{ color: "var(--ink)" }}
                   >
                     open the full form
                   </Link>
@@ -196,7 +198,7 @@ export function RequestsHub({
                       Admins: empty catalog? Run{" "}
                       <Link
                         href="/onboarding"
-                        className="font-medium text-zinc-900 underline dark:text-zinc-100"
+                        className="font-medium underline" style={{ color: "var(--ink)" }}
                       >
                         onboarding
                       </Link>{" "}
@@ -213,18 +215,21 @@ export function RequestsHub({
               <li key={r.id}>
                 <Link
                   href={`/requests/${r.id}`}
-                  className="block rounded-xl border border-zinc-200 bg-white p-3.5 transition-all duration-300 hover:border-zinc-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-600"
+                  className="block rounded-xl border p-3.5 transition-all duration-300"
+                  style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = "var(--shadow-hover)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = "none"; }}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="font-mono text-xs text-zinc-500">
+                      <p className="font-mono text-xs" style={{ color: "var(--ink-3)" }}>
                         {r.id.slice(0, 8)}…
                       </p>
-                      <p className="mt-0.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                      <p className="mt-0.5 text-sm font-medium">
                         {r.typeTitle}
                       </p>
                     </div>
-                    <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+                    <span className="rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ background: "var(--subtle)", color: "var(--ink-2)" }}>
                       {requestStatusLabel(r.status)}
                     </span>
                   </div>
@@ -234,12 +239,11 @@ export function RequestsHub({
                   />
                   {r.status === "fulfilled" && r.expiresAt && (
                     <div className="mt-3 flex items-center gap-2 text-[10px]">
-                      <div className={`h-1.5 w-1.5 rounded-full ${
-                        new Date(r.expiresAt).getTime() - now < 24 * 60 * 60 * 1000
-                          ? "bg-amber-500 animate-pulse"
-                          : "bg-emerald-500"
-                      }`} />
-                      <span className="text-zinc-500">
+                      <div
+                        className={`h-1.5 w-1.5 rounded-full ${new Date(r.expiresAt).getTime() - now < 24 * 60 * 60 * 1000 ? "animate-pulse" : ""}`}
+                        style={{ background: new Date(r.expiresAt).getTime() - now < 24 * 60 * 60 * 1000 ? "var(--status-pending)" : "var(--status-approved)" }}
+                      />
+                      <span style={{ color: "var(--ink-3)" }}>
                         Expires: {new Date(r.expiresAt).toLocaleDateString()}
                       </span>
                     </div>
@@ -253,7 +257,10 @@ export function RequestsHub({
           <div className="mt-3 flex justify-center">
             <Link
               href={`/requests?before=${encodeURIComponent(listPagination.nextBeforeIso)}`}
-              className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
+              style={{ borderColor: "var(--line)", color: "var(--ink-2)" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "var(--subtle)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
             >
               Load older requests
             </Link>

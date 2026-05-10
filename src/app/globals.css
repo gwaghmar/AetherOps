@@ -1,42 +1,135 @@
+/* src/app/globals.css */
 @import "tailwindcss";
 
+/* ─── Light mode tokens ─────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --canvas:          #F6F6EF; /* YC cream — outermost page bg */
+  --surface:         #FFFFFF; /* cards, panels, nav */
+  --subtle:          #FAFAFA; /* main content area */
+  --line:            #E8E8E6; /* hairline borders */
+  --line-dim:        #F0F0EE; /* table row dividers */
+
+  --ink:             #0F0F0F; /* primary text */
+  --ink-2:           #6B6B6B; /* secondary text */
+  --ink-3:           #AAAAAA; /* muted / placeholder */
+
+  --accent:          #FF6600; /* YC orange — single brand accent */
+  --accent-dim:      rgba(255,102,0,0.12);
+  --accent-hover:    #E85C00;
+  --ink-on-accent:   #FFFFFF; /* text on accent-colored backgrounds */
+
+  --status-pending:  #FF6600;
+  --status-approved: #3D9970;
+  --status-denied:   #E55353;
+
+  --shadow-hover:    0 2px 8px rgba(0,0,0,0.05);
+
+  /* legacy aliases kept so old code doesn't hard-crash before sweep */
+  --background:      var(--canvas);
+  --foreground:      var(--ink);
+  --yc-orange:       var(--accent);
+  --yc-orange-dim:   var(--accent-dim);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* ─── Dark mode tokens ──────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --canvas:          #0A0A0A;
+    --surface:         #111113;
+    --subtle:          #161618;
+    --line:            #232326;
+    --line-dim:        #1C1C1F;
+
+    --ink:             #F5F5F5;
+    --ink-2:           #8B8B8F;
+    --ink-3:           #4A4A4F;
+
+    --accent:          #FF6600;
+    --accent-dim:      rgba(255,102,0,0.15);
+    --accent-hover:    #FF7A20;
+    --shadow-hover:    0 2px 8px rgba(0,0,0,0.15);
   }
 }
 
+/* Manual dark toggle support */
+[data-theme="dark"] {
+  --canvas:          #0A0A0A;
+  --surface:         #111113;
+  --subtle:          #161618;
+  --line:            #232326;
+  --line-dim:        #1C1C1F;
+  --ink:             #F5F5F5;
+  --ink-2:           #8B8B8F;
+  --ink-3:           #4A4A4F;
+  --accent:          #FF6600;
+  --accent-dim:      rgba(255,102,0,0.15);
+  --accent-hover:    #FF7A20;
+  --shadow-hover:    0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* ─── Tailwind 4 token registration ────────────── */
+@theme inline {
+  --color-canvas:          var(--canvas);
+  --color-surface:         var(--surface);
+  --color-subtle:          var(--subtle);
+  --color-line:            var(--line);
+  --color-line-dim:        var(--line-dim);
+  --color-ink:             var(--ink);
+  --color-ink-2:           var(--ink-2);
+  --color-ink-3:           var(--ink-3);
+  --color-accent:          var(--accent);
+  --color-accent-dim:      var(--accent-dim);
+  --color-accent-hover:    var(--accent-hover);
+  --color-status-pending:  var(--status-pending);
+  --color-status-approved: var(--status-approved);
+  --color-status-denied:   var(--status-denied);
+
+  /* legacy — keeps existing bg-background, text-foreground working */
+  --color-background:      var(--canvas);
+  --color-foreground:      var(--ink);
+  --color-yc-orange:       var(--accent);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+/* ─── Base styles ───────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
 }
 
-/* Shared interaction affordances keep forms and actions consistent. */
-:where(input, textarea, select, button, a) {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, outline, box-shadow;
+/* ─── Interaction transitions ───────────────────── */
+input, textarea, select, button, a {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  transition-duration: 150ms;
+  transition-duration: 120ms;
 }
 
-:where(input, textarea, select, button, a):focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgba(99, 102, 241, 0.6); /* Indigo ring like Linear */
+/* ─── Focus ring ────────────────────────────────── */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent-dim) !important;
 }
 
-:where(input, textarea, select, button):disabled {
+input:disabled, textarea:disabled, select:disabled, button:disabled {
   cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ─── Magic UI: shimmer border animation ─────────── */
+@keyframes shimmer-border {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ─── Dot-grid background (home page) ────────────── */
+.dot-grid {
+  background-color: var(--canvas);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 18%, transparent) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

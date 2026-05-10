@@ -29,6 +29,10 @@ export async function createRequestCore(input: {
   isEmergencyOverride?: boolean;
   overrideReason?: string;
 }) {
+  if (input.expiresAt && input.expiresAt <= new Date()) {
+    throw new Error("expiresAt must be in the future");
+  }
+
   await evaluatePolicyOrThrow({
     organizationId: input.organizationId,
     requestTypeSlug: input.typeSlug,

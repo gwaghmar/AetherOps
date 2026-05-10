@@ -60,11 +60,11 @@ export async function ApproverRecommendation({
   const configuredApproverId = rule?.approverId ?? null;
 
   return (
-    <section className="rounded-xl border border-violet-200/60 bg-violet-50/40 p-4 text-sm dark:border-violet-900/40 dark:bg-violet-950/20">
-      <h2 className="text-xs font-semibold text-violet-800 dark:text-violet-300">
+    <section className="rounded-lg border p-4 text-sm" style={{ borderColor: "color-mix(in srgb, var(--accent) 25%, transparent)", background: "color-mix(in srgb, var(--accent) 6%, transparent)" }}>
+      <h2 className="text-xs font-semibold" style={{ color: "var(--accent)" }}>
         ✦ AI approver insight
       </h2>
-      <p className="mt-1 text-xs text-violet-700/80 dark:text-violet-400/80">
+      <p className="mt-1 text-xs" style={{ color: "var(--ink-2)" }}>
         Based on approval history for this request type:
       </p>
       <ul className="mt-3 space-y-1.5">
@@ -73,15 +73,15 @@ export async function ApproverRecommendation({
             key={r.approverId}
             className="flex items-center justify-between gap-2"
           >
-            <span className="font-medium text-zinc-800 dark:text-zinc-200">
+            <span className="font-medium">
               {r.approverName ?? r.approverEmail ?? r.approverId?.slice(0, 8)}
               {r.approverId === configuredApproverId && (
-                <span className="ml-1.5 rounded bg-violet-100 px-1 py-0.5 text-xs text-violet-700 dark:bg-violet-900/60 dark:text-violet-300">
+                <span className="ml-1.5 rounded px-1 py-0.5 text-xs" style={{ background: "color-mix(in srgb, var(--accent) 12%, transparent)", color: "var(--accent)" }}>
                   configured
                 </span>
               )}
             </span>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs" style={{ color: "var(--ink-3)" }}>
               {r.approved} approval{Number(r.approved) !== 1 ? "s" : ""}
             </span>
           </li>

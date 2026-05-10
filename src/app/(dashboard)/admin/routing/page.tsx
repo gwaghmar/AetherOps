@@ -18,7 +18,7 @@ export default async function AdminRoutingPage() {
 
   const orgId = session.user.organizationId;
   if (!orgId) {
-    return <p className="text-red-600">No organization.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
   }
 
   const types = await db
@@ -74,7 +74,7 @@ export default async function AdminRoutingPage() {
         <h1 className="text-2xl font-semibold tracking-tight">
           Approval routing
         </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Map catalog types (or the whole org) to approvers. Lower sort order
           comes first in the pool.
         </p>

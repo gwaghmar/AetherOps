@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { generateText } from "ai";
-import { resolveAiModel } from "@/server/ai/client";
+import { getOrgLanguageModel } from "@/server/ai/client";
 
 export async function createAppAction(input: {
   appName: string;
@@ -59,7 +59,7 @@ export async function ingestVendorDocsAction(appId: string, url: string) {
     throw new Error("Failed to fetch the provided URL.");
   }
 
-  const model = await resolveAiModel(organizationId);
+  const { model } = await getOrgLanguageModel(organizationId);
   
   const { text } = await generateText({
     model,

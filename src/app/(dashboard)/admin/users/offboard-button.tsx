@@ -6,7 +6,7 @@ import { useToast } from "@/components/toast";
 import { UserMinus } from "lucide-react";
 
 export function OffboardButton({ userId, userName }: { userId: string, userName: string | null }) {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   async function handleOffboard() {
@@ -17,10 +17,10 @@ export function OffboardButton({ userId, userName }: { userId: string, userName:
     try {
       const res = await offboardUserAction(userId);
       if (res.ok) {
-        showToast(`Successfully offboarded ${userName || "user"}.`, "success");
+        toast(`Successfully offboarded ${userName || "user"}.`, "success");
       }
     } catch (err) {
-      showToast("Failed to offboard user.", "error");
+      toast("Failed to offboard user.", "error");
     } finally {
       setLoading(false);
     }
@@ -30,7 +30,12 @@ export function OffboardButton({ userId, userName }: { userId: string, userName:
     <button
       onClick={handleOffboard}
       disabled={loading}
-      className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100 disabled:opacity-50 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+      className="flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-50"
+      style={{
+        borderColor: "color-mix(in srgb, var(--status-denied) 25%, transparent)",
+        background: "color-mix(in srgb, var(--status-denied) 8%, transparent)",
+        color: "var(--status-denied)",
+      }}
     >
       <UserMinus className="h-3.5 w-3.5" />
       {loading ? "Offboarding..." : "Offboard"}

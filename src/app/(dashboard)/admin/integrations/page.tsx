@@ -8,10 +8,10 @@ export default async function AdminIntegrationsPage() {
   const session = await requireSession();
   const role = session.user.role;
   if (role !== "admin") {
-    return <p className="text-red-600">Admin only.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>Admin only.</p>;
   }
   const orgId = session.user.organizationId;
-  if (!orgId) return <p className="text-red-600">No organization.</p>;
+  if (!orgId) return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
 
   const [org] = await db
     .select({ webhookUrl: organization.webhookUrl, slackTeamId: organization.slackTeamId })
@@ -23,19 +23,19 @@ export default async function AdminIntegrationsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Integrations</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Outbound webhooks for approvals and provisioning events. Payloads are
           POSTed as JSON; when a signing secret is set, we add header{" "}
-          <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">
+          <code className="rounded px-1 text-xs" style={{ background: "var(--subtle)" }}>
             X-Governance-Signature
           </code>{" "}
           with HMAC-SHA256 of the raw body.
         </p>
       </div>
 
-      <div className="rounded-lg border border-teal-200 bg-teal-50/90 px-4 py-3 text-sm text-teal-950 dark:border-teal-900/60 dark:bg-teal-950/35 dark:text-teal-100">
-        <p className="font-medium">In plain English</p>
-        <p className="mt-1 text-teal-900/90 dark:text-teal-200/90">
+      <div className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: "color-mix(in srgb, var(--accent) 25%, transparent)", background: "color-mix(in srgb, var(--accent) 6%, transparent)", color: "var(--ink-2)" }}>
+        <p className="font-medium" style={{ color: "var(--ink)" }}>In plain English</p>
+        <p className="mt-1">
           This page configures <strong>outbound notifications</strong>: when
           something important happens here (for example, an approval or a
           provisioning step), we can POST a JSON payload to your URL so Slack,

@@ -16,6 +16,21 @@ import type { CatalogProposal } from "@/server/ai/catalog-proposal-schema";
 
 type TemplateOpt = { id: string; label: string };
 
+const sectionStyle = {
+  borderColor: "var(--line)",
+  background: "var(--surface)",
+};
+
+const inputStyle = {
+  borderColor: "var(--line)",
+  background: "transparent",
+};
+
+const primaryBtnStyle = {
+  background: "var(--accent)",
+  color: "var(--ink-on-accent)",
+};
+
 export function OnboardingWizard({
   orgName,
   aiConfigured,
@@ -57,7 +72,7 @@ export function OnboardingWizard({
         <h1 className="text-2xl font-semibold tracking-tight">
           Organization setup
         </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           AI-assisted onboarding. Nothing is applied until you confirm each
           step.{" "}
           <Link href="/admin/ai" className="underline">
@@ -68,23 +83,24 @@ export function OnboardingWizard({
       </div>
 
       {step === 0 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Welcome</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>
             We will set your organization display name, seed the service catalog
             (template or AI), point you at routing and integrations, and help
             you invite teammates.
           </p>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>
             AI status:{" "}
-            <span className={aiConfigured ? "text-teal-700 dark:text-teal-300" : "text-amber-700 dark:text-amber-300"}>
+            <span style={{ color: aiConfigured ? "var(--status-approved)" : "var(--status-pending)" }}>
               {aiConfigured ? "Ready (BYOK or platform fallback)" : "Not configured — use templates or /admin/ai"}
             </span>
           </p>
           <button
             type="button"
             onClick={next}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium"
+            style={primaryBtnStyle}
           >
             Start
           </button>
@@ -92,12 +108,13 @@ export function OnboardingWizard({
       )}
 
       {step === 1 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Organization name</h2>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="w-full rounded-lg border px-3 py-2 text-sm"
+            style={inputStyle}
           />
           <div className="flex gap-2">
             <button
@@ -117,7 +134,8 @@ export function OnboardingWizard({
                   }
                 });
               }}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={primaryBtnStyle}
             >
               {pending ? "Saving…" : "Save & continue"}
             </button>
@@ -125,15 +143,15 @@ export function OnboardingWizard({
               Skip
             </button>
           </div>
-          {msg && <p className="text-sm text-red-600">{msg}</p>}
+          {msg && <p className="text-sm" style={{ color: "var(--status-denied)" }}>{msg}</p>}
         </section>
       )}
 
       {step === 2 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Service catalog</h2>
           {existingTypeCount > 0 ? (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="text-sm" style={{ color: "var(--ink-2)" }}>
               You already have {existingTypeCount} request type(s). You can skip
               or add more (duplicates by slug will fail).
             </p>
@@ -164,7 +182,8 @@ export function OnboardingWizard({
             <select
               value={templateId}
               onChange={(e) => setTemplateId(e.target.value)}
-              className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+              style={inputStyle}
             >
               {templateOptions.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -179,14 +198,16 @@ export function OnboardingWizard({
                 placeholder="Industry (e.g. fintech, healthcare)"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                style={inputStyle}
               />
               <textarea
                 placeholder="Optional notes for the model"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                style={inputStyle}
               />
             </div>
           )}
@@ -216,7 +237,8 @@ export function OnboardingWizard({
                   }
                 });
               }}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={primaryBtnStyle}
             >
               {pending ? "Working…" : "Build preview"}
             </button>
@@ -226,27 +248,29 @@ export function OnboardingWizard({
                 void mergeOnboardingSteps({ catalog: true });
                 setStep(4);
               }}
-              className="rounded-lg border border-zinc-200 px-4 py-2 text-sm dark:border-zinc-700"
+              className="rounded-lg border px-4 py-2 text-sm"
+              style={{ borderColor: "var(--line)" }}
             >
               Skip catalog (use Admin → Catalog later)
             </button>
           </div>
-          {msg && <p className="text-sm text-red-600">{msg}</p>}
+          {msg && <p className="text-sm" style={{ color: "var(--status-denied)" }}>{msg}</p>}
         </section>
       )}
 
       {step === 3 && proposal && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Preview catalog</h2>
           <ul className="space-y-2 text-sm">
             {proposal.requestTypes.map((t) => (
               <li
                 key={t.slug}
-                className="rounded-lg border border-zinc-100 px-3 py-2 dark:border-zinc-800"
+                className="rounded-lg border px-3 py-2"
+                style={{ borderColor: "var(--line)" }}
               >
                 <span className="font-medium">{t.title}</span>{" "}
-                <code className="text-xs text-zinc-500">{t.slug}</code>
-                <p className="text-zinc-600 dark:text-zinc-400">
+                <code className="text-xs" style={{ color: "var(--ink-3)" }}>{t.slug}</code>
+                <p style={{ color: "var(--ink-2)" }}>
                   {t.description}
                 </p>
               </li>
@@ -258,7 +282,8 @@ export function OnboardingWizard({
                 placeholder="Refine (e.g. make titles shorter)"
                 value={refinement}
                 onChange={(e) => setRefinement(e.target.value)}
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                style={inputStyle}
               />
               <button
                 type="button"
@@ -281,7 +306,8 @@ export function OnboardingWizard({
                     }
                   });
                 }}
-                className="w-fit rounded-lg border border-zinc-200 px-3 py-1.5 text-sm dark:border-zinc-700"
+                className="w-fit rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
+                style={{ borderColor: "var(--line)" }}
               >
                 Regenerate with refinement
               </button>
@@ -303,7 +329,8 @@ export function OnboardingWizard({
                   }
                 });
               }}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={primaryBtnStyle}
             >
               {pending ? "Applying…" : "Apply to catalog"}
             </button>
@@ -319,13 +346,7 @@ export function OnboardingWizard({
             </button>
           </div>
           {msg && (
-            <p
-              className={
-                msg.startsWith("Catalog")
-                  ? "text-sm text-teal-700"
-                  : "text-sm text-red-600"
-              }
-            >
+            <p style={{ fontSize: "0.875rem", color: msg.startsWith("Catalog") ? "var(--status-approved)" : "var(--status-denied)" }}>
               {msg}
             </p>
           )}
@@ -333,9 +354,9 @@ export function OnboardingWizard({
       )}
 
       {step === 4 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Approval routing</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>
             Map request types to approvers under{" "}
             <Link href="/admin/routing" className="underline">
               Admin → Routing
@@ -348,7 +369,8 @@ export function OnboardingWizard({
               void mergeOnboardingSteps({ routing: true });
               next();
             }}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium"
+            style={primaryBtnStyle}
           >
             Mark routing as done
           </button>
@@ -356,9 +378,9 @@ export function OnboardingWizard({
       )}
 
       {step === 5 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Integrations</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>
             Optional outbound webhooks:{" "}
             <Link href="/admin/integrations" className="underline">
               Admin → Integrations
@@ -371,7 +393,8 @@ export function OnboardingWizard({
               void mergeOnboardingSteps({ integrations: true });
               next();
             }}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium"
+            style={primaryBtnStyle}
           >
             Continue
           </button>
@@ -379,15 +402,15 @@ export function OnboardingWizard({
       )}
 
       {step === 6 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Email</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>
             For approval emails and invites, set{" "}
-            <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">
+            <code className="rounded px-1 text-xs" style={{ background: "var(--subtle)" }}>
               RESEND_API_KEY
             </code>{" "}
             and{" "}
-            <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">
+            <code className="rounded px-1 text-xs" style={{ background: "var(--subtle)" }}>
               EMAIL_FROM
             </code>{" "}
             in your deployment environment. Gmail / Microsoft Graph OAuth can be
@@ -399,7 +422,8 @@ export function OnboardingWizard({
               void mergeOnboardingSteps({ emailDoc: true });
               next();
             }}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium"
+            style={primaryBtnStyle}
           >
             Continue
           </button>
@@ -407,7 +431,7 @@ export function OnboardingWizard({
       )}
 
       {step === 7 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Invite a teammate</h2>
           <div className="space-y-2">
             <input
@@ -415,7 +439,8 @@ export function OnboardingWizard({
               placeholder="colleague@company.com"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
-              className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+              style={inputStyle}
             />
             <select
               value={inviteRole}
@@ -424,7 +449,8 @@ export function OnboardingWizard({
                   e.target.value as "requester" | "approver" | "admin",
                 )
               }
-              className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+              style={inputStyle}
             >
               <option value="requester">Requester</option>
               <option value="approver">Approver</option>
@@ -458,19 +484,20 @@ export function OnboardingWizard({
                 }
               });
             }}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+            style={primaryBtnStyle}
           >
             {pending ? "Creating…" : "Create invite link"}
           </button>
           {inviteUrl && (
-            <div className="rounded-lg bg-zinc-50 p-3 text-xs dark:bg-zinc-950">
+            <div className="rounded-lg p-3 text-xs" style={{ background: "var(--subtle)" }}>
               <p className="font-medium">Share this link</p>
-              <p className="mt-1 break-all text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1 break-all" style={{ color: "var(--ink-2)" }}>
                 {inviteUrl}
               </p>
             </div>
           )}
-          {msg && <p className="text-sm text-red-600">{msg}</p>}
+          {msg && <p className="text-sm" style={{ color: "var(--status-denied)" }}>{msg}</p>}
           <button type="button" onClick={next} className="block text-sm underline">
             Skip
           </button>
@@ -478,9 +505,9 @@ export function OnboardingWizard({
       )}
 
       {step === 8 && (
-        <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="space-y-4 rounded-lg border p-6" style={sectionStyle}>
           <h2 className="font-medium">Finish</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>
             You can reopen this wizard anytime from the home copilot or{" "}
             <Link href="/onboarding?force=1" className="underline">
               /onboarding?force=1
@@ -497,7 +524,8 @@ export function OnboardingWizard({
                 router.refresh();
               });
             }}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+            style={primaryBtnStyle}
           >
             {pending ? "Saving…" : "Go to home"}
           </button>
@@ -508,7 +536,8 @@ export function OnboardingWizard({
         <button
           type="button"
           onClick={() => setStep((s) => Math.max(0, s - 1))}
-          className="text-sm text-zinc-500 underline"
+          className="text-sm underline"
+          style={{ color: "var(--ink-3)" }}
         >
           Back
         </button>

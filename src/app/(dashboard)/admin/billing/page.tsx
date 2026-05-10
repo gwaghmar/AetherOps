@@ -39,21 +39,21 @@ export default async function BillingPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Billing</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-3)" }}>
           Manage your subscription and usage limits.
         </p>
       </div>
 
       {/* Current subscription */}
       {activePlan && status && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-xl border p-5" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
           <h2 className="text-sm font-semibold">Current subscription</h2>
           <div className="mt-3 flex items-center gap-3">
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+            <span className="rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: "color-mix(in srgb, var(--status-approved) 10%, transparent)", color: "var(--status-approved)" }}>
               {status}
             </span>
             <span className="font-medium">{PLANS[activePlan].name}</span>
-            <span className="text-sm text-zinc-500">
+            <span className="text-sm" style={{ color: "var(--ink-3)" }}>
               {PLANS[activePlan].price_display}
             </span>
           </div>
@@ -66,7 +66,8 @@ export default async function BillingPage() {
               <input type="hidden" name="orgId" value={orgId} />
               <button
                 type="submit"
-                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                className="rounded-lg border px-3 py-1.5 text-sm"
+                style={{ borderColor: "var(--line)" }}
               >
                 Manage subscription →
               </button>
@@ -83,16 +84,15 @@ export default async function BillingPage() {
             return (
               <div
                 key={key}
-                className={`rounded-xl border p-5 ${
-                  isCurrent
-                    ? "border-violet-400 bg-violet-50 dark:border-violet-700 dark:bg-violet-950/30"
-                    : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
-                }`}
+                className="rounded-xl border p-5"
+                style={isCurrent
+                  ? { borderColor: "var(--accent)", background: "color-mix(in srgb, var(--accent) 6%, transparent)" }
+                  : { borderColor: "var(--line)", background: "var(--surface)" }}
               >
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">{plan.name}</h3>
                   {isCurrent && (
-                    <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700 dark:bg-violet-900/60 dark:text-violet-300">
+                    <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700">
                       Current
                     </span>
                   )}
@@ -100,10 +100,10 @@ export default async function BillingPage() {
                 <p className="mt-1 text-2xl font-bold tabular-nums">
                   {plan.price_display}
                 </p>
-                <ul className="mt-4 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                <ul className="mt-4 space-y-1.5 text-sm" style={{ color: "var(--ink-2)" }}>
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-1.5">
-                      <span className="text-emerald-500">✓</span> {f}
+                      <span style={{ color: "var(--status-approved)" }}>✓</span> {f}
                     </li>
                   ))}
                 </ul>
@@ -113,7 +113,8 @@ export default async function BillingPage() {
                     <input type="hidden" name="priceId" value={plan.price_id} />
                     <button
                       type="submit"
-                      className="w-full rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                      className="w-full rounded-lg px-3 py-2 text-sm font-medium"
+                      style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
                     >
                       {activePlan ? "Switch to " : "Start "}
                       {plan.name}
@@ -123,7 +124,8 @@ export default async function BillingPage() {
                 {!isCurrent && key === "enterprise" && (
                   <a
                     href="mailto:sales@example.com?subject=Enterprise+inquiry"
-                    className="mt-4 block w-full rounded-lg border border-zinc-200 px-3 py-2 text-center text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                    className="mt-4 block w-full rounded-lg border px-3 py-2 text-center text-sm font-medium"
+                    style={{ borderColor: "var(--line)" }}
                   >
                     Contact sales →
                   </a>
@@ -135,13 +137,13 @@ export default async function BillingPage() {
       </div>
 
       {!stripeReady && (
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm" style={{ color: "var(--ink-3)" }}>
           Billing is not configured. Set{" "}
-          <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
+          <code className="rounded px-1" style={{ background: "var(--subtle)" }}>
             STRIPE_SECRET_KEY
           </code>{" "}
           and{" "}
-          <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
+          <code className="rounded px-1" style={{ background: "var(--subtle)" }}>
             STRIPE_*_PRICE_ID
           </code>{" "}
           environment variables to enable subscriptions.

@@ -10,10 +10,10 @@ export default async function AdminTypesPage() {
   const session = await requireSession();
   const role = session.user.role;
   if (role !== "admin") {
-    return <p className="text-red-600">Admin only.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>Admin only.</p>;
   }
   const orgId = session.user.organizationId;
-  if (!orgId) return <p className="text-red-600">No organization.</p>;
+  if (!orgId) return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
 
   const types = await db
     .select()
@@ -38,14 +38,14 @@ export default async function AdminTypesPage() {
     <div className="space-y-7">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Request catalog</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Create and edit intent templates. Slug must be unique per org; use
           lowercase letters, numbers, underscores, hyphens.
         </p>
       </div>
 
       <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--ink-3)" }}>
           New type
         </h2>
         <RequestTypeForm mode="create" />
@@ -58,14 +58,15 @@ export default async function AdminTypesPage() {
           return (
           <li
             key={t.id}
-            className="rounded-xl border border-zinc-200 bg-white p-3.5 dark:border-zinc-800 dark:bg-zinc-900"
+            className="rounded-lg border p-3.5"
+            style={{ background: "var(--surface)", borderColor: "var(--line)" }}
           >
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <span className="font-medium">{t.title}</span>
-                <span className="ml-2 text-xs text-zinc-500">({t.slug})</span>
+                <span className="ml-2 text-xs" style={{ color: "var(--ink-3)" }}>({t.slug})</span>
                 {archived ? (
-                  <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-950/80 dark:text-amber-200">
+                  <span className="ml-2 rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: "color-mix(in srgb, var(--status-pending) 10%, transparent)", color: "var(--status-pending)" }}>
                     Archived
                   </span>
                 ) : null}
@@ -78,12 +79,12 @@ export default async function AdminTypesPage() {
               />
             </div>
             {t.description && (
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
                 {t.description}
               </p>
             )}
             <details className="mt-2.5">
-              <summary className="cursor-pointer text-sm font-medium text-zinc-600">
+              <summary className="cursor-pointer text-sm font-medium" style={{ color: "var(--ink-2)" }}>
                 Edit
               </summary>
               <RequestTypeForm

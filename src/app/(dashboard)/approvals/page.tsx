@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { and, desc, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
@@ -25,7 +25,7 @@ export default async function ApprovalsPage({
 
   const orgId = session.user.organizationId;
   if (!orgId) {
-    return <p className="text-red-600">No organization.</p>;
+    return <p style={{ color: "var(--status-denied)" }}>No organization.</p>;
   }
 
   const { before } = await searchParams;
@@ -85,7 +85,7 @@ export default async function ApprovalsPage({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Approvals</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
           Summary-first cards; open a request to decide.
           {cursor && (
             <span className="ml-2">
@@ -98,7 +98,10 @@ export default async function ApprovalsPage({
       </div>
       <ul className="space-y-3">
         {pageRows.length === 0 ? (
-          <li className="rounded-xl border border-dashed border-zinc-200 px-4 py-8 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+          <li
+            className="rounded-lg border border-dashed px-4 py-8 text-sm"
+            style={{ borderColor: "var(--line)", color: "var(--ink-2)" }}
+          >
             <p>No pending items.</p>
             {role === "admin" && (
               <p className="mt-2">
@@ -119,19 +122,26 @@ export default async function ApprovalsPage({
             <li key={r.id}>
               <Link
                 href={`/requests/${r.id}`}
-                className="block rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+                className="block rounded-lg border p-4 transition hover:opacity-90"
+                style={{ borderColor: "var(--line)", background: "var(--surface)" }}
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs dark:bg-zinc-800">
+                  <span
+                    className="rounded-full px-2 py-0.5 text-xs"
+                    style={{ background: "var(--subtle)" }}
+                  >
                     {requestStatusLabel(r.status)}
                   </span>
                   <span className="text-sm font-medium">{r.typeTitle}</span>
                 </div>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>
                   Requester: {r.requesterEmail}
                 </p>
-                <div className="mt-2.5 rounded-lg bg-zinc-50 p-2.5 text-sm dark:bg-zinc-950/50">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                <div
+                  className="mt-2.5 rounded-lg p-2.5 text-sm"
+                  style={{ background: "var(--subtle)" }}
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--ink-3)" }}>
                     Summary for approval
                   </p>
                   <ul className="mt-2 space-y-1">
@@ -139,12 +149,12 @@ export default async function ApprovalsPage({
                       r.payload as Record<string, unknown>,
                     ).map(([k, v]) => (
                       <li key={k}>
-                        <span className="text-zinc-500">{k}: </span>
+                        <span style={{ color: "var(--ink-3)" }}>{k}: </span>
                         {String(v)}
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-2 text-xs" style={{ color: "var(--ink-3)" }}>
                     Policy verdicts are evaluated on the request detail flow when a
                     policy engine is configured.
                   </p>
@@ -158,7 +168,8 @@ export default async function ApprovalsPage({
         <div className="flex justify-center pt-2">
           <Link
             href={`/approvals?before=${encodeURIComponent(nextCursor)}`}
-            className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg border px-4 py-2 text-sm font-medium hover:opacity-80"
+            style={{ borderColor: "var(--line)", color: "var(--ink-2)" }}
           >
             Load older items
           </Link>

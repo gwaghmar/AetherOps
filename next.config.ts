@@ -23,7 +23,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       // Resend tracking pixel (optional), allow same-origin images and data URIs
       "img-src 'self' data: blob:",
-      // Fonts served self-hosted (Geist via next/font)
+      // Fonts loaded via next/font/google (Geist + Geist Mono) — self-hosted at build time, no external font-src needed
       "font-src 'self'",
       // AI API calls go through our own API routes (server-side), no browser fetch to 3rd parties
       "connect-src 'self'",
@@ -59,6 +59,6 @@ export default withSentryConfig(nextConfig, {
   project: process.env.SENTRY_PROJECT,
   silent: !process.env.CI,
   widenClientFileUpload: true,
-  hideSourceMaps: true,
-  disableLogger: true,
+  sourcemaps: { disable: true },
+  webpack: { treeshake: { removeDebugLogging: true } },
 });

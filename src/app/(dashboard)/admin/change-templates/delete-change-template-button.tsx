@@ -37,7 +37,8 @@ export function DeleteChangeTemplateButton({
           setPending(false);
         }
       }}
-      className="text-xs text-red-600 underline disabled:opacity-50"
+      className="text-xs underline disabled:opacity-50"
+      style={{ color: "var(--status-denied)" }}
     >
       Delete
     </button>

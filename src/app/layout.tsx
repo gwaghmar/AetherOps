@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Aether Ops | Autonomous AI Operations Platform",
-  description: "The category-defining operations layer for AI-native companies. Automate intake, safety checks, and fulfillment with a rigorous audit trail.",
+  description:
+    "The category-defining operations layer for AI-native companies. Automate intake, safety checks, and fulfillment with a rigorous audit trail.",
   keywords: ["AISM", "AI Operations", "Autonomous Operations", "AI Governance", "Agentic Workflows"],
   authors: [{ name: "Aether Ops Team" }],
   openGraph: {
@@ -29,15 +30,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );
 }

@@ -53,7 +53,8 @@ export function AdminCatalogCopilot() {
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls={dialogId}
-        className="fixed bottom-4 right-4 z-20 rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-950 shadow-md dark:border-violet-900/60 dark:bg-violet-950/50 dark:text-violet-100"
+        className="fixed bottom-4 right-4 z-20 rounded-full border px-4 py-2 text-sm font-medium shadow-md"
+        style={{ borderColor: "var(--line)", background: "var(--subtle)" }}
       >
         Catalog help
       </button>
@@ -63,9 +64,13 @@ export function AdminCatalogCopilot() {
           role="dialog"
           aria-modal="true"
           aria-labelledby={dialogTitleId}
-          className="fixed bottom-4 right-4 z-30 flex h-[min(28rem,calc(100vh-5rem))] w-[min(22rem,calc(100vw-2rem))] flex-col rounded-xl border border-violet-200 bg-white shadow-xl dark:border-violet-900/50 dark:bg-zinc-900"
+          className="fixed bottom-4 right-4 z-30 flex h-[min(28rem,calc(100vh-5rem))] w-[min(22rem,calc(100vw-2rem))] flex-col rounded-xl border shadow-xl"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         >
-          <div className="flex items-center justify-between border-b border-zinc-200 px-3 py-2 dark:border-zinc-800">
+          <div
+            className="flex items-center justify-between border-b px-3 py-2"
+            style={{ borderColor: "var(--line)" }}
+          >
             <span id={dialogTitleId} className="text-sm font-medium">
               Catalog copilot
             </span>
@@ -73,12 +78,16 @@ export function AdminCatalogCopilot() {
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close catalog copilot panel"
-              className="text-xs text-zinc-500"
+              className="text-xs"
+              style={{ color: "var(--ink-3)" }}
             >
               Close
             </button>
           </div>
-          <p className="border-b border-zinc-100 px-3 py-2 text-xs text-zinc-500 dark:border-zinc-800">
+          <p
+            className="border-b px-3 py-2 text-xs"
+            style={{ borderColor: "var(--line)", color: "var(--ink-3)" }}
+          >
             Ask about slugs, fields, risk defaults, or how to structure a new
             intent. Changes still go through the forms below.
           </p>
@@ -90,23 +99,24 @@ export function AdminCatalogCopilot() {
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={
+                className={m.role === "user" ? "ml-4 rounded-lg px-2 py-1" : "mr-4 rounded-lg border px-2 py-1"}
+                style={
                   m.role === "user"
-                    ? "ml-4 rounded-lg bg-violet-50 px-2 py-1 dark:bg-violet-950/40"
-                    : "mr-4 rounded-lg border border-zinc-100 px-2 py-1 dark:border-zinc-800"
+                    ? { background: "color-mix(in srgb, var(--accent) 8%, transparent)" }
+                    : { borderColor: "var(--line)" }
                 }
               >
-                <span className="text-[10px] uppercase text-zinc-400">
+                <span className="text-[10px] uppercase" style={{ color: "var(--ink-3)" }}>
                   {m.role}
                 </span>
                 <p className="whitespace-pre-wrap">{messageText(m)}</p>
               </div>
             ))}
             {status === "streaming" && (
-              <p className="text-xs text-zinc-400">Thinking…</p>
+              <p className="text-xs" style={{ color: "var(--ink-3)" }}>Thinking…</p>
             )}
             {error && (
-              <p className="text-xs text-red-600">
+              <p className="text-xs" style={{ color: "var(--status-denied)" }}>
                 {/ai_not_configured|503/i.test(String(error.message))
                   ? "AI not configured — Admin → AI."
                   : error.message}
@@ -115,19 +125,22 @@ export function AdminCatalogCopilot() {
           </div>
           <form
             onSubmit={onSubmit}
-            className="border-t border-zinc-200 p-2 dark:border-zinc-800"
+            className="border-t p-2"
+            style={{ borderColor: "var(--line)" }}
           >
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               aria-label="Ask catalog copilot"
               placeholder="Ask about the catalog…"
-              className="w-full rounded-lg border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="w-full rounded-lg border px-2 py-1.5 text-sm bg-transparent"
+              style={{ borderColor: "var(--line)" }}
             />
             <button
               type="submit"
               disabled={status === "streaming" || status === "submitted"}
-              className="mt-2 w-full rounded-lg bg-violet-700 py-1.5 text-xs font-medium text-white disabled:opacity-50 dark:bg-violet-600"
+              className="mt-2 w-full rounded-lg py-1.5 text-xs font-medium disabled:opacity-50"
+              style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
             >
               {status === "streaming" || status === "submitted"
                 ? "Sending…"

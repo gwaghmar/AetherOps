@@ -4,57 +4,111 @@ import Link from "next/link";
 import type { CatalogTileLike } from "@/lib/catalog-categories";
 import { groupCatalogTiles } from "@/lib/catalog-categories";
 
+function CatalogTile({ tile, featured = false }: { tile: CatalogTileLike; featured?: boolean }) {
+  const initial = tile.title.slice(0, 1).toUpperCase();
+
+  return (
+    <Link
+      href={`/requests/new?typeId=${encodeURIComponent(tile.id)}`}
+      className="group flex flex-col rounded-[7px] p-[11px] border transition-all"
+      style={
+        featured
+          ? {
+              borderColor: "transparent",
+              background: `
+                linear-gradient(var(--surface), var(--surface)) padding-box,
+                linear-gradient(90deg, var(--line) 0%, var(--accent) 50%, var(--line) 100%) border-box
+              `,
+              backgroundSize: "200% auto",
+              animation: "shimmer-border 2.5s linear infinite",
+            }
+          : {
+              background: "var(--surface)",
+              borderColor: "var(--line)",
+            }
+      }
+      onMouseEnter={(e) => {
+        if (!featured) {
+          const el = e.currentTarget as HTMLElement;
+          el.style.borderColor = "#D4D4D0";
+          el.style.boxShadow = "var(--shadow-hover)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!featured) {
+          const el = e.currentTarget as HTMLElement;
+          el.style.borderColor = "var(--line)";
+          el.style.boxShadow = "none";
+        }
+      }}
+    >
+      <span
+        className="flex h-[26px] w-[26px] items-center justify-center rounded-[6px] text-xs font-semibold mb-[6px]"
+        style={{
+          background: featured ? "color-mix(in srgb, var(--accent) 8%, transparent)" : "var(--subtle)",
+          color: featured ? "var(--accent)" : "var(--ink-3)",
+        }}
+      >
+        {initial}
+      </span>
+      <span
+        className="text-[11.5px] font-medium tracking-[-0.02em] mb-[2px]"
+        style={{ color: "var(--ink)" }}
+      >
+        {tile.title}
+      </span>
+      {tile.description ? (
+        <span
+          className="text-[10.5px] line-clamp-2 leading-[1.35]"
+          style={{ color: "var(--ink-3)" }}
+        >
+          {tile.description}
+        </span>
+      ) : (
+        <span className="text-[10.5px]" style={{ color: "var(--ink-3)" }}>
+          Open form
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function CatalogGroupedTiles({ catalog }: { catalog: CatalogTileLike[] }) {
   const groups = groupCatalogTiles(catalog);
 
   if (groups.length === 0) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-[12px]" style={{ color: "var(--ink-3)" }}>
         No catalog items yet. Ask an admin to add request types.
       </p>
     );
   }
 
   return (
-    <div className="space-y-5">
-      {groups.map((group) => (
+    <div className="space-y-4">
+      {groups.map((group, gi) => (
         <section
           key={group.id}
           aria-labelledby={`catalog-cat-${group.id}`}
-          className="rounded-2xl border border-zinc-200/90 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/40"
+          className="rounded-lg border p-3"
+          style={{ background: "var(--surface)", borderColor: "var(--line)" }}
         >
-          <header className="mb-3 border-b border-zinc-200/80 pb-2.5 dark:border-zinc-700/80">
+          <header className="mb-2.5 pb-2 border-b" style={{ borderColor: "var(--line-dim)" }}>
             <h2
               id={`catalog-cat-${group.id}`}
-              className="text-sm font-semibold text-zinc-900 dark:text-zinc-100"
+              className="text-[12.5px] font-semibold tracking-[-0.02em]"
+              style={{ color: "var(--ink)" }}
             >
               {group.title}
             </h2>
-            <p className="mt-0.5 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="mt-0.5 text-[11px] leading-relaxed" style={{ color: "var(--ink-2)" }}>
               {group.subtitle}
             </p>
           </header>
-          <ul className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-            {group.items.map((t) => (
+          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {group.items.map((t, ti) => (
               <li key={t.id}>
-                <Link
-                  href={`/requests/new?typeId=${encodeURIComponent(t.id)}`}
-                  className="group flex h-full flex-col rounded-xl border border-zinc-200 bg-white p-3.5 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-950/60 dark:hover:border-zinc-600"
-                >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-xs font-semibold text-zinc-700 transition-colors group-hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:group-hover:bg-zinc-700">
-                    {t.title.slice(0, 1).toUpperCase()}
-                  </span>
-                  <span className="mt-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                    {t.title}
-                  </span>
-                  {t.description ? (
-                    <span className="mt-1 line-clamp-2 text-xs text-zinc-500 dark:text-zinc-400">
-                      {t.description}
-                    </span>
-                  ) : (
-                    <span className="mt-1 text-xs text-zinc-400">Open form</span>
-                  )}
-                </Link>
+                <CatalogTile tile={t} featured={gi === 0 && ti === 0} />
               </li>
             ))}
           </ul>

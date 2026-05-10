@@ -29,9 +29,12 @@ export function ProfileForm({
   return (
     <div className="space-y-8">
       {/* Name */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+      <section
+        className="rounded-lg border p-6"
+        style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+      >
         <h2 className="text-base font-semibold">Profile</h2>
-        <p className="mt-1 text-sm text-zinc-500">Your display name and email address.</p>
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-3)" }}>Your display name and email address.</p>
         <form
           className="mt-4 space-y-4"
           onSubmit={async (e) => {
@@ -50,7 +53,8 @@ export function ProfileForm({
           <div>
             <label
               htmlFor={`${nameId}-name`}
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               Display name
             </label>
@@ -60,12 +64,14 @@ export function ProfileForm({
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="name"
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div>
             <label
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               Email
             </label>
@@ -74,15 +80,17 @@ export function ProfileForm({
               value={email}
               disabled
               aria-label="Email address (read-only)"
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--subtle)", color: "var(--ink-3)" }}
             />
-            <p className="mt-1 text-xs text-zinc-400">Contact your admin to change your email.</p>
+            <p className="mt-1 text-xs" style={{ color: "var(--ink-3)" }}>Contact your admin to change your email.</p>
           </div>
           <button
             type="submit"
             disabled={nameLoading}
             aria-busy={nameLoading}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+            style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
           >
             {nameLoading ? "Saving…" : "Save name"}
           </button>
@@ -91,11 +99,12 @@ export function ProfileForm({
 
       {/* Password */}
       <section
-        className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+        className="rounded-lg border p-6"
         aria-describedby={pwError ? pwErrorId : undefined}
+        style={{ borderColor: "var(--line)", background: "var(--surface)" }}
       >
         <h2 className="text-base font-semibold">Change password</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm" style={{ color: "var(--ink-3)" }}>
           Use a strong password of at least 8 characters.
         </p>
         <form
@@ -132,7 +141,8 @@ export function ProfileForm({
           <div>
             <label
               htmlFor={`${pwErrorId}-current`}
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               Current password
             </label>
@@ -144,13 +154,15 @@ export function ProfileForm({
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               aria-invalid={Boolean(pwError)}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div>
             <label
               htmlFor={`${pwErrorId}-new`}
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               New password
             </label>
@@ -163,13 +175,15 @@ export function ProfileForm({
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               aria-invalid={Boolean(pwError)}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           <div>
             <label
               htmlFor={`${pwErrorId}-confirm`}
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              className="text-xs font-medium"
+              style={{ color: "var(--ink-2)" }}
             >
               Confirm new password
             </label>
@@ -181,11 +195,12 @@ export function ProfileForm({
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               aria-invalid={Boolean(pwError)}
-              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
             />
           </div>
           {pwError && (
-            <p id={pwErrorId} className="text-sm text-red-600 dark:text-red-400" role="alert">
+            <p id={pwErrorId} className="text-sm" role="alert" style={{ color: "var(--status-denied)" }}>
               {pwError}
             </p>
           )}
@@ -193,7 +208,8 @@ export function ProfileForm({
             type="submit"
             disabled={pwLoading}
             aria-busy={pwLoading}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+            style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
           >
             {pwLoading ? "Updating…" : "Update password"}
           </button>

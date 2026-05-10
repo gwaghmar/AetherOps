@@ -6,7 +6,7 @@ import { useToast } from "@/components/toast";
 import { Lock } from "lucide-react";
 
 export function VaultForm() {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -19,29 +19,29 @@ export function VaultForm() {
     try {
       const result = await storeVaultCredentialAction(connectorId, payload);
       if (result.ok) {
-        showToast("Credential securely stored in vault", "success");
+        toast("Credential securely stored in vault", "success");
         (e.target as HTMLFormElement).reset();
       } else {
-        showToast(result.error || "Failed to store credential", "error");
+        toast(result.error || "Failed to store credential", "error");
       }
     } catch (err) {
-      showToast("An unexpected error occurred", "error");
+      toast("An unexpected error occurred", "error");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
+    <div className="rounded-lg border" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
+      <div className="border-b px-6 py-4" style={{ borderColor: "var(--line)" }}>
         <h2 className="flex items-center gap-2 font-medium">
-          <Lock className="h-4 w-4 text-zinc-500" />
+          <Lock className="h-4 w-4" style={{ color: "var(--ink-3)" }} />
           Add / Update Credential
         </h2>
       </div>
       <form onSubmit={onSubmit} className="space-y-4 p-6">
         <div>
-          <label htmlFor="connectorId" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="connectorId" className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>
             Connector ID
           </label>
           <input
@@ -50,11 +50,12 @@ export function VaultForm() {
             type="text"
             required
             placeholder="e.g., github, linear, aws"
-            className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700"
+            className="mt-1 block w-full rounded-md border px-3 py-2 text-sm bg-transparent"
+            style={{ borderColor: "var(--line)", color: "var(--ink)" }}
           />
         </div>
         <div>
-          <label htmlFor="payload" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="payload" className="block text-sm font-medium" style={{ color: "var(--ink-2)" }}>
             Secure Payload (JSON)
           </label>
           <textarea
@@ -63,9 +64,10 @@ export function VaultForm() {
             required
             rows={5}
             placeholder='{"apiKey": "...", "secret": "..."}'
-            className="mt-1 block w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 font-mono"
+            className="mt-1 block w-full rounded-md border px-3 py-2 text-sm bg-transparent font-mono"
+            style={{ borderColor: "var(--line)", color: "var(--ink)" }}
           />
-          <p className="mt-2 text-xs text-zinc-500">
+          <p className="mt-2 text-xs" style={{ color: "var(--ink-3)" }}>
             Must be a valid JSON object. This will be AES-256-GCM encrypted before saving to the database.
           </p>
         </div>
@@ -73,7 +75,8 @@ export function VaultForm() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 dark:focus:ring-offset-zinc-900"
+            className="inline-flex justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+            style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
           >
             {loading ? "Encrypting..." : "Store Securely"}
           </button>

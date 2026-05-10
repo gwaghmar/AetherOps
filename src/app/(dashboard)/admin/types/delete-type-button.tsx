@@ -30,7 +30,7 @@ export function DeleteTypeButton({
 
   if (archived && requestCount > 0) {
     return (
-      <span className="text-xs text-zinc-500 dark:text-zinc-400">
+      <span className="text-xs" style={{ color: "var(--ink-3)" }}>
         Archived · {requestCount} request{requestCount === 1 ? "" : "s"}
       </span>
     );
@@ -57,13 +57,8 @@ export function DeleteTypeButton({
           setPending(false);
         }
       }}
-      className={
-        archived
-          ? "text-xs text-red-600 underline disabled:opacity-50"
-          : requestCount > 0
-            ? "text-xs text-amber-700 underline dark:text-amber-400 disabled:opacity-50"
-            : "text-xs text-red-600 underline disabled:opacity-50"
-      }
+      className="text-xs underline disabled:opacity-50"
+      style={{ color: requestCount > 0 && !archived ? "var(--status-pending)" : "var(--status-denied)" }}
     >
       {pending ? "…" : label}
     </button>

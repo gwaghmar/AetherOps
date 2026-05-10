@@ -36,7 +36,7 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
       }}
     >
       <div>
-        <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
           Webhook URL
         </label>
         <input
@@ -44,11 +44,12 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://hooks.slack.com/services/…"
-          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
       </div>
       <div>
-        <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
           Signing secret (optional)
         </label>
         <input
@@ -58,9 +59,10 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
           onChange={(e) => setSecret(e.target.value)}
           placeholder="Leave blank to keep existing"
           autoComplete="new-password"
-          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
-        <label className="mt-2 flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+        <label className="mt-2 flex items-center gap-2 text-xs" style={{ color: "var(--ink-2)" }}>
           <input
             type="checkbox"
             checked={clearSecret}
@@ -69,22 +71,24 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
           Remove stored signing secret
         </label>
       </div>
-      <p className="text-xs text-zinc-500">
+      <p className="text-xs" style={{ color: "var(--ink-3)" }}>
         When{" "}
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">FIELD_ENCRYPTION_KEY</code>{" "}
+        <code className="rounded px-1" style={{ background: "var(--subtle)" }}>FIELD_ENCRYPTION_KEY</code>{" "}
         is set, new secrets are encrypted at rest (app-level envelope; swap for
-        KMS in production — see <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">src/lib/kms-envelope.ts</code>).
+        KMS in production — see <code className="rounded px-1" style={{ background: "var(--subtle)" }}>src/lib/kms-envelope.ts</code>).
       </p>
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900"
+        className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-60"
+        style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
       >
         {pending ? "Saving…" : "Save webhooks"}
       </button>
       {msg ? (
         <p
-          className={`text-sm ${msg === "Saved." ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+          className="text-sm"
+          style={{ color: msg === "Saved." ? "var(--status-approved)" : "var(--status-denied)" }}
         >
           {msg}
         </p>
@@ -92,7 +96,8 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
     </form>
 
     <form
-      className="mt-8 max-w-lg space-y-4 border-t border-zinc-200 pt-8 dark:border-zinc-700"
+      className="mt-8 max-w-lg space-y-4 border-t pt-8"
+      style={{ borderColor: "var(--line)" }}
       onSubmit={(e) => {
         e.preventDefault();
         setSlackMsg(null);
@@ -111,13 +116,13 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
       }}
     >
       <h2 className="text-base font-semibold tracking-tight">Slack Integration</h2>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm" style={{ color: "var(--ink-2)" }}>
         Map your Slack workspace to this organization so the{" "}
-        <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">/request</code>{" "}
+        <code className="rounded px-1 text-xs" style={{ background: "var(--subtle)" }}>/request</code>{" "}
         slash command resolves to the correct tenant.
       </p>
       <div>
-        <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <label className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
           Slack Team ID
         </label>
         <input
@@ -125,9 +130,10 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
           value={slackTeamId}
           onChange={(e) => setSlackTeamId(e.target.value)}
           placeholder="T0123ABCDEF"
-          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
-        <p className="mt-1 text-xs text-zinc-500">
+        <p className="mt-1 text-xs" style={{ color: "var(--ink-3)" }}>
           Find your Slack Team ID in your workspace URL or via the Slack API.
           Leave blank to remove the mapping.
         </p>
@@ -135,13 +141,15 @@ export function IntegrationsForm({ initialUrl, initialSlackTeamId }: { initialUr
       <button
         type="submit"
         disabled={slackPending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900"
+        className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-60"
+        style={{ background: "var(--ink)", color: "var(--ink-on-accent)" }}
       >
         {slackPending ? "Saving…" : "Save Slack settings"}
       </button>
       {slackMsg ? (
         <p
-          className={`text-sm ${slackMsg === "Saved." ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+          className="text-sm"
+          style={{ color: slackMsg === "Saved." ? "var(--status-approved)" : "var(--status-denied)" }}
         >
           {slackMsg}
         </p>
