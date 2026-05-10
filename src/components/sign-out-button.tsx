@@ -13,7 +13,8 @@ export function SignOutButton() {
         router.push("/sign-in");
         router.refresh();
       }}
-      className="text-sm text-zinc-500 underline underline-offset-2 hover:text-zinc-800 dark:hover:text-zinc-200"
+      className="text-sm underline underline-offset-2"
+      style={{ color: "var(--ink-3)" }}
     >
       Sign out
     </button>

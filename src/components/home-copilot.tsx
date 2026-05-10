@@ -86,7 +86,8 @@ export function HomeCopilot({
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls={dialogId}
-        className="fixed bottom-4 right-4 z-20 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium shadow-md dark:border-zinc-700 dark:bg-zinc-900"
+        className="fixed bottom-4 right-4 z-20 rounded-full border px-4 py-2 text-sm font-medium shadow-md"
+        style={{ borderColor: "var(--line)", background: "var(--surface)" }}
       >
         Copilot
       </button>
@@ -96,9 +97,13 @@ export function HomeCopilot({
           role="dialog"
           aria-modal="true"
           aria-labelledby={dialogTitleId}
-          className="fixed bottom-4 right-4 z-30 flex h-[min(32rem,calc(100vh-5rem))] w-[min(22rem,calc(100vw-2rem))] flex-col rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900"
+          className="fixed bottom-4 right-4 z-30 flex h-[min(32rem,calc(100vh-5rem))] w-[min(22rem,calc(100vw-2rem))] flex-col rounded-xl border shadow-xl"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         >
-          <div className="flex items-center justify-between border-b border-zinc-200 px-3 py-2 dark:border-zinc-800">
+          <div
+            className="flex items-center justify-between border-b px-3 py-2"
+            style={{ borderColor: "var(--line)" }}
+          >
             <span id={dialogTitleId} className="text-sm font-medium">
               Copilot
             </span>
@@ -106,40 +111,42 @@ export function HomeCopilot({
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close copilot panel"
-              className="text-xs text-zinc-500"
+              className="text-xs"
+              style={{ color: "var(--ink-3)" }}
             >
               Close
             </button>
           </div>
           <div
-            className="border-b border-zinc-100 px-3 py-2 text-xs dark:border-zinc-800"
+            className="border-b px-3 py-2 text-xs"
+            style={{ borderColor: "var(--line)" }}
             role="navigation"
             aria-label="Copilot quick actions"
           >
-            <p className="font-medium text-zinc-700 dark:text-zinc-300">
+            <p className="font-medium" style={{ color: "var(--ink-2)" }}>
               Quick actions
             </p>
             <div className="mt-1 flex flex-col gap-1">
-              <Link href="/requests/new" className="text-teal-700 underline dark:text-teal-400">
+              <Link href="/requests/new" className="underline" style={{ color: "var(--accent)" }}>
                 New request
               </Link>
               {onboardingIncomplete && (
-                <Link href="/onboarding" className="text-teal-700 underline dark:text-teal-400">
+                <Link href="/onboarding" className="underline" style={{ color: "var(--accent)" }}>
                   Resume onboarding
                 </Link>
               )}
-              <Link href="/requests" className="text-teal-700 underline dark:text-teal-400">
+              <Link href="/requests" className="underline" style={{ color: "var(--accent)" }}>
                 My requests
               </Link>
               {lastRequestHref && (
-                <Link href={lastRequestHref} className="text-teal-700 underline dark:text-teal-400">
+                <Link href={lastRequestHref} className="underline" style={{ color: "var(--accent)" }}>
                   Where you left off
                 </Link>
               )}
             </div>
             {recentTickets.length > 0 && (
-              <div className="mt-2 border-t border-zinc-100 pt-2 dark:border-zinc-800">
-                <p className="font-medium text-zinc-700 dark:text-zinc-300">
+              <div className="mt-2 border-t pt-2" style={{ borderColor: "var(--line)" }}>
+                <p className="font-medium" style={{ color: "var(--ink-2)" }}>
                   Your recent tickets
                 </p>
                 <ul className="mt-1 space-y-1">
@@ -151,10 +158,11 @@ export function HomeCopilot({
                             ? `/requests/${t.id}`
                             : `/changes/${t.id}`
                         }
-                        className="line-clamp-2 text-teal-700 underline dark:text-teal-400"
+                        className="line-clamp-2 underline"
+                        style={{ color: "var(--accent)" }}
                       >
                         {t.kind === "request" ? "Request" : "Change"}: {t.title}{" "}
-                        <span className="text-zinc-500">
+                        <span style={{ color: "var(--ink-3)" }}>
                           ({requestStatusLabel(t.status)})
                         </span>
                       </Link>
@@ -172,41 +180,48 @@ export function HomeCopilot({
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={
+                className={m.role === "user" ? "ml-4 rounded-lg px-2 py-1" : "mr-4 rounded-lg border px-2 py-1"}
+                style={
                   m.role === "user"
-                    ? "ml-4 rounded-lg bg-zinc-100 px-2 py-1 dark:bg-zinc-800"
-                    : "mr-4 rounded-lg border border-zinc-100 px-2 py-1 dark:border-zinc-800"
+                    ? { background: "var(--subtle)" }
+                    : { borderColor: "var(--line)" }
                 }
               >
-                <span className="text-[10px] uppercase text-zinc-400">
+                <span className="text-[10px] uppercase" style={{ color: "var(--ink-3)" }}>
                   {m.role}
                 </span>
                 <p className="whitespace-pre-wrap">{messageText(m)}</p>
               </div>
             ))}
             {status === "streaming" && (
-              <p className="text-xs text-zinc-400">Thinking…</p>
+              <p className="text-xs" style={{ color: "var(--ink-3)" }}>Thinking…</p>
             )}
             {error && (
-              <p className="text-xs text-red-600">
+              <p className="text-xs" style={{ color: "var(--status-denied)" }}>
                 {/ai_not_configured|503/i.test(String(error.message))
                   ? "AI not configured — open Admin → AI."
                   : error.message}
               </p>
             )}
           </div>
-          <form onSubmit={onSubmit} className="border-t border-zinc-200 p-2 dark:border-zinc-800">
+          <form
+            onSubmit={onSubmit}
+            className="border-t p-2"
+            style={{ borderColor: "var(--line)" }}
+          >
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               aria-label="Ask Copilot"
               placeholder="Ask anything…"
-              className="w-full rounded-lg border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="w-full rounded-lg border px-2 py-1.5 text-sm bg-transparent"
+              style={{ borderColor: "var(--line)" }}
             />
             <button
               type="submit"
               disabled={status === "streaming" || status === "submitted"}
-              className="mt-2 w-full rounded-lg bg-zinc-900 py-1.5 text-xs font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+              className="mt-2 w-full rounded-lg py-1.5 text-xs font-medium disabled:opacity-50"
+              style={{ background: "var(--accent)", color: "var(--ink-on-accent)" }}
             >
               {status === "streaming" || status === "submitted"
                 ? "Sending…"

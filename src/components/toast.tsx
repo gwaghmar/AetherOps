@@ -54,13 +54,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     return () => timers.forEach((t) => clearTimeout(t));
   }, []);
 
-  const variantClasses: Record<ToastVariant, string> = {
-    success:
-      "bg-emerald-700 text-white",
-    error:
-      "bg-red-700 text-white",
-    info:
-      "bg-zinc-800 text-zinc-100 dark:bg-zinc-100 dark:text-zinc-900",
+  const variantStyle: Record<ToastVariant, React.CSSProperties> = {
+    success: { background: "var(--status-approved)", color: "#fff" },
+    error: { background: "var(--status-denied)", color: "#fff" },
+    info: { background: "var(--ink)", color: "var(--canvas)" },
   };
 
   return (
@@ -75,7 +72,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={t.id}
             role="status"
-            className={`pointer-events-auto flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium shadow-lg transition-all animate-in fade-in slide-in-from-bottom-2 ${variantClasses[t.variant]}`}
+            className="pointer-events-auto flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium shadow-lg transition-all animate-in fade-in slide-in-from-bottom-2"
+            style={variantStyle[t.variant]}
           >
             <span>{t.message}</span>
             <button

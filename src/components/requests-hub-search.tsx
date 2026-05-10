@@ -34,7 +34,7 @@ export function RequestsHubSearch() {
   if (pathname !== "/requests") return null;
 
   return (
-    <div className="flex min-w-[14rem] max-w-md flex-1 basis-full items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2 py-1.5 sm:basis-auto dark:border-zinc-700 dark:bg-zinc-950">
+    <div className="flex min-w-[14rem] max-w-md flex-1 basis-full items-center gap-2 rounded-lg border px-2 py-1.5 sm:basis-auto" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
       <label className="min-w-0 flex-1">
         <span className="sr-only">Search your requests</span>
         <input
@@ -44,7 +44,8 @@ export function RequestsHubSearch() {
           onChange={(e) => setValue(e.target.value)}
           placeholder="Search requests by ID, type, status, approver…"
           autoComplete="off"
-          className="w-full border-0 bg-transparent px-1 text-sm placeholder:text-zinc-400 focus:outline-none dark:placeholder:text-zinc-500"
+          className="w-full border-0 bg-transparent px-1 text-sm focus:outline-none"
+          style={{ "--tw-placeholder-color": "var(--ink-3)" } as React.CSSProperties}
         />
       </label>
       {value ? (
@@ -52,7 +53,10 @@ export function RequestsHubSearch() {
           type="button"
           onClick={() => setValue("")}
           aria-label="Clear request search"
-          className="rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded-md px-2 py-1 text-xs transition-colors"
+          style={{ color: "var(--ink-2)" }}
+          onMouseEnter={e => (e.currentTarget.style.background = "var(--subtle)")}
+          onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
         >
           Clear
         </button>

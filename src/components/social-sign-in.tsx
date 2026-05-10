@@ -67,7 +67,10 @@ export function SocialSignIn({
               callbackURL,
             });
           }}
-          className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="flex w-full items-center justify-center gap-2.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
+          style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+          onMouseEnter={e => (e.currentTarget.style.background = "var(--subtle)")}
+          onMouseLeave={e => (e.currentTarget.style.background = "var(--surface)")}
         >
           {p.logo}
           {p.label}
