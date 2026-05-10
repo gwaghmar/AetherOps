@@ -30,10 +30,11 @@ export function ApprovalPanel({ requestId }: { requestId: string }) {
 
   return (
     <section
-      className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
+      className="rounded-xl p-5"
+      style={{ border: "1px solid var(--line)", background: "var(--surface)" }}
       aria-labelledby={`approval-actions-${requestId}`}
     >
-      <h2 id={`approval-actions-${requestId}`} className="text-sm font-semibold">
+      <h2 id={`approval-actions-${requestId}`} className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
         Approver actions
       </h2>
       <label htmlFor={`${errorId}-comment`} className="sr-only">
@@ -47,10 +48,11 @@ export function ApprovalPanel({ requestId }: { requestId: string }) {
         rows={2}
         aria-describedby={error ? errorId : undefined}
         aria-invalid={Boolean(error)}
-        className="mt-3 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+        className="mt-3 w-full rounded-lg px-3 py-2 text-sm"
+        style={{ border: "1px solid var(--line)", background: "var(--subtle)", color: "var(--ink)" }}
       />
       {error && (
-        <p id={errorId} className="mt-2 text-sm text-red-600" role="alert">
+        <p id={errorId} className="mt-2 text-sm" style={{ color: "var(--status-denied)" }} role="alert">
           {error}
         </p>
       )}
@@ -60,7 +62,8 @@ export function ApprovalPanel({ requestId }: { requestId: string }) {
           disabled={pending}
           onClick={() => act("approved")}
           aria-busy={pending}
-          className="rounded-lg bg-emerald-700 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-50"
+          style={{ background: "var(--status-approved)", color: "#fff" }}
         >
           Approve
         </button>
@@ -69,7 +72,8 @@ export function ApprovalPanel({ requestId }: { requestId: string }) {
           disabled={pending}
           onClick={() => act("denied")}
           aria-busy={pending}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-zinc-600"
+          className="rounded-lg px-3 py-1.5 text-sm disabled:opacity-50"
+          style={{ border: "1px solid var(--line)", color: "var(--ink)" }}
         >
           Deny
         </button>
@@ -78,7 +82,8 @@ export function ApprovalPanel({ requestId }: { requestId: string }) {
           disabled={pending}
           onClick={() => act("needs_info")}
           aria-busy={pending}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-zinc-600"
+          className="rounded-lg px-3 py-1.5 text-sm disabled:opacity-50"
+          style={{ border: "1px solid var(--line)", color: "var(--ink)" }}
         >
           Needs info
         </button>
