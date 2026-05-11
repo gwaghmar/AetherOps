@@ -58,8 +58,8 @@ const PROVIDERS: ProviderDef[] = [
     envKey: "AI_GOOGLE_API_KEY",
     models: {
       fast: "gemini-2.0-flash",
-      standard: "gemini-1.5-pro",
-      heavy: "gemini-1.5-pro",
+      standard: "gemini-2.5-pro",
+      heavy: "gemini-2.5-pro",
     },
     makeModel: (key, modelId) =>
       createGoogleGenerativeAI({ apiKey: key })(modelId),
