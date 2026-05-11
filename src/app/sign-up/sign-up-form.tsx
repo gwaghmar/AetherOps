@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useState } from "react";
+import { ensureUserProfileAction } from "@/app/actions/auth";
 import { finalizeInviteFromToken } from "@/app/actions/ai-org";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/logo";
@@ -81,20 +82,24 @@ export function SignUpForm() {
             const { error: err } = await supabase.auth.signUp({
               email,
               password,
-              options: {
-                data: { full_name: name },
-                emailRedirectTo: `${window.location.origin}/api/auth/callback`,
-              },
+              options: { data: { full_name: name } },
             });
-            setLoading(false);
             if (err) {
+              setLoading(false);
               setError(err.message ?? "Sign up failed");
+              return;
+            }
+            const profile = await ensureUserProfileAction(name);
+            if (!profile.ok) {
+              setLoading(false);
+              setError(profile.error ?? "Profile creation failed");
               return;
             }
             if (inviteToken) {
               try {
                 await finalizeInviteFromToken(inviteToken);
               } catch (err) {
+                setLoading(false);
                 setError(
                   err instanceof Error
                     ? `Account created, but invite failed: ${err.message}`
