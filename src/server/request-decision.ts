@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { approval, request as requestTable } from "@/db/schema";
 import { isApproverAllowedForRequest } from "@/server/approval-routing";
@@ -27,6 +27,10 @@ export async function applyRequestDecision(input: {
   actorRole: "approver" | "admin";
 }): Promise<void> {
   const { organizationId: orgId, requestId, decision, comment, actorUserId: approverId, actorRole } = input;
+
+  if (decision === "emergency_approved") {
+    throw new Error("emergency_approved decisions must go through applyEmergencyOverride.");
+  }
 
   const [req] = await db
     .select()
@@ -70,9 +74,12 @@ export async function applyRequestDecision(input: {
   if (existingDecision) throw new Error("You have already decided on this request.");
 
   const routingApproverIds = (req.routingApproverIds as string[] | null) ?? [];
+  // Falls back to 1 when routingApproverIds is empty — only reachable via the admin path
+  // since isApproverAllowedForRequest blocks non-admin approvers when no routing ids exist.
   const requiredCount = routingApproverIds.length > 0 ? routingApproverIds.length : 1;
   let jobId: string | null = null;
 
+  try {
   await db.transaction(async (tx) => {
     await tx.insert(approval).values({
       id: randomUUID(),
@@ -90,10 +97,7 @@ export async function applyRequestDecision(input: {
           and(
             eq(requestTable.id, req.id),
             eq(requestTable.organizationId, orgId),
-            or(
-              eq(requestTable.status, APPROVABLE_STATUSES[0]),
-              eq(requestTable.status, APPROVABLE_STATUSES[1]),
-            ),
+            inArray(requestTable.status, [...APPROVABLE_STATUSES]),
           ),
         );
     } else if (decision === "approved") {
@@ -149,6 +153,12 @@ export async function applyRequestDecision(input: {
       tx,
     );
   });
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "code" in err && (err as { code: string }).code === "23505") {
+      throw new Error("You have already decided on this request.");
+    }
+    throw err;
+  }
 
   if (decision !== "approved" || !jobId) return;
 

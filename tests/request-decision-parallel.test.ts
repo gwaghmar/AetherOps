@@ -137,4 +137,25 @@ describe("applyRequestDecision — parallel N-approver model", () => {
     expect(mockTransaction).toHaveBeenCalled();
     expect(enqueueFulfillmentJob).not.toHaveBeenCalled();
   });
+
+  it("admin bypasses isApproverAllowedForRequest and can approve", async () => {
+    const { isApproverAllowedForRequest } = await import("@/server/approval-routing");
+    const { applyRequestDecision } = await import("@/server/request-decision");
+    mockApprovalCountWhere.mockResolvedValueOnce([{ count: "1" }]);
+    // Single-approver request for admin (routingApproverIds has 1)
+    mockRequestLimit.mockResolvedValueOnce([{
+      id: "req_1", organizationId: "org_1", status: "pending_approval",
+      routingApproverIds: ["user_a"], assignedApproverId: "user_a",
+    }]);
+    await applyRequestDecision({ organizationId: "org_1", requestId: "req_1", decision: "approved", actorUserId: "admin_user", actorRole: "admin" });
+    // Admin skips isApproverAllowedForRequest
+    expect(isApproverAllowedForRequest).not.toHaveBeenCalled();
+  });
+
+  it("throws if emergency_approved decision is passed directly", async () => {
+    const { applyRequestDecision } = await import("@/server/request-decision");
+    await expect(
+      applyRequestDecision({ organizationId: "org_1", requestId: "req_1", decision: "emergency_approved", actorUserId: "admin", actorRole: "admin" })
+    ).rejects.toThrow("emergency_approved decisions must go through applyEmergencyOverride");
+  });
 });
