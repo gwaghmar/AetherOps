@@ -5,9 +5,16 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (secret && req.headers.get("x-cron-secret") !== secret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const expected = process.env.CRON_SECRET?.trim();
+  if (!expected) {
+    return NextResponse.json(
+      { error: "CRON_SECRET is not configured", code: "disabled" },
+      { status: 503 },
+    );
+  }
+  const authz = req.headers.get("authorization");
+  if (authz !== `Bearer ${expected}`) {
+    return new Response("Unauthorized", { status: 401 });
   }
 
   try {

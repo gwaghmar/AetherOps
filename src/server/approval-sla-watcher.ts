@@ -1,4 +1,4 @@
-import { and, eq, isNull, lt } from "drizzle-orm";
+import { and, eq, inArray, isNull, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { request as requestTable, user as userTable } from "@/db/schema";
 import { sendTransactionalEmail } from "@/server/email/send-email";
@@ -41,12 +41,10 @@ export async function processApprovalSlaEscalations() {
     // Notify all routing approvers who have not yet decided
     const routingIds = (req.routingApproverIds as string[] | null) ?? [];
     if (routingIds.length > 0) {
-      const approvers = await db
+      const pendingApprovers = await db
         .select({ id: userTable.id, email: userTable.email, name: userTable.name })
         .from(userTable)
-        .where(eq(userTable.organizationId, req.organizationId));
-
-      const pendingApprovers = approvers.filter((a) => routingIds.includes(a.id));
+        .where(inArray(userTable.id, routingIds));
 
       for (const approver of pendingApprovers) {
         try {
