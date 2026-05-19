@@ -11,6 +11,10 @@
     {
       "path": "/api/internal/worker/sla-check",
       "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/internal/worker/approval-sla-check",
+      "schedule": "0 * * * *"
     }
   ]
 }
