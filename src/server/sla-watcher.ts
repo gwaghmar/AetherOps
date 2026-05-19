@@ -33,6 +33,14 @@ export async function processSlaEscalations() {
   for (const job of staleJobs) {
     const req = job.request;
     if (!req) continue;
+    if (!req.requestType || !req.requester) {
+      console.warn(`[sla-watcher] Missing relations for request ${req.id}, skipping.`);
+      continue;
+    }
+    if (!job.organizationId) {
+      console.warn(`[sla-watcher] fulfillmentJob ${job.id} has no organizationId, skipping.`);
+      continue;
+    }
 
     const admins = await db
       .select({ email: userTable.email, name: userTable.name })
