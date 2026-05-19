@@ -11,15 +11,16 @@ async function slackPost(token: string, method: string, body: Record<string, unk
     },
     body: JSON.stringify(body),
   });
-  return res.json() as Promise<{ ok: boolean; channel?: string; ts?: string; error?: string }>;
+  return res.json() as Promise<{ ok: boolean; channel?: string | { id: string }; ts?: string; error?: string }>;
 }
 
 export async function openDMChannel(token: string, slackUserId: string): Promise<string> {
   const data = await slackPost(token, "conversations.open", { users: slackUserId });
-  if (!data.ok || !data.channel) {
+  const channelId = typeof data.channel === "object" ? data.channel?.id : data.channel;
+  if (!data.ok || !channelId) {
     throw new Error(`conversations.open failed: ${data.error ?? "unknown"}`);
   }
-  return data.channel;
+  return channelId;
 }
 
 export async function sendDM(

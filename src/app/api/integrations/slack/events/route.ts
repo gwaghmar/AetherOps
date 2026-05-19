@@ -68,7 +68,7 @@ export async function POST(req: Request) {
   // Ignore bot messages to avoid loops
   if (innerEvent.bot_id || innerEvent.subtype) return NextResponse.json({ ok: true });
 
-  const slackUserId = innerEvent.user as string | undefined;
+  const slackUserId = typeof innerEvent.user === "string" ? innerEvent.user : undefined;
   const text = (innerEvent.text as string | undefined)?.trim() ?? "";
   const threadTs = (innerEvent.ts as string | undefined) ?? null;
   const teamId = event.team_id as string | undefined;
