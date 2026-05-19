@@ -28,6 +28,8 @@ export async function createRequestCore(input: {
   expiresAt?: Date | null;
   isEmergencyOverride?: boolean;
   overrideReason?: string;
+  slaHours?: number | null;
+  requesterNote?: string | null;
 }) {
   if (input.expiresAt && input.expiresAt <= new Date()) {
     throw new Error("expiresAt must be in the future");
@@ -61,6 +63,10 @@ export async function createRequestCore(input: {
     expiresAt: input.expiresAt ?? null,
     isEmergencyOverride: input.isEmergencyOverride ?? false,
     overrideReason: input.overrideReason ?? null,
+    requesterNote: input.requesterNote ?? null,
+    approvalDeadlineAt: input.slaHours
+      ? new Date(Date.now() + input.slaHours * 3_600_000)
+      : null,
   };
 
   let jobId: string | null = null;

@@ -23,6 +23,7 @@ const createRequestInputSchema = z.object({
   expiresAt: z.string().datetime().optional().nullable(),
   isEmergencyOverride: z.boolean().optional(),
   overrideReason: z.string().optional(),
+  requesterNote: z.string().max(2000).optional().nullable(),
 });
 
 const decideApprovalInputSchema = z.object({
@@ -49,6 +50,7 @@ export async function createRequestAction(input: {
   expiresAt?: string | null;
   isEmergencyOverride?: boolean;
   overrideReason?: string;
+  requesterNote?: string | null;
 }) {
   const boundary = createRequestInputSchema.safeParse(input);
   if (!boundary.success) {
@@ -98,6 +100,8 @@ export async function createRequestAction(input: {
       typeRiskDefaults: type.riskDefaults,
       auditAction: "request_created",
       auditActorId: requesterId,
+      requesterNote: boundary.data.requesterNote ?? null,
+      slaHours: type.slaHours ?? null,
     });
     id = res.id;
   } catch (e) {

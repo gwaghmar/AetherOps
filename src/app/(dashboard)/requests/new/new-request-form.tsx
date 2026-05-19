@@ -68,6 +68,7 @@ export function NewRequestForm({
   const [duration, setDuration] = useState<string>("permanent");
   const [isEmergencyOverride, setIsEmergencyOverride] = useState(false);
   const [overrideReason, setOverrideReason] = useState("");
+  const [requesterNote, setRequesterNote] = useState("");
 
   const selected = types.find((t) => t.id === typeId) ?? types[0];
   const schema = useMemo((): FieldSchemaJson | null => {
@@ -144,6 +145,7 @@ export function NewRequestForm({
                 expiresAt,
                 isEmergencyOverride,
                 overrideReason: isEmergencyOverride ? overrideReason : undefined,
+                requesterNote: requesterNote || undefined,
               });
 
               if (!res.ok) {
@@ -367,6 +369,27 @@ export function NewRequestForm({
                 </div>
               );
             })}
+
+            <div>
+              <label
+                htmlFor={`${formId}-note`}
+                className="text-xs font-medium"
+                style={{ color: "var(--ink-2)" }}
+              >
+                Note to approvers{" "}
+                <span style={{ color: "var(--ink-3)" }}>(optional)</span>
+              </label>
+              <textarea
+                id={`${formId}-note`}
+                rows={3}
+                maxLength={2000}
+                value={requesterNote}
+                onChange={(e) => setRequesterNote(e.target.value)}
+                placeholder="Add context that will help approvers decide faster…"
+                className="mt-0.5 w-full rounded border px-2 py-1.5 text-sm"
+                style={inputStyle}
+              />
+            </div>
 
             {submitError && (
               <p id={submitErrorId} className="text-sm" style={{ color: "var(--status-denied)" }} role="alert">
