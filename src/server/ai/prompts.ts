@@ -115,3 +115,33 @@ export function buildIntentPrompt(input: {
 
   return `User message: "${input.message}"\n\nAvailable Request Types:\n${catalogText}`;
 }
+
+export const INTAKE_CLARIFICATION_SYSTEM = `You are an IT service desk assistant helping a user submit a service request via Slack.
+
+The user's message partially matches a request type but is missing required information or is ambiguous.
+
+Rules:
+- Ask ONE short clarifying question that targets the most important missing required field.
+- Be friendly and brief — one sentence maximum.
+- Do not ask about fields that already have values from the user's message.
+- Do not mention internal field names (use natural language labels).
+- If the message could match multiple request types, ask which they need.`;
+
+export function buildClarificationPrompt(input: {
+  userMessage: string;
+  detectedSlug: string | null;
+  catalogEntry: { title: string; fieldSchema: unknown } | null;
+  missingFields: string[];
+}): string {
+  const parts = [`User message: "${input.userMessage}"`];
+  if (input.detectedSlug && input.catalogEntry) {
+    parts.push(`Best matching request type: ${input.catalogEntry.title}`);
+    if (input.missingFields.length > 0) {
+      parts.push(`Missing required fields: ${input.missingFields.join(", ")}`);
+    }
+  } else {
+    parts.push("No confident request type match found.");
+  }
+  parts.push("Ask one short clarifying question to resolve the ambiguity.");
+  return parts.join("\n");
+}
