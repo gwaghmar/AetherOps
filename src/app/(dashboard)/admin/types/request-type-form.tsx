@@ -20,6 +20,7 @@ export function RequestTypeForm(props: {
     fieldSchema: unknown;
     riskDefaults: unknown;
     connectorId: string | null;
+    slaHours?: number | null;
   };
 }) {
   const [slug, setSlug] = useState(props.initial?.slug ?? "");
@@ -40,6 +41,9 @@ export function RequestTypeForm(props: {
   const [connectorId, setConnectorId] = useState(
     props.initial?.connectorId ?? "",
   );
+  const [slaHours, setSlaHours] = useState<string>(
+    props.initial?.slaHours != null ? String(props.initial.slaHours) : "",
+  );
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -51,6 +55,7 @@ export function RequestTypeForm(props: {
   const idFs = `${uid}-fs`;
   const idRd = `${uid}-rd`;
   const idConn = `${uid}-conn`;
+  const idSla = `${uid}-sla`;
   const errorId = `${uid}-error`;
 
   return (
@@ -71,6 +76,7 @@ export function RequestTypeForm(props: {
               fieldSchemaJson,
               riskDefaultsJson,
               connectorId: connectorId || null,
+              slaHours: slaHours ? parseInt(slaHours, 10) : null,
             });
           } else if (props.initial) {
             await adminUpdateRequestType({
@@ -81,6 +87,7 @@ export function RequestTypeForm(props: {
               fieldSchemaJson,
               riskDefaultsJson,
               connectorId: connectorId || null,
+              slaHours: slaHours ? parseInt(slaHours, 10) : null,
             });
           }
           const verb = props.mode === "create" ? "created" : "updated";
@@ -197,6 +204,25 @@ export function RequestTypeForm(props: {
           <option value="http_webhook">HTTP Webhook</option>
           <option value="log">Log to Console</option>
         </select>
+      </div>
+      <div>
+        <label htmlFor={idSla} className="text-xs font-medium" style={{ color: "var(--ink-2)" }}>
+          SLA (hours)
+          <span className="ml-1 font-normal" style={{ color: "var(--ink-3)" }}>
+            — leave blank for no timer
+          </span>
+        </label>
+        <input
+          id={idSla}
+          type="number"
+          min={1}
+          max={8760}
+          value={slaHours}
+          onChange={(e) => setSlaHours(e.target.value)}
+          placeholder="e.g. 48"
+          className="mt-0.5 w-full rounded border px-2 py-1 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
+        />
       </div>
       {error && (
         <p id={errorId} className="text-sm" style={{ color: "var(--status-denied)" }} role="alert">

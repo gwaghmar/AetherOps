@@ -9,6 +9,7 @@ import {
 } from "@/db/schema";
 import { requireSession } from "@/lib/session";
 import { requestStatusLabel } from "@/lib/status-labels";
+import { ApprovalDeadlineTimer } from "./approval-timer";
 
 const PAGE_SIZE = 25;
 
@@ -67,6 +68,9 @@ export default async function ApprovalsPage({
       createdAt: requestTable.createdAt,
       typeTitle: requestType.title,
       requesterEmail: user.email,
+      approvalDeadlineAt: requestTable.approvalDeadlineAt,
+      requesterNote: requestTable.requesterNote,
+      routingApproverIds: requestTable.routingApproverIds,
     })
     .from(requestTable)
     .innerJoin(requestType, eq(requestTable.requestTypeId, requestType.id))
@@ -134,6 +138,29 @@ export default async function ApprovalsPage({
                   </span>
                   <span className="text-sm font-medium">{r.typeTitle}</span>
                 </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {r.approvalDeadlineAt && (
+                    <ApprovalDeadlineTimer
+                      deadlineAt={r.approvalDeadlineAt.toISOString()}
+                    />
+                  )}
+                  {Array.isArray(r.routingApproverIds) && r.routingApproverIds.length > 1 && (
+                    <span
+                      className="rounded-full px-2 py-0.5 text-xs"
+                      style={{ background: "var(--subtle)", color: "var(--ink-3)" }}
+                    >
+                      {r.routingApproverIds.length} approvers required
+                    </span>
+                  )}
+                </div>
+                {r.requesterNote && (
+                  <p
+                    className="mt-2 text-sm italic"
+                    style={{ color: "var(--ink-2)" }}
+                  >
+                    &ldquo;{r.requesterNote}&rdquo;
+                  </p>
+                )}
                 <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>
                   Requester: {r.requesterEmail}
                 </p>

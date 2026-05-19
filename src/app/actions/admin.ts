@@ -78,6 +78,7 @@ const typeFields = z.object({
   fieldSchemaJson: z.string().min(2),
   riskDefaultsJson: z.string().min(2),
   connectorId: z.string().max(64).nullable().optional(),
+  slaHours: z.number().int().min(1).max(8760).nullable().optional(),
 });
 
 export async function adminCreateRequestType(input: {
@@ -87,6 +88,7 @@ export async function adminCreateRequestType(input: {
   fieldSchemaJson: string;
   riskDefaultsJson: string;
   connectorId?: string | null;
+  slaHours?: number | null;
 }) {
   const session = await requireSession();
   const orgId = requireAdminOrg(session);
@@ -114,6 +116,7 @@ export async function adminCreateRequestType(input: {
     fieldSchema,
     riskDefaults,
     connectorId: parsed.data.connectorId ?? null,
+    slaHours: parsed.data.slaHours ?? null,
   });
 
   revalidatePath("/admin/types");
@@ -131,6 +134,7 @@ export async function adminUpdateRequestType(input: {
   fieldSchemaJson: string;
   riskDefaultsJson: string;
   connectorId?: string | null;
+  slaHours?: number | null;
 }) {
   const session = await requireSession();
   const orgId = requireAdminOrg(session);
@@ -168,6 +172,7 @@ export async function adminUpdateRequestType(input: {
       fieldSchema,
       riskDefaults,
       connectorId: parsed.data.connectorId ?? null,
+      slaHours: parsed.data.slaHours ?? null,
     })
     .where(eq(requestType.id, row.id));
 
