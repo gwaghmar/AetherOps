@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { request as requestTable, requestType } from "@/db/schema";
+import { request as requestTable, requestType, fulfillmentJob } from "@/db/schema";
 import { assertAuditExportRangeOrThrow } from "@/lib/audit-export-limit";
 import {
   buildPayloadSchema,
@@ -302,4 +302,52 @@ export async function emergencyOverrideAction(input: {
   revalidatePath("/requests");
   revalidatePath(`/requests/${requestId}`);
   return { ok: true as const };
+}
+
+export async function completeManualFulfillmentAction(
+  jobId: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await requireSession();
+  if (session.user.role !== "admin") {
+    return { ok: false, error: "Admin role required" };
+  }
+
+  const orgId = sessionOrgId(session);
+
+  const [job] = await db
+    .select()
+    .from(fulfillmentJob)
+    .where(
+      and(
+        eq(fulfillmentJob.id, jobId),
+        eq(fulfillmentJob.organizationId, orgId),
+        eq(fulfillmentJob.status, "manual_action_required"),
+      ),
+    )
+    .limit(1);
+
+  if (!job) return { ok: false, error: "Job not found or already resolved" };
+
+  await db
+    .update(fulfillmentJob)
+    .set({ status: "fulfilled", updatedAt: new Date() })
+    .where(eq(fulfillmentJob.id, jobId));
+
+  await db
+    .update(requestTable)
+    .set({ status: "fulfilled", updatedAt: new Date() })
+    .where(eq(requestTable.id, job.requestId));
+
+  await recordAuditEvent({
+    organizationId: orgId,
+    actorId: session.user.id,
+    entityType: "request",
+    entityId: job.requestId,
+    action: "manual_provision_completed",
+    metadata: { jobId },
+  });
+
+  revalidatePath("/requests");
+  revalidatePath(`/requests/${job.requestId}`);
+  return { ok: true };
 }
