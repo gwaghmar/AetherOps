@@ -76,7 +76,7 @@ export function RequestTypeForm(props: {
               fieldSchemaJson,
               riskDefaultsJson,
               connectorId: connectorId || null,
-              slaHours: slaHours ? parseInt(slaHours, 10) : null,
+              slaHours: slaHours && !Number.isNaN(+slaHours) ? parseInt(slaHours, 10) : null,
             });
           } else if (props.initial) {
             await adminUpdateRequestType({
@@ -87,7 +87,7 @@ export function RequestTypeForm(props: {
               fieldSchemaJson,
               riskDefaultsJson,
               connectorId: connectorId || null,
-              slaHours: slaHours ? parseInt(slaHours, 10) : null,
+              slaHours: slaHours && !Number.isNaN(+slaHours) ? parseInt(slaHours, 10) : null,
             });
           }
           const verb = props.mode === "create" ? "created" : "updated";
