@@ -62,6 +62,109 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No actionable block found" }, { status: 400 });
   }
 
+  const slackUserId = payload.user?.id;
+  if (!slackUserId) {
+    return NextResponse.json({ error: "Missing Slack user ID" }, { status: 400 });
+  }
+
+  const botToken = process.env.SLACK_BOT_TOKEN?.trim();
+  if (!botToken) {
+    return NextResponse.json({ error: "SLACK_BOT_TOKEN is not configured" }, { status: 503 });
+  }
+
+  // Intake confirmation actions
+  if (action.action_id === "confirm_intake" || action.action_id === "cancel_intake") {
+    let actionData: { conversationId?: string } = {};
+    try {
+      actionData = JSON.parse(action.value ?? "{}");
+    } catch {
+      return NextResponse.json({ text: "Error: Invalid action data." });
+    }
+
+    const { conversationId } = actionData;
+    if (!conversationId) {
+      return NextResponse.json({ text: "Error: Missing conversation ID." });
+    }
+
+    const { intakeConversation: intakeConvTable } = await import("@/db/schema");
+    const { resolveConversation } = await import("@/server/intake/conversation-store");
+    const { sendDM: slackSendDM } = await import("@/server/intake/channels/slack");
+    const { eq: eqDyn } = await import("drizzle-orm");
+
+    const [conv] = await db
+      .select()
+      .from(intakeConvTable)
+      .where(eqDyn(intakeConvTable.id, conversationId))
+      .limit(1);
+
+    if (!conv || conv.state !== "awaiting_confirmation") {
+      return NextResponse.json({
+        replace_original: true,
+        text: "This request has already been handled or expired.",
+      });
+    }
+
+    await resolveConversation(conversationId);
+
+    if (action.action_id === "cancel_intake") {
+      await slackSendDM(botToken, slackUserId, "Request cancelled. Let me know if you need anything else.");
+      return NextResponse.json({ replace_original: true, text: "Request cancelled." });
+    }
+
+    // confirm_intake: create the request
+    if (!conv.detectedRequestTypeSlug || !conv.resolvedUserId) {
+      await slackSendDM(botToken, slackUserId, "Sorry, I lost the request details. Please try submitting again.");
+      return NextResponse.json({ replace_original: true, text: "Could not submit — missing data." });
+    }
+
+    const { findRequestTypeBySlug, createRequestCore } = await import("@/server/create-request");
+    const { buildPayloadSchema, parseFieldSchema } = await import("@/lib/request-schemas");
+
+    const type = await findRequestTypeBySlug(conv.organizationId, conv.detectedRequestTypeSlug);
+    if (!type) {
+      await slackSendDM(botToken, slackUserId, "That request type no longer exists. Please try again.");
+      return NextResponse.json({ replace_original: true, text: "Request type not found." });
+    }
+
+    const fieldSchema = parseFieldSchema(type.fieldSchema);
+    const payloadCheck = buildPayloadSchema(fieldSchema.fields).safeParse(conv.detectedPayload ?? {});
+    if (!payloadCheck.success) {
+      await slackSendDM(botToken, slackUserId, "Some required fields are missing. Please try again with more details.");
+      return NextResponse.json({ replace_original: true, text: "Payload validation failed." });
+    }
+
+    try {
+      const result = await createRequestCore({
+        organizationId: conv.organizationId,
+        requesterId: conv.resolvedUserId,
+        requestTypeId: type.id,
+        payload: payloadCheck.data as Record<string, unknown>,
+        typeSlug: type.slug,
+        typeTitle: type.title,
+        typeRiskDefaults: type.riskDefaults,
+        slaHours: type.slaHours ?? null,
+        auditAction: "request_created_slack_intake",
+        auditActorId: conv.resolvedUserId,
+        auditMetadata: { ingest: "slack", conversationId },
+      });
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "";
+      await slackSendDM(
+        botToken,
+        slackUserId,
+        `Request submitted! Track it at ${appUrl}/requests/${result.id}`,
+      );
+
+      return NextResponse.json({
+        replace_original: true,
+        text: `Request submitted ✓ — ID ${result.id}`,
+      });
+    } catch (err) {
+      await slackSendDM(botToken, slackUserId, `Failed to submit: ${err instanceof Error ? err.message : "unknown error"}`);
+      return NextResponse.json({ replace_original: true, text: "Submission failed." });
+    }
+  }
+
   let actionData;
   try {
     actionData = JSON.parse(action.value);
@@ -72,16 +175,6 @@ export async function POST(req: Request) {
   const { requestId, organizationId } = actionData;
   if (!requestId || !organizationId) {
     return NextResponse.json({ error: "Missing context in action value" }, { status: 400 });
-  }
-
-  const slackUserId = payload.user?.id;
-  if (!slackUserId) {
-    return NextResponse.json({ error: "Missing Slack user ID" }, { status: 400 });
-  }
-
-  const botToken = process.env.SLACK_BOT_TOKEN?.trim();
-  if (!botToken) {
-    return NextResponse.json({ error: "SLACK_BOT_TOKEN is not configured" }, { status: 503 });
   }
 
   // 1. Fetch user email from Slack API
