@@ -82,6 +82,8 @@ export const requestType = pgTable(
       .notNull(),
     /** Soft-delete: set instead of hard-deleting so existing requests are not orphaned. */
     archivedAt: timestamp("archived_at", { withTimezone: true }),
+    /** Optional SLA in hours. When set, requests of this type get an approval_deadline_at at creation. */
+    slaHours: integer("sla_hours"),
   },
   (t) => [
     /** Slug unique among non-archived rows so a new type can reuse a retired slug. */
@@ -127,6 +129,14 @@ export const request = pgTable(
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     /** Track if the 2-hour pre-expiry notification was successfully dispatched. */
     preExpiryNotifiedAt: timestamp("pre_expiry_notified_at", { withTimezone: true }),
+    /** Optional note from requester shown to all approvers. */
+    requesterNote: text("requester_note"),
+    /** Set at request creation: now() + sla_hours if request_type.sla_hours is set. */
+    approvalDeadlineAt: timestamp("approval_deadline_at", { withTimezone: true }),
+    /** Set by SLA cron when breach is detected (idempotency guard). */
+    slaBreachedAt: timestamp("sla_breached_at", { withTimezone: true }),
+    /** Set by SLA cron when reminder emails are sent. */
+    slaReminderSentAt: timestamp("sla_reminder_sent_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -208,8 +218,8 @@ export const approval = pgTable(
   },
   (t) => [
     index("approval_request_idx").on(t.requestId),
-    uniqueIndex("approval_request_terminal_unique")
-      .on(t.requestId)
+    uniqueIndex("approval_request_approver_terminal_unique")
+      .on(t.requestId, t.approverId)
       .where(sql`${t.decision} in ('approved', 'denied')`),
   ],
 );
@@ -685,6 +695,7 @@ export const organizationRelations = relations(organization, ({ many, one }) => 
   accessReviewCampaigns: many(accessReviewCampaign),
   aiUsageTelemetry: many(aiUsageTelemetry),
   roleBundles: many(roleBundle),
+  intakeConversations: many(intakeConversation),
 }));
 
 export const roleBundle = pgTable(
@@ -923,6 +934,52 @@ export const policyDecisionLogRelations = relations(policyDecisionLog, ({ one })
   }),
   actor: one(user, {
     fields: [policyDecisionLog.actorId],
+    references: [user.id],
+  }),
+}));
+
+export const intakeConversation = pgTable(
+  "intake_conversation",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    channel: text("channel").notNull(),
+    channelUserId: text("channel_user_id").notNull(),
+    channelThreadId: text("channel_thread_id"),
+    resolvedUserId: text("resolved_user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    /** awaiting_clarification | awaiting_confirmation | resolved | expired */
+    state: text("state").notNull(),
+    detectedRequestTypeSlug: text("detected_request_type_slug"),
+    detectedPayload: jsonb("detected_payload").$type<Record<string, unknown> | null>(),
+    turnCount: integer("turn_count").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    index("intake_conversation_channel_user_idx")
+      .on(t.channel, t.channelUserId)
+      .where(sql`${t.state} in ('awaiting_clarification', 'awaiting_confirmation')`),
+    index("intake_conversation_expires_idx").on(t.expiresAt),
+  ],
+);
+
+export const intakeConversationRelations = relations(intakeConversation, ({ one }) => ({
+  organization: one(organization, {
+    fields: [intakeConversation.organizationId],
+    references: [organization.id],
+  }),
+  resolvedUser: one(user, {
+    fields: [intakeConversation.resolvedUserId],
     references: [user.id],
   }),
 }));
