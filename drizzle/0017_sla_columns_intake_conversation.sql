@@ -12,6 +12,7 @@ CREATE TABLE "intake_conversation" (
 	"channel_user_id" text NOT NULL,
 	"channel_thread_id" text,
 	"resolved_user_id" text,
+	"resolved_request_id" text REFERENCES "request"("id") ON DELETE SET NULL,
 	"state" text NOT NULL,
 	"detected_request_type_slug" text,
 	"detected_payload" jsonb,
@@ -23,5 +24,6 @@ CREATE TABLE "intake_conversation" (
 --> statement-breakpoint
 ALTER TABLE "intake_conversation" ADD CONSTRAINT "intake_conversation_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "intake_conversation" ADD CONSTRAINT "intake_conversation_resolved_user_id_user_id_fk" FOREIGN KEY ("resolved_user_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "intake_conversation_org_idx" ON "intake_conversation" ("organization_id");--> statement-breakpoint
 CREATE INDEX "intake_conversation_channel_user_idx" ON "intake_conversation" USING btree ("channel","channel_user_id") WHERE "intake_conversation"."state" in ('awaiting_clarification', 'awaiting_confirmation');--> statement-breakpoint
 CREATE INDEX "intake_conversation_expires_idx" ON "intake_conversation" USING btree ("expires_at");

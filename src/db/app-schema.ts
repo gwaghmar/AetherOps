@@ -218,6 +218,9 @@ export const approval = pgTable(
   },
   (t) => [
     index("approval_request_idx").on(t.requestId),
+    // approverId is non-null for all terminal approval rows in this implementation
+    // (human decisions and emergency overrides both supply a real userId).
+    // The unique index therefore correctly enforces one terminal decision per (request, approver).
     uniqueIndex("approval_request_approver_terminal_unique")
       .on(t.requestId, t.approverId)
       .where(sql`${t.decision} in ('approved', 'denied')`),
@@ -951,6 +954,10 @@ export const intakeConversation = pgTable(
     resolvedUserId: text("resolved_user_id").references(() => user.id, {
       onDelete: "set null",
     }),
+    /** FK to the request created when this conversation was confirmed. Null until confirmed. */
+    resolvedRequestId: text("resolved_request_id").references(() => request.id, {
+      onDelete: "set null",
+    }),
     /** awaiting_clarification | awaiting_confirmation | resolved | expired */
     state: text("state").notNull(),
     detectedRequestTypeSlug: text("detected_request_type_slug"),
@@ -966,6 +973,7 @@ export const intakeConversation = pgTable(
       .$onUpdate(() => new Date()),
   },
   (t) => [
+    index("intake_conversation_org_idx").on(t.organizationId),
     index("intake_conversation_channel_user_idx")
       .on(t.channel, t.channelUserId)
       .where(sql`${t.state} in ('awaiting_clarification', 'awaiting_confirmation')`),
@@ -981,5 +989,9 @@ export const intakeConversationRelations = relations(intakeConversation, ({ one 
   resolvedUser: one(user, {
     fields: [intakeConversation.resolvedUserId],
     references: [user.id],
+  }),
+  resolvedRequest: one(request, {
+    fields: [intakeConversation.resolvedRequestId],
+    references: [request.id],
   }),
 }));
