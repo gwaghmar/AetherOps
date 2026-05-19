@@ -110,4 +110,31 @@ describe("applyRequestDecision — parallel N-approver model", () => {
     await applyRequestDecision({ organizationId: "org_1", requestId: "req_1", decision: "approved", actorUserId: "user_b", actorRole: "approver" });
     expect(enqueueFulfillmentJob).toHaveBeenCalled();
   });
+
+  it("throws if request is not in an approvable status", async () => {
+    mockRequestLimit.mockResolvedValueOnce([{
+      id: "req_1", organizationId: "org_1", status: "fulfilled",
+      routingApproverIds: ["user_a"], assignedApproverId: "user_a",
+    }]);
+    const { applyRequestDecision } = await import("@/server/request-decision");
+    await expect(
+      applyRequestDecision({ organizationId: "org_1", requestId: "req_1", decision: "denied", actorUserId: "user_a", actorRole: "approver" })
+    ).rejects.toThrow("Request is not awaiting approval.");
+  });
+
+  it("denied path calls transaction and does not enqueue fulfillment", async () => {
+    const { enqueueFulfillmentJob } = await import("@/server/fulfillment-queue");
+    const { applyRequestDecision } = await import("@/server/request-decision");
+    await applyRequestDecision({ organizationId: "org_1", requestId: "req_1", decision: "denied", actorUserId: "user_a", actorRole: "approver" });
+    expect(mockTransaction).toHaveBeenCalled();
+    expect(enqueueFulfillmentJob).not.toHaveBeenCalled();
+  });
+
+  it("needs_info path calls transaction and does not enqueue fulfillment", async () => {
+    const { enqueueFulfillmentJob } = await import("@/server/fulfillment-queue");
+    const { applyRequestDecision } = await import("@/server/request-decision");
+    await applyRequestDecision({ organizationId: "org_1", requestId: "req_1", decision: "needs_info", actorUserId: "user_a", actorRole: "approver" });
+    expect(mockTransaction).toHaveBeenCalled();
+    expect(enqueueFulfillmentJob).not.toHaveBeenCalled();
+  });
 });
