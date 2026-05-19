@@ -26,80 +26,92 @@ export async function processApprovalSlaEscalations() {
 
   console.info(`[approval-sla-watcher] Found ${breachedRequests.length} requests with breached approval SLA.`);
 
+  let processed = 0;
+  let errors = 0;
+
   for (const req of breachedRequests) {
     if (!req.requestType || !req.requester) {
       console.warn(`[approval-sla-watcher] Missing relations for request ${req.id}, skipping.`);
       continue;
     }
 
-    // Mark breached first (idempotency — prevents re-firing if email fails)
-    await db
-      .update(requestTable)
-      .set({ slaBreachedAt: now })
-      .where(and(eq(requestTable.id, req.id), isNull(requestTable.slaBreachedAt)));
+    try {
+      // Mark breached first (idempotency — prevents re-firing if email fails)
+      // Mark-first: if the process crashes before emails send, this request won't be retried.
+      // Acceptable tradeoff — prevents duplicate escalation emails on cron retry.
+      await db
+        .update(requestTable)
+        .set({ slaBreachedAt: now })
+        .where(and(eq(requestTable.id, req.id), isNull(requestTable.slaBreachedAt)));
 
-    // Notify all routing approvers who have not yet decided
-    const routingIds = (req.routingApproverIds as string[] | null) ?? [];
-    if (routingIds.length > 0) {
-      const pendingApprovers = await db
-        .select({ id: userTable.id, email: userTable.email, name: userTable.name })
-        .from(userTable)
-        .where(inArray(userTable.id, routingIds));
+      // Notify all routing approvers who have not yet decided
+      const routingIds = (req.routingApproverIds as string[] | null) ?? [];
+      if (routingIds.length > 0) {
+        const pendingApprovers = await db
+          .select({ id: userTable.id, email: userTable.email, name: userTable.name })
+          .from(userTable)
+          .where(inArray(userTable.id, routingIds));
 
-      for (const approver of pendingApprovers) {
-        try {
-          await sendTransactionalEmail({
-            organizationId: req.organizationId,
-            to: approver.email,
-            subject: `Action required: Approval overdue for "${req.requestType.title}"`,
-            html: `
-              <div style="font-family: sans-serif; color: #111;">
-                <h2 style="color: #d97706;">Approval SLA Breached</h2>
-                <p>A request is waiting for your approval and has exceeded the allowed time window.</p>
-                <p><strong>Request type:</strong> ${req.requestType.title}</p>
-                <p><strong>Requester:</strong> ${req.requester.name} (${req.requester.email})</p>
-                <p><strong>Deadline was:</strong> ${req.approvalDeadlineAt?.toLocaleString()}</p>
-                <p>Please review and decide as soon as possible.</p>
-              </div>
-            `,
-          });
-        } catch (err) {
-          console.error(`[approval-sla-watcher] Failed to email approver ${approver.email} for request ${req.id}`, err);
+        for (const approver of pendingApprovers) {
+          try {
+            await sendTransactionalEmail({
+              organizationId: req.organizationId,
+              to: approver.email,
+              subject: `Action required: Approval overdue for "${req.requestType.title}"`,
+              html: `
+                <div style="font-family: sans-serif; color: #111;">
+                  <h2 style="color: #d97706;">Approval SLA Breached</h2>
+                  <p>A request is waiting for your approval and has exceeded the allowed time window.</p>
+                  <p><strong>Request type:</strong> ${req.requestType.title}</p>
+                  <p><strong>Requester:</strong> ${req.requester.name} (${req.requester.email})</p>
+                  <p><strong>Deadline was:</strong> ${req.approvalDeadlineAt?.toLocaleString()}</p>
+                  <p>Please review and decide as soon as possible.</p>
+                </div>
+              `,
+            });
+          } catch (err) {
+            console.error(`[approval-sla-watcher] Failed to email approver ${approver.email} for request ${req.id}`, err);
+          }
         }
       }
-    }
 
-    // Escalate to requester's manager
-    if (req.requester.managerUserId) {
-      const [manager] = await db
-        .select({ email: userTable.email, name: userTable.name })
-        .from(userTable)
-        .where(eq(userTable.id, req.requester.managerUserId))
-        .limit(1);
+      // Escalate to requester's manager
+      if (req.requester.managerUserId) {
+        const [manager] = await db
+          .select({ email: userTable.email, name: userTable.name })
+          .from(userTable)
+          .where(eq(userTable.id, req.requester.managerUserId))
+          .limit(1);
 
-      if (manager) {
-        try {
-          await sendTransactionalEmail({
-            organizationId: req.organizationId,
-            to: manager.email,
-            subject: `Escalation: "${req.requestType.title}" approval is stuck`,
-            html: `
-              <div style="font-family: sans-serif; color: #111;">
-                <h2 style="color: #e11d48;">Approval Escalation</h2>
-                <p>A request from your report has exceeded its approval SLA and remains pending.</p>
-                <p><strong>Requester:</strong> ${req.requester.name}</p>
-                <p><strong>Request type:</strong> ${req.requestType.title}</p>
-                <p><strong>Request ID:</strong> <code>${req.id}</code></p>
-                <p>Please ensure the appropriate approver takes action.</p>
-              </div>
-            `,
-          });
-        } catch (err) {
-          console.error(`[approval-sla-watcher] Failed to escalate to manager for request ${req.id}`, err);
+        if (manager) {
+          try {
+            await sendTransactionalEmail({
+              organizationId: req.organizationId,
+              to: manager.email,
+              subject: `Escalation: "${req.requestType.title}" approval is stuck`,
+              html: `
+                <div style="font-family: sans-serif; color: #111;">
+                  <h2 style="color: #e11d48;">Approval Escalation</h2>
+                  <p>A request from your report has exceeded its approval SLA and remains pending.</p>
+                  <p><strong>Requester:</strong> ${req.requester.name}</p>
+                  <p><strong>Request type:</strong> ${req.requestType.title}</p>
+                  <p><strong>Request ID:</strong> <code>${req.id}</code></p>
+                  <p>Please ensure the appropriate approver takes action.</p>
+                </div>
+              `,
+            });
+          } catch (err) {
+            console.error(`[approval-sla-watcher] Failed to escalate to manager for request ${req.id}`, err);
+          }
         }
       }
+
+      processed++;
+    } catch (err) {
+      console.error(`[approval-sla-watcher] Failed processing request ${req.id}`, err);
+      errors++;
     }
   }
 
-  return { escalated: breachedRequests.length };
+  return { found: breachedRequests.length, escalated: processed, errors };
 }
