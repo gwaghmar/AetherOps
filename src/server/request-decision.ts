@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { approval, request as requestTable } from "@/db/schema";
 import { isApproverAllowedForRequest } from "@/server/approval-routing";
@@ -26,38 +26,21 @@ export async function applyRequestDecision(input: {
   actorUserId: string;
   actorRole: "approver" | "admin";
 }): Promise<void> {
-  const {
-    organizationId: orgId,
-    requestId,
-    decision,
-    comment,
-    actorUserId: approverId,
-    actorRole,
-  } = input;
+  const { organizationId: orgId, requestId, decision, comment, actorUserId: approverId, actorRole } = input;
 
   const [req] = await db
     .select()
     .from(requestTable)
-    .where(
-      and(
-        eq(requestTable.id, requestId),
-        eq(requestTable.organizationId, orgId),
-      ),
-    )
+    .where(and(eq(requestTable.id, requestId), eq(requestTable.organizationId, orgId)))
     .limit(1);
 
   if (!req) throw new Error("Request not found.");
-  const nextStatus =
-    decision === "approved"
-      ? "approved"
-      : decision === "denied"
-        ? "denied"
-        : "needs_info";
 
-  // RLY-01: Idempotent return if already matches target decision
-  if (req.status === nextStatus) {
-    return;
-  }
+  const targetStatus =
+    decision === "approved" ? "approved" : decision === "denied" ? "denied" : "needs_info";
+
+  // Idempotency: already in target state
+  if (req.status === targetStatus) return;
 
   if (!APPROVABLE_STATUSES.includes(req.status as (typeof APPROVABLE_STATUSES)[number])) {
     throw new Error("Request is not awaiting approval.");
@@ -69,37 +52,28 @@ export async function applyRequestDecision(input: {
       routingApproverIds: req.routingApproverIds ?? null,
       assignedApproverId: req.assignedApproverId,
     });
-    if (!allowed) {
-      throw new Error("You are not authorized to approve this request.");
-    }
+    if (!allowed) throw new Error("You are not authorized to approve this request.");
   }
 
-  // (Moved up for idempotency check)
+  // Friendly check before hitting the unique index
+  const [existingDecision] = await db
+    .select({ id: approval.id })
+    .from(approval)
+    .where(
+      and(
+        eq(approval.requestId, req.id),
+        eq(approval.approverId, approverId),
+        sql`${approval.decision} in ('approved', 'denied')`,
+      ),
+    )
+    .limit(1);
+  if (existingDecision) throw new Error("You have already decided on this request.");
 
+  const routingApproverIds = (req.routingApproverIds as string[] | null) ?? [];
+  const requiredCount = routingApproverIds.length > 0 ? routingApproverIds.length : 1;
   let jobId: string | null = null;
 
   await db.transaction(async (tx) => {
-    const updated = await tx
-      .update(requestTable)
-      .set({ status: nextStatus, updatedAt: new Date() })
-      .where(
-        and(
-          eq(requestTable.id, req.id),
-          eq(requestTable.organizationId, orgId),
-          or(
-            eq(requestTable.status, APPROVABLE_STATUSES[0]),
-            eq(requestTable.status, APPROVABLE_STATUSES[1]),
-          ),
-        ),
-      )
-      .returning({ id: requestTable.id });
-
-    if (updated.length === 0) {
-      throw new Error(
-        "Request is no longer awaiting approval. Please refresh before deciding.",
-      );
-    }
-
     await tx.insert(approval).values({
       id: randomUUID(),
       requestId: req.id,
@@ -107,6 +81,61 @@ export async function applyRequestDecision(input: {
       decision,
       comment: comment ?? null,
     });
+
+    if (decision === "denied") {
+      await tx
+        .update(requestTable)
+        .set({ status: "denied", updatedAt: new Date() })
+        .where(
+          and(
+            eq(requestTable.id, req.id),
+            eq(requestTable.organizationId, orgId),
+            or(
+              eq(requestTable.status, APPROVABLE_STATUSES[0]),
+              eq(requestTable.status, APPROVABLE_STATUSES[1]),
+            ),
+          ),
+        );
+    } else if (decision === "approved") {
+      const [countRow] = await tx
+        .select({ count: sql<string>`count(*)` })
+        .from(approval)
+        .where(and(eq(approval.requestId, req.id), eq(approval.decision, "approved")));
+
+      const approvedCount = Number(countRow?.count ?? 0);
+
+      if (approvedCount >= requiredCount) {
+        const updated = await tx
+          .update(requestTable)
+          .set({ status: "approved", updatedAt: new Date() })
+          .where(
+            and(
+              eq(requestTable.id, req.id),
+              eq(requestTable.organizationId, orgId),
+              eq(requestTable.status, "pending_approval"),
+            ),
+          )
+          .returning({ id: requestTable.id });
+
+        if (updated.length > 0) {
+          jobId = await enqueueFulfillmentJob(
+            { organizationId: orgId, requestId: req.id, actorId: approverId },
+            tx,
+          );
+        }
+      }
+    } else if (decision === "needs_info") {
+      await tx
+        .update(requestTable)
+        .set({ status: "needs_info", updatedAt: new Date() })
+        .where(
+          and(
+            eq(requestTable.id, req.id),
+            eq(requestTable.organizationId, orgId),
+            eq(requestTable.status, "pending_approval"),
+          ),
+        );
+    }
 
     await recordAuditEvent(
       {
@@ -119,15 +148,6 @@ export async function applyRequestDecision(input: {
       },
       tx,
     );
-
-    // Enqueue fulfillment job atomically inside the TX so a crash between
-    // commit and enqueue cannot orphan an approved request without a job.
-    if (decision === "approved") {
-      jobId = await enqueueFulfillmentJob(
-        { organizationId: orgId, requestId: req.id, actorId: approverId },
-        tx,
-      );
-    }
   });
 
   if (decision !== "approved" || !jobId) return;

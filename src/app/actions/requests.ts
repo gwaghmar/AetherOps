@@ -189,6 +189,15 @@ export async function resubmitRequestAfterInfoAction(input: {
     metadata: {},
   });
 
+  await recordAuditEvent({
+    organizationId: orgId,
+    actorId: uid,
+    entityType: "request",
+    entityId: req.id,
+    action: "approval_invalidated_by_resubmit",
+    metadata: {},
+  });
+
   revalidatePath("/");
   revalidatePath("/requests");
   revalidatePath(`/requests/${req.id}`);
