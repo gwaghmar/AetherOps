@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { organization } from "@/db/schema";
