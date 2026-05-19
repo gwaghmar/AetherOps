@@ -38,7 +38,7 @@ export default function SignInPage() {
             <span style={{ color: "var(--accent)" }}>autopilot.</span>
           </h1>
           <p className="text-[15px] max-w-md mx-auto md:mx-0" style={{ color: "var(--ink-2)" }}>
-            GrantOps connects your team to the tools they need, instantly governed by AI.
+            Connect your team to the tools they need, instantly governed by AI.
           </p>
 
           {/* Diagram */}

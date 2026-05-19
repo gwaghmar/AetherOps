@@ -97,5 +97,5 @@ export function getPublicAppUrl(): string {
  * Display name for UI (optional). Defaults to "AI Governance".
  */
 export function getPublicAppName(): string {
-  return process.env.NEXT_PUBLIC_APP_NAME?.trim() || "GrantOps";
+  return process.env.NEXT_PUBLIC_APP_NAME?.trim() || "AetherOps";
 }

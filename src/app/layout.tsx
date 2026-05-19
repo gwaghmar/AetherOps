@@ -13,16 +13,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GrantOps | Autonomous AI Operations Platform",
+  title: "AetherOps | Autonomous AI Operations Platform",
   description:
     "The category-defining operations layer for AI-native companies. Automate intake, safety checks, and fulfillment with a rigorous audit trail.",
   keywords: ["AISM", "AI Operations", "Autonomous Operations", "AI Governance", "Agentic Workflows"],
-  authors: [{ name: "GrantOps Team" }],
+  authors: [{ name: "AetherOps Team" }],
   openGraph: {
-    title: "GrantOps | Autonomous AI Operations Platform",
+    title: "AetherOps | Autonomous AI Operations Platform",
     description: "The category-defining operations layer for AI-native companies.",
-    url: "https://grantops.vercel.app",
-    siteName: "GrantOps",
+    siteName: "AetherOps",
     locale: "en_US",
     type: "website",
   },
