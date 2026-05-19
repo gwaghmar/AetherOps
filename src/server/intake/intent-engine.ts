@@ -73,6 +73,9 @@ export async function runIntentEngine(
       // schema parse failure — treat as low confidence
       missingFields.push("details");
     }
+  } else {
+    // slug found but not in catalog — cannot validate, force clarification
+    missingFields.push("details");
   }
 
   if (missingFields.length > 0) {

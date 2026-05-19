@@ -74,10 +74,13 @@ export async function updateConversation(
     turnCount: number;
   }>,
 ): Promise<void> {
-  const expiresAt = new Date(Date.now() + CONVERSATION_TTL_MS);
+  const isTerminal = patch.state === "resolved" || patch.state === "expired";
+  const updateSet = isTerminal
+    ? { ...patch, updatedAt: new Date() }
+    : { ...patch, expiresAt: new Date(Date.now() + CONVERSATION_TTL_MS), updatedAt: new Date() };
   await db
     .update(intakeConversation)
-    .set({ ...patch, expiresAt, updatedAt: new Date() })
+    .set(updateSet)
     .where(eq(intakeConversation.id, id));
 }
 
