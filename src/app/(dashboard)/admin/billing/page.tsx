@@ -137,17 +137,30 @@ export default async function BillingPage() {
       </div>
 
       {!stripeReady && (
-        <p className="text-sm" style={{ color: "var(--ink-3)" }}>
-          Billing is not configured. Set{" "}
-          <code className="rounded px-1" style={{ background: "var(--subtle)" }}>
-            STRIPE_SECRET_KEY
-          </code>{" "}
-          and{" "}
-          <code className="rounded px-1" style={{ background: "var(--subtle)" }}>
-            STRIPE_*_PRICE_ID
-          </code>{" "}
-          environment variables to enable subscriptions.
-        </p>
+        <div
+          className="rounded-lg border p-6 max-w-lg"
+          style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+        >
+          <p className="font-semibold text-sm" style={{ color: "var(--ink)" }}>
+            Billing not configured
+          </p>
+          <p className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
+            Add these environment variables in your Vercel project settings to activate billing:
+          </p>
+          <ul
+            className="mt-3 space-y-1 text-xs font-mono rounded-md p-3"
+            style={{ background: "var(--subtle)", color: "var(--ink-2)" }}
+          >
+            <li>STRIPE_SECRET_KEY</li>
+            <li>STRIPE_WEBHOOK_SECRET</li>
+            <li>STRIPE_STARTER_PRICE_ID</li>
+            <li>STRIPE_GROWTH_PRICE_ID</li>
+            <li>STRIPE_ENTERPRISE_PRICE_ID</li>
+          </ul>
+          <p className="mt-3 text-xs" style={{ color: "var(--ink-3)" }}>
+            After adding them, redeploy and return here to activate plans.
+          </p>
+        </div>
       )}
     </div>
   );

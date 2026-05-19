@@ -81,6 +81,18 @@ export function assertProductionEnv(): void {
       "[env] API_KEY_PEPPER is not set. Set it to a dedicated secret for API key hashing.",
     );
   }
+
+  if (!process.env.STRIPE_SECRET_KEY?.trim()) {
+    console.warn(
+      "[env] STRIPE_SECRET_KEY is not set. Billing features will be disabled.",
+    );
+  }
+
+  if (!process.env.CRON_SECRET?.trim()) {
+    console.warn(
+      "[env] CRON_SECRET is not set. Internal worker endpoints are unprotected.",
+    );
+  }
 }
 
 /** Public site URL for server-side auth client base URL fallback. */
