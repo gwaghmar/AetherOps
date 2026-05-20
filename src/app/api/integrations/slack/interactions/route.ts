@@ -87,9 +87,8 @@ export async function POST(req: Request) {
     }
 
     const { intakeConversation: intakeConvTable } = await import("@/db/schema");
-    const { resolveConversation } = await import("@/server/intake/conversation-store");
     const { sendDM: slackSendDM } = await import("@/server/intake/channels/slack");
-    const { eq: eqDyn } = await import("drizzle-orm");
+    const { eq: eqDyn, and: andDyn } = await import("drizzle-orm");
 
     const [conv] = await db
       .select()
@@ -104,7 +103,24 @@ export async function POST(req: Request) {
       });
     }
 
-    await resolveConversation(conversationId);
+    // Atomic CAS: only the first of any concurrent duplicate requests wins
+    const claimed = await db
+      .update(intakeConvTable)
+      .set({ state: "resolved", updatedAt: new Date() })
+      .where(
+        andDyn(
+          eqDyn(intakeConvTable.id, conversationId),
+          eqDyn(intakeConvTable.state, "awaiting_confirmation"),
+        ),
+      )
+      .returning({ id: intakeConvTable.id });
+
+    if (claimed.length === 0) {
+      return NextResponse.json({
+        replace_original: true,
+        text: "This request has already been handled or expired.",
+      });
+    }
 
     if (action.action_id === "cancel_intake") {
       await slackSendDM(botToken, slackUserId, "Request cancelled. Let me know if you need anything else.");
@@ -160,7 +176,8 @@ export async function POST(req: Request) {
         text: `Request submitted ✓ — ID ${result.id}`,
       });
     } catch (err) {
-      await slackSendDM(botToken, slackUserId, `Failed to submit: ${err instanceof Error ? err.message : "unknown error"}`);
+      console.error("[slack:confirm_intake] createRequestCore failed:", err);
+      await slackSendDM(botToken, slackUserId, "Failed to submit your request. Please try again or contact support.");
       return NextResponse.json({ replace_original: true, text: "Submission failed." });
     }
   }
