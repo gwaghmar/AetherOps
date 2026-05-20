@@ -122,7 +122,7 @@ export default async function BillingPage() {
                 )}
                 {!isCurrent && key === "enterprise" && (
                   <a
-                    href="mailto:sales@example.com?subject=Enterprise+inquiry"
+                    href={`mailto:${process.env.NEXT_PUBLIC_SALES_EMAIL ?? "sales@aetherops.ai"}?subject=Enterprise+inquiry`}
                     className="mt-4 block w-full rounded-lg border px-3 py-2 text-center text-sm font-medium"
                     style={{ borderColor: "var(--line)" }}
                   >

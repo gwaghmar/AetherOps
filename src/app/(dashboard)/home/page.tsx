@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { eq } from "drizzle-orm";
+import { and, count, eq, gte, inArray } from "drizzle-orm";
 import { ensureOrganizationOnboardingRow } from "@/app/actions/ai-org";
 import { HomeCopilot } from "@/components/home-copilot";
 import { CatalogGroupedTiles } from "@/components/catalog-grouped-tiles";
 import { db } from "@/db";
-import { organizationOnboarding } from "@/db/schema";
+import { approval, organizationOnboarding, request } from "@/db/schema";
 import { fetchOrgCatalogTiles } from "@/server/org-catalog";
 import { getRecentUserTickets } from "@/server/recent-tickets";
 import { requireSession } from "@/lib/session";
@@ -74,9 +74,48 @@ export default async function HomePage() {
 
   let onboardingIncomplete = false;
   let recentForCopilot: { kind: "request" | "change"; id: string; title: string; status: string }[] = [];
+  let openRequestsCount = 0;
+  let pendingApprovalsCount = 0;
+  let fulfilledThisMonthCount = 0;
 
   if (orgId) {
     await ensureOrganizationOnboardingRow(orgId);
+
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const [openRow, approvalRow, fulfilledRow] = await Promise.all([
+      db
+        .select({ n: count() })
+        .from(request)
+        .where(
+          and(
+            eq(request.requesterId, session.user.id),
+            eq(request.organizationId, orgId),
+            inArray(request.status, ["pending_approval", "approved"]),
+          ),
+        ),
+      db
+        .select({ n: count() })
+        .from(approval)
+        .where(
+          and(
+            eq(approval.approverId, session.user.id),
+            eq(approval.decision, "pending"),
+          ),
+        ),
+      db
+        .select({ n: count() })
+        .from(request)
+        .where(
+          and(
+            eq(request.organizationId, orgId),
+            eq(request.status, "fulfilled"),
+            gte(request.updatedAt, monthStart),
+          ),
+        ),
+    ]);
+    openRequestsCount = Number(openRow[0]?.n ?? 0);
+    pendingApprovalsCount = Number(approvalRow[0]?.n ?? 0);
+    fulfilledThisMonthCount = Number(fulfilledRow[0]?.n ?? 0);
     const [onb] = await db
       .select({ wizardCompletedAt: organizationOnboarding.wizardCompletedAt })
       .from(organizationOnboarding)
@@ -154,9 +193,22 @@ export default async function HomePage() {
 
             {/* Stat cards — 3 columns */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <StatCard label="Time saved" value="42h" change="↑ 12% this month" />
-              <StatCard label="Agents active" value="12" change="All healthy" sparkle />
-              <StatCard label="Open requests" value="3" change="2 need action" />
+              <StatCard
+                label="My open requests"
+                value={String(openRequestsCount)}
+                change={openRequestsCount === 0 ? "None pending" : `${openRequestsCount} in progress`}
+              />
+              <StatCard
+                label="Pending approvals"
+                value={String(pendingApprovalsCount)}
+                change={pendingApprovalsCount === 0 ? "All clear" : `${pendingApprovalsCount} need action`}
+                sparkle={pendingApprovalsCount > 0}
+              />
+              <StatCard
+                label="Fulfilled this month"
+                value={String(fulfilledThisMonthCount)}
+                change={fulfilledThisMonthCount === 0 ? "—" : "↑ completed"}
+              />
             </div>
 
             {/* Empty catalog hint */}
