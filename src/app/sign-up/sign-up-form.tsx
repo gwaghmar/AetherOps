@@ -18,6 +18,7 @@ export function SignUpForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkEmail, setCheckEmail] = useState(false);
   const [inviteOrgName, setInviteOrgName] = useState<string | null>(null);
   const [inviteLockedEmail, setInviteLockedEmail] = useState(false);
   const errorId = useId();
@@ -51,6 +52,28 @@ export function SignUpForm() {
     };
   }, [inviteToken]);
 
+  if (checkEmail) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4" style={{ background: "var(--canvas)" }}>
+        <div className="mb-8">
+          <Logo size="md" wordmark href="/" />
+        </div>
+        <div className="w-full max-w-sm rounded-lg border p-8 text-center space-y-3" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
+          <p className="text-lg font-semibold" style={{ color: "var(--ink)" }}>Check your inbox</p>
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>
+            We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.
+          </p>
+          <p className="text-xs" style={{ color: "var(--ink-3)" }}>
+            Didn&apos;t receive it? Check spam or{" "}
+            <button className="underline" style={{ color: "var(--accent)" }} onClick={() => setCheckEmail(false)}>
+              try again
+            </button>.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4" style={{ background: "var(--canvas)" }}>
       <div className="mb-8">
@@ -79,7 +102,7 @@ export function SignUpForm() {
             setError(null);
             setLoading(true);
             const supabase = createClient();
-            const { error: err } = await supabase.auth.signUp({
+            const { data: signUpData, error: err } = await supabase.auth.signUp({
               email,
               password,
               options: { data: { full_name: name } },
@@ -87,6 +110,12 @@ export function SignUpForm() {
             if (err) {
               setLoading(false);
               setError(err.message ?? "Sign up failed");
+              return;
+            }
+            // Email confirmation is required — profile will be created on callback
+            if (!signUpData.session) {
+              setCheckEmail(true);
+              setLoading(false);
               return;
             }
             const profile = await ensureUserProfileAction(name);

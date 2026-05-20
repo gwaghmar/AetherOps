@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { db } from "@/db";
-import { user as userTable } from "@/db/schema";
+import { organization as orgTable, user as userTable } from "@/db/schema";
 import { count, eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
@@ -26,8 +26,29 @@ export async function GET(request: Request) {
         .limit(1);
 
       if (existing.length === 0) {
+        const orgId = process.env.DEFAULT_ORGANIZATION_ID?.trim() ?? null;
+
+        if (orgId) {
+          const existingOrg = await db
+            .select({ id: orgTable.id })
+            .from(orgTable)
+            .where(eq(orgTable.id, orgId))
+            .limit(1);
+          if (existingOrg.length === 0) {
+            const slug =
+              process.env.DEFAULT_ORGANIZATION_SLUG?.trim() ||
+              orgId.replace(/^org_/, "").toLowerCase();
+            const orgName = process.env.NEXT_PUBLIC_APP_NAME?.trim() || "AetherOps";
+            try {
+              await db.insert(orgTable).values({ id: orgId, name: orgName, slug });
+            } catch (err: unknown) {
+              if ((err as { code?: string }).code !== "23505") throw err;
+            }
+          }
+        }
+
         const [row] = await db.select({ n: count() }).from(userTable);
-        const isFirst = row.n === 0;
+        const isFirst = Number(row?.n ?? 0) === 0;
 
         await db.insert(userTable).values({
           id: userId,
@@ -38,8 +59,7 @@ export async function GET(request: Request) {
             data.user.email!,
           emailVerified: true,
           role: isFirst ? "admin" : "requester",
-          organizationId:
-            process.env.DEFAULT_ORGANIZATION_ID?.trim() ?? null,
+          organizationId: orgId,
         });
       }
 
