@@ -15,7 +15,7 @@ function formatDuration(ms: number): string {
 
 export function ApprovalDeadlineTimer({ deadlineAt }: { deadlineAt: string }) {
   const target = new Date(deadlineAt).getTime();
-  const [remaining, setRemaining] = useState(target - Date.now());
+  const [remaining, setRemaining] = useState(() => target - Date.now());
 
   useEffect(() => {
     const tick = () => setRemaining(target - Date.now());

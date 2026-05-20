@@ -5,8 +5,12 @@ vi.mock("@/db", () => ({
   db: {
     select: vi.fn(),
     update: vi.fn(),
-    transaction: vi.fn(async (cb) => {
-      // Create a mock transaction object
+    query: {
+      request: {
+        findMany: vi.fn(),
+      },
+    },
+    transaction: vi.fn(async (cb: (tx: unknown) => Promise<unknown>) => {
       const tx = {
         update: vi.fn().mockReturnValue({
           set: vi.fn().mockReturnValue({
@@ -32,10 +36,16 @@ import { scanAndEnqueueRevocations, scanAndNotifyExpiring } from "@/server/revoc
 import { enqueueFulfillmentJob } from "@/server/fulfillment-queue";
 
 // Helper to mock db.select().from().where()
-function mockDbSelect(returnValue: any[]) {
+function mockDbSelect(returnValue: Record<string, unknown>[]) {
   const where = vi.fn().mockResolvedValue(returnValue);
   const from = vi.fn().mockReturnValue({ where });
   (db.select as ReturnType<typeof vi.fn>).mockReturnValue({ from });
+}
+
+// Helper to mock db.query.request.findMany()
+function mockDbQueryFindMany(returnValue: Record<string, unknown>[]) {
+  (db as unknown as { query: { request: { findMany: ReturnType<typeof vi.fn> } } })
+    .query.request.findMany.mockResolvedValue(returnValue);
 }
 
 describe("Revocation Worker", () => {
@@ -80,35 +90,32 @@ describe("Revocation Worker", () => {
 
   describe("scanAndNotifyExpiring", () => {
     it("does nothing when no requests are expiring soon", async () => {
-      mockDbSelect([]);
-      
+      mockDbQueryFindMany([]);
+
       const result = await scanAndNotifyExpiring();
       expect(result.notified).toBe(0);
     });
 
     it("notifies for requests expiring soon", async () => {
-      const mockDbUpdate = () => {
-        const where = vi.fn().mockResolvedValue(undefined);
-        const set = vi.fn().mockReturnValue({ where });
-        (db.update as ReturnType<typeof vi.fn>).mockReturnValue({ set });
-        return { set, where };
-      };
-
-      const { set, where } = mockDbUpdate();
+      const where = vi.fn().mockResolvedValue(undefined);
+      const set = vi.fn().mockReturnValue({ where });
+      (db.update as ReturnType<typeof vi.fn>).mockReturnValue({ set });
 
       const mockReq = {
         id: "req_notify_1",
         organizationId: "org_1",
         expiresAt: new Date(Date.now() + 3600000), // Expiring in 1 hour
+        requester: { email: "user@example.com", name: "User" },
+        requestType: { title: "Slack Access" },
       };
-      mockDbSelect([mockReq]);
-      
+      mockDbQueryFindMany([mockReq]);
+
       const result = await scanAndNotifyExpiring();
-      
+
       expect(result.notified).toBe(1);
       expect(db.update).toHaveBeenCalled();
       expect(set).toHaveBeenCalledWith(expect.objectContaining({
-        preExpiryNotifiedAt: expect.any(Date)
+        preExpiryNotifiedAt: expect.any(Date),
       }));
       expect(where).toHaveBeenCalled();
     });

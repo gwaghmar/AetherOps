@@ -104,7 +104,7 @@ export function buildCatalogUserPrompt(context: {
 
 export function buildIntentPrompt(input: {
   message: string;
-  catalog: Array<{ slug: string; title: string; description: string | null; fieldSchema: any }>;
+  catalog: Array<{ slug: string; title: string; description: string | null; fieldSchema: unknown }>;
 }): string {
   const catalogText = input.catalog
     .map(

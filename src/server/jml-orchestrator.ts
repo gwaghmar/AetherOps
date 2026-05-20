@@ -48,8 +48,8 @@ export async function applyRoleBundle(userId: string, roleBundleId: string, acto
         },
       });
       results.push({ typeSlug: type.slug, requestId: res.id, ok: true });
-    } catch (err: any) {
-      results.push({ typeSlug: type.slug, ok: false, error: err.message });
+    } catch (err: unknown) {
+      results.push({ typeSlug: type.slug, ok: false, error: (err as Error).message });
     }
   }
 
@@ -83,8 +83,8 @@ export async function offboardUser(userId: string, organizationId: string, actor
           jobType: "revoke",
         });
         results.push({ requestId: req.id, action: "revocation_enqueued", ok: true });
-      } catch (err: any) {
-        results.push({ requestId: req.id, action: "revocation_failed", ok: false, error: err.message });
+      } catch (err: unknown) {
+        results.push({ requestId: req.id, action: "revocation_failed", ok: false, error: (err as Error).message });
       }
     } else {
       // For pending requests, we can simply cancel/deny them

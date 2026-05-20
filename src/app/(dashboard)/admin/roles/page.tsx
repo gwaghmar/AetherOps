@@ -42,10 +42,10 @@ export default async function RolesAdminPage() {
         </div>
       </div>
 
-      <RoleBundleList 
-        initialBundles={bundles as any} 
-        availableTypes={availableTypes as any}
-        allUsers={allUsers as any}
+      <RoleBundleList
+        initialBundles={bundles}
+        availableTypes={availableTypes}
+        allUsers={allUsers}
       />
     </div>
   );

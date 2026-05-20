@@ -27,7 +27,7 @@ describe("detectRequestIntent", () => {
   });
 
   it("detects intent and extracts payload", async () => {
-    (generateObject as any).mockResolvedValue({
+    (generateObject as ReturnType<typeof vi.fn>).mockResolvedValue({
       object: {
         slug: "slack_access",
         payload: { email: "test@example.com" },
@@ -43,7 +43,7 @@ describe("detectRequestIntent", () => {
   });
 
   it("returns null slug for ambiguous messages", async () => {
-    (generateObject as any).mockResolvedValue({
+    (generateObject as ReturnType<typeof vi.fn>).mockResolvedValue({
       object: {
         slug: null,
         payload: {},

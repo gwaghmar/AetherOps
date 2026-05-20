@@ -74,7 +74,8 @@ export async function POST(req: Request) {
     );
   }
 
-  let { requestTypeSlug, payload, message } = parsed.data;
+  const { message } = parsed.data;
+  let { requestTypeSlug, payload } = parsed.data;
 
   // AI-assisted intent detection if no explicit slug
   if (!requestTypeSlug && message) {

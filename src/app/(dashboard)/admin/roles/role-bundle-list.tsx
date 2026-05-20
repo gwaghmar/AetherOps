@@ -10,14 +10,38 @@ import {
 import { useToast } from "@/components/toast";
 import { Plus, Trash2, UserPlus, ShieldCheck, Box } from "lucide-react";
 
-export function RoleBundleList({ 
-  initialBundles, 
-  availableTypes, 
-  allUsers 
-}: { 
-  initialBundles: any[], 
-  availableTypes: any[], 
-  allUsers: any[] 
+interface BundleType {
+  id: string;
+  requestTypeId: string;
+  requestType: { title: string; slug: string };
+}
+
+interface Bundle {
+  id: string;
+  name: string;
+  description: string | null;
+  requestTypes: BundleType[];
+}
+
+interface RequestType {
+  id: string;
+  title: string;
+}
+
+interface OrgUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export function RoleBundleList({
+  initialBundles,
+  availableTypes,
+  allUsers,
+}: {
+  initialBundles: Bundle[];
+  availableTypes: RequestType[];
+  allUsers: OrgUser[];
 }) {
   const { toast } = useToast();
   const [showCreate, setShowCreate] = useState(false);
@@ -121,7 +145,7 @@ export function RoleBundleList({
                         <Box className="h-3.5 w-3.5" /> Bundle Contents
                      </h4>
                      <div className="space-y-2">
-                        {bundle.requestTypes.map((bt: any) => (
+                        {bundle.requestTypes.map((bt) => (
                           <div key={bt.id} className="flex items-center justify-between border rounded-lg px-3 py-2.5 text-sm shadow-sm" style={{ background: "var(--surface)", borderColor: "var(--line)" }}>
                              <span className="font-medium">{bt.requestType.title}</span>
                              <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: "var(--subtle)", color: "var(--ink-3)" }}>/{bt.requestType.slug}</span>
@@ -144,7 +168,7 @@ export function RoleBundleList({
                            >
                               <option value="" disabled>+ Add App/Type to Bundle</option>
                               {availableTypes
-                                .filter(t => !bundle.requestTypes.find((bt: any) => bt.requestTypeId === t.id))
+                                .filter(t => !bundle.requestTypes.find((bt) => bt.requestTypeId === t.id))
                                 .map(t => (
                                   <option key={t.id} value={t.id}>{t.title}</option>
                                 ))
