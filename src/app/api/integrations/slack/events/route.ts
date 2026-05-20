@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { organization, user as userTable } from "@/db/schema";
 import { verifySlackRequestSignature } from "@/lib/slack-signature";
@@ -121,7 +121,7 @@ async function processSlackMessage(input: {
     const [platformUser] = await db
       .select({ id: userTable.id })
       .from(userTable)
-      .where(eq(userTable.email, slackUser.email))
+      .where(and(eq(userTable.email, slackUser.email), eq(userTable.organizationId, org.id)))
       .limit(1);
 
     if (!platformUser) {
@@ -161,7 +161,7 @@ async function processSlackMessage(input: {
         });
         await sendConfirmationCard(botToken, slackUserId, threadTs, {
           conversationId: existing.id,
-          requestTypeTitle: result.slug,
+          requestTypeTitle: result.title ?? result.slug ?? "",
           payload: result.payload,
         });
       } else {

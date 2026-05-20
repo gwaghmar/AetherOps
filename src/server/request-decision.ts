@@ -101,10 +101,19 @@ export async function applyRequestDecision(input: {
           ),
         );
     } else if (decision === "approved") {
+      // Only count approvals from routed approvers — admin/non-routed clicks must not satisfy the quorum
+      const approvalWhere =
+        routingApproverIds.length > 0
+          ? and(
+              eq(approval.requestId, req.id),
+              eq(approval.decision, "approved"),
+              inArray(approval.approverId, routingApproverIds),
+            )
+          : and(eq(approval.requestId, req.id), eq(approval.decision, "approved"));
       const [countRow] = await tx
         .select({ count: sql<string>`count(*)` })
         .from(approval)
-        .where(and(eq(approval.requestId, req.id), eq(approval.decision, "approved")));
+        .where(approvalWhere);
 
       const approvedCount = Number(countRow?.count ?? 0);
 

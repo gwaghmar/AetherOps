@@ -103,6 +103,11 @@ export async function POST(req: Request) {
       });
     }
 
+    // Verify the clicker is the user who started this conversation
+    if (slackUserId !== conv.channelUserId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     // Atomic CAS: only the first of any concurrent duplicate requests wins
     const claimed = await db
       .update(intakeConvTable)
@@ -217,6 +222,10 @@ export async function POST(req: Request) {
 
   if (!platformUser) {
     return NextResponse.json({ text: "Error: Your Slack email is not registered in the platform." });
+  }
+
+  if (platformUser.organizationId !== organizationId) {
+    return NextResponse.json({ text: "Error: You are not authorized to act on this request." });
   }
 
   // 3. Apply decision

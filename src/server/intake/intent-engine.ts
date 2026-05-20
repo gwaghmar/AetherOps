@@ -11,6 +11,7 @@ import {
 export type IntentResult = {
   confidence: "high" | "low" | "none";
   slug: string | null;
+  title: string | null;
   payload: Record<string, unknown>;
   clarificationQuestion: string | null;
 };
@@ -30,6 +31,7 @@ export async function runIntentEngine(
     return {
       confidence: "none",
       slug: null,
+      title: null,
       payload: {},
       clarificationQuestion: "What type of access do you need?",
     };
@@ -48,6 +50,7 @@ export async function runIntentEngine(
     return {
       confidence: "none",
       slug: null,
+      title: null,
       payload: {},
       clarificationQuestion: q,
     };
@@ -89,6 +92,7 @@ export async function runIntentEngine(
     return {
       confidence: "low",
       slug: detected.slug,
+      title: catalogEntry?.title ?? null,
       payload: detected.payload,
       clarificationQuestion: q,
     };
@@ -97,6 +101,7 @@ export async function runIntentEngine(
   return {
     confidence: "high",
     slug: detected.slug,
+    title: catalogEntry?.title ?? null,
     payload: detected.payload,
     clarificationQuestion: null,
   };
