@@ -5,11 +5,9 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(".env.local") });
 dotenv.config({ path: path.resolve(".env") });
 
-/** Prefer app auth URL so Playwright’s Origin matches Better Auth `trustedOrigins` (localhost vs 127.0.0.1). */
 const baseURL =
   process.env.PLAYWRIGHT_BASE_URL?.trim() ||
   process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-  process.env.BETTER_AUTH_URL?.trim() ||
   "http://127.0.0.1:3000";
 
 function originOf(url: string): string {
@@ -20,7 +18,6 @@ function originOf(url: string): string {
   }
 }
 
-/** Must match Playwright `baseURL` so Better Auth cookies and CSRF trust the browser origin. */
 const e2ePublicOrigin = originOf(baseURL);
 
 const hasDb = Boolean(process.env.DATABASE_URL?.trim());
@@ -43,16 +40,26 @@ export default defineConfig({
     baseURL,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    // Pass Vercel Deployment Protection bypass header when testing remote deployments.
+    // Set VERCEL_AUTOMATION_BYPASS_SECRET in your env (Vercel Project Settings →
+    // Deployment Protection → Protection Bypass for Automation).
+    extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+      ? { "x-vercel-protection-bypass": process.env.VERCEL_AUTOMATION_BYPASS_SECRET }
+      : undefined,
   },
-  webServer: {
-    command: "npm run dev",
-    url: baseURL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
-    env: {
-      ...process.env,
-      BETTER_AUTH_URL: e2ePublicOrigin,
-      NEXT_PUBLIC_APP_URL: e2ePublicOrigin,
-    },
-  },
+  // webServer only spins up for local runs (no PLAYWRIGHT_BASE_URL)
+  ...(process.env.PLAYWRIGHT_BASE_URL
+    ? {}
+    : {
+        webServer: {
+          command: "npm run dev",
+          url: baseURL,
+          reuseExistingServer: !process.env.CI,
+          timeout: 180_000,
+          env: {
+            ...process.env,
+            NEXT_PUBLIC_APP_URL: e2ePublicOrigin,
+          },
+        },
+      }),
 });

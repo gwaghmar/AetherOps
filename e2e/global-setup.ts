@@ -10,6 +10,13 @@ export default async function globalSetup() {
     throw new Error("DATABASE_URL must be provided to run E2E specs. Failing fast.");
   }
 
+  // Skip schema push + seed when testing a remote deployment — the remote
+  // server manages its own DB and we must not push local schema onto it.
+  if (process.env.PLAYWRIGHT_BASE_URL?.trim()) {
+    console.log("[global-setup] Remote target detected — skipping schema push and seed.");
+    return;
+  }
+
   const root = path.resolve(__dirname, "..");
   execSync("npx drizzle-kit push --force", {
     cwd: root,

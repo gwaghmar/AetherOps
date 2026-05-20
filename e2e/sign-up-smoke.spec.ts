@@ -26,16 +26,44 @@ async function deleteTestUser(email: string) {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
   if (!url || !key) return;
 
-  const admin = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
-  const { data } = await admin.auth.admin.listUsers();
-  const match = data?.users?.find((u) => u.email === email);
-  if (match) {
-    await admin.auth.admin.deleteUser(match.id);
+  try {
+    const admin = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
+    const { data } = await admin.auth.admin.listUsers();
+    const match = data?.users?.find((u) => u.email === email);
+    if (match) {
+      await admin.auth.admin.deleteUser(match.id);
+    }
+  } catch {
+    // Cleanup is best-effort — don't fail the test if Supabase is unreachable
+  }
+}
+
+/** Returns true if the Supabase Auth API is reachable. */
+async function checkSupabaseReachable(): Promise<boolean> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  if (!url) return false;
+  try {
+    const res = await fetch(`${url}/auth/v1/health`, { signal: AbortSignal.timeout(8_000) });
+    return res.ok;
+  } catch {
+    return false;
   }
 }
 
 test.describe("Sign-up smoke test", () => {
   let testEmail: string;
+  let supabaseUp: boolean;
+
+  test.beforeAll(async () => {
+    supabaseUp = await checkSupabaseReachable();
+    if (!supabaseUp) {
+      console.warn(
+        "\n[smoke] Supabase Auth API unreachable — project may be paused.\n" +
+        "  → Go to https://supabase.com/dashboard and unpause the project.\n" +
+        "  → Form-submission tests will be skipped.\n",
+      );
+    }
+  });
 
   test.beforeEach(() => {
     testEmail = `smoke-${Date.now()}@test.aetherops.internal`;
@@ -57,6 +85,7 @@ test.describe("Sign-up smoke test", () => {
   });
 
   test("valid sign-up succeeds — redirects to /home or shows check-email", async ({ page }) => {
+    test.skip(!supabaseUp, "Supabase project is paused — unpause at supabase.com/dashboard");
     await page.goto("/sign-up");
     await page.getByLabel("Name").fill("Smoke Tester");
     await page.getByLabel("Email").fill(testEmail);
@@ -78,6 +107,7 @@ test.describe("Sign-up smoke test", () => {
   });
 
   test("duplicate email shows Supabase error", async ({ page }) => {
+    test.skip(!supabaseUp, "Supabase project is paused — unpause at supabase.com/dashboard");
     // First sign-up
     await page.goto("/sign-up");
     await page.getByLabel("Name").fill("First User");
