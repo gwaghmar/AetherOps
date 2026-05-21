@@ -27,7 +27,7 @@ function buildPoolConfig(): pg.PoolConfig {
     user: decodeURIComponent(u.username || "postgres"),
     password: decodeURIComponent(u.password || ""),
     database: u.pathname.replace(/^\//, "") || "postgres",
-    ssl: { rejectUnauthorized: process.env.NODE_ENV === "production" },
+    ssl: { rejectUnauthorized: false },
     ...base,
   };
 }
