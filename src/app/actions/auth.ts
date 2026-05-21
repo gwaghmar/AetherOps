@@ -16,11 +16,17 @@ export async function ensureUserProfileAction(
   if (!user) return { ok: false, error: "Not authenticated" };
   if (!user.email) return { ok: false, error: "Auth user has no email address" };
 
-  const existing = await db
-    .select({ id: userTable.id })
-    .from(userTable)
-    .where(eq(userTable.id, user.id))
-    .limit(1);
+  let existing;
+  try {
+    existing = await db
+      .select({ id: userTable.id })
+      .from(userTable)
+      .where(eq(userTable.id, user.id))
+      .limit(1);
+  } catch (dbErr: unknown) {
+    console.error("[ensureUserProfile] DB error:", (dbErr as Error).message, (dbErr as NodeJS.ErrnoException).code);
+    return { ok: false, error: "Database unavailable" };
+  }
 
   if (existing.length > 0) return { ok: true };
 
