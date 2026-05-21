@@ -44,7 +44,8 @@ async function checkSupabaseReachable(): Promise<boolean> {
   if (!url) return false;
   try {
     const res = await fetch(`${url}/auth/v1/health`, { signal: AbortSignal.timeout(8_000) });
-    return res.ok;
+    // 401 = API key required but service is up; anything < 500 means reachable
+    return res.status < 500;
   } catch {
     return false;
   }
@@ -81,7 +82,7 @@ test.describe("Sign-up smoke test", () => {
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign up" })).toBeVisible();
     // No error alert should be visible on initial load
-    await expect(page.getByRole("alert")).not.toBeVisible();
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).not.toBeVisible();
   });
 
   test("valid sign-up succeeds — redirects to /home or shows check-email", async ({ page }) => {
@@ -103,7 +104,7 @@ test.describe("Sign-up smoke test", () => {
     ]);
 
     // Confirm no error alert was shown
-    await expect(page.getByRole("alert")).not.toBeVisible();
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).not.toBeVisible();
   });
 
   test("duplicate email shows Supabase error", async ({ page }) => {

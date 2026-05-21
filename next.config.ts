@@ -25,8 +25,8 @@ const securityHeaders = [
       "img-src 'self' data: blob:",
       // Fonts loaded via next/font/google (Geist + Geist Mono) — self-hosted at build time, no external font-src needed
       "font-src 'self'",
-      // AI API calls go through our own API routes (server-side), no browser fetch to 3rd parties
-      "connect-src 'self'",
+      // Supabase Auth (client-side signUp/signIn) + AI API routes via own server
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
