@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-# Project Status — AetherOps (AI Service Now Vision)
+# Project Status — AetherOps
 
 ## What This Is
 

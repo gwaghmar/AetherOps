@@ -1,4 +1,4 @@
-# AI Service Now Vision: Master Plan & Synthesis
+# AetherOps: Master Plan & Synthesis
 
 *This document synthesizes all product vision documents (`docs/00-11`), research files, codebase audits, and roadmap planning into a single, comprehensive source of truth.*
 
@@ -55,4 +55,4 @@ The platform is now a hardened, production-grade suite for AI-native enterprise 
 ---
 
 ## 5. Vision Realized
-The AI Service Now Vision platform has successfully transitioned from a brownfield foundation to a state-of-the-art governance engine. It is now ready to support high-growth AI companies in automating their operational workflows with total trust and auditability.
+The AetherOps platform has successfully transitioned from a brownfield foundation to a state-of-the-art governance engine. It is now ready to support high-growth AI companies in automating their operational workflows with total trust and auditability.

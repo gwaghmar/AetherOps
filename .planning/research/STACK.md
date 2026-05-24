@@ -1,6 +1,6 @@
 # Technology Stack Direction (2026)
 
-**Project:** AI Service Now Vision  
+**Project:** AetherOps  
 **Scope:** Brownfield stack refinements for agent-native automation, multitenant safety, and enterprise operations  
 **Researched:** 2026-04-14
 

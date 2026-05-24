@@ -50,10 +50,10 @@
 ## Authentication & Identity
 
 **Auth Provider:**
-- Better Auth
-  - Implementation: server auth config and DB adapter in `src/lib/auth.ts`; Next.js route binding in `src/app/api/auth/[...all]/route.ts`
-  - Core auth env: `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`
-  - Optional social OAuth providers: Google (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`), GitHub (`GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`), Microsoft (`MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`, `MICROSOFT_TENANT_ID`)
+- Supabase Auth (`@supabase/ssr`)
+  - Implementation: browser/server clients in `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts`; session refresh in `src/middleware.ts`; OAuth/email-link callback in `src/app/api/auth/callback/route.ts`; session helpers in `src/lib/session.ts`
+  - Core auth env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+  - OAuth providers configured in the Supabase dashboard (Google, GitHub, Microsoft, etc.) rather than via env vars
 
 ## Monitoring & Observability
 
@@ -74,7 +74,7 @@
 ## Environment Configuration
 
 **Required env vars:**
-- Platform/core: `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, one of `DEFAULT_ORGANIZATION_ID` or `DEFAULT_ORGANIZATION_SLUG` (`README.md`, `src/lib/env.ts`)
+- Platform/core: `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, one of `DEFAULT_ORGANIZATION_ID` or `DEFAULT_ORGANIZATION_SLUG` (`README.md`, `src/lib/env.ts`)
 - AI: `APP_AI_PLATFORM_API_KEY` (fallback mode), optional `APP_AI_PLATFORM_BASE_URL`, `APP_AI_PLATFORM_MODEL` (`src/server/ai/client.ts`)
 - Billing: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, Stripe price IDs (`src/lib/stripe.ts`, `src/app/api/stripe/webhook/route.ts`)
 - Email: `RESEND_API_KEY`, optional `EMAIL_FROM` (`src/server/email/send-email.ts`)

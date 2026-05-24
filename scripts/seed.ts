@@ -870,8 +870,9 @@ async function main() {
 function printNextSteps() {
   console.log(`
 Next steps:
-1. Set DATABASE_URL, BETTER_AUTH_SECRET (32+ chars), BETTER_AUTH_URL, NEXT_PUBLIC_APP_URL,
-   and DEFAULT_ORGANIZATION_ID=${ORG_ID} (or DEFAULT_ORGANIZATION_SLUG) — see README.
+1. Set DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+   SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_APP_URL, and
+   DEFAULT_ORGANIZATION_ID=${ORG_ID} (or DEFAULT_ORGANIZATION_SLUG) — see README.
 2. npm run db:push   # or db:migrate (already applied if you ran this after push)
 3. npm run dev
 4. Sign up at /sign-up (users join the configured default organization).

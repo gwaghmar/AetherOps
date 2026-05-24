@@ -12,13 +12,15 @@ You **do not need Docker** unless you want the full local Supabase stack. The ap
 3. **Apply schema** (pick one):
    - **New empty database:** `npm run db:migrate` then `npm run db:seed`
    - **Quick dev / already in sync issues:** `npm run db:supabase:sync` (`db:push` + `db:seed`)
-4. **App env:** Copy `.env.example` → `.env.local` and fill `BETTER_AUTH_*`, `NEXT_PUBLIC_APP_URL`, `DEFAULT_ORGANIZATION_ID` (see repo `README.md`).
+4. **App env:** Copy `.env.example` → `.env.local` and fill `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, `DEFAULT_ORGANIZATION_ID` (see repo `README.md`).
+5. **Site URL + Redirect URLs:** In Supabase **Authentication → URL Configuration**, set Site URL to your public origin (e.g. `https://aetherops-govw.vercel.app`) and add it to Redirect URLs as `https://aetherops-govw.vercel.app/**`. Add `http://localhost:3000/**` for local dev.
 
 ## What Supabase provides here
 
-- **Managed Postgres** — primary requirement for this app  
-- **Dashboard** — SQL editor, logs, backups, connection strings  
-- **Optional later** — Auth is **Better Auth** in this codebase, not Supabase Auth; you can still use Supabase Storage/Realtime later if you add features
+- **Managed Postgres** — primary requirement for this app
+- **Auth** — sign-up, sign-in, sessions, magic links, OAuth (via `@supabase/ssr`)
+- **Dashboard** — SQL editor, logs, backups, connection strings, auth user management
+- **Optional later** — Storage and Realtime if you add features
 
 ## Optional CLI (no Docker required)
 

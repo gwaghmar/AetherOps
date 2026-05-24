@@ -11,15 +11,15 @@ For behavioral, catalog, or workflow work, read and follow [.cursor/skills/think
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
-**AI Service Now Vision**
+**AetherOps**
 
-AI Service Now Vision is a ServiceNow-style operations platform adapted for AI agents and AI-native companies. It manages service requests end-to-end: intake, policy checks, approvals, fulfillment, and audits across dashboard, API, and integration channels. The current system is already functional as a brownfield foundation and is being extended toward agent-native enterprise workflows.
+AetherOps is a ServiceNow-style operations platform adapted for AI agents and AI-native companies. It manages service requests end-to-end: intake, policy checks, approvals, fulfillment, and audits across dashboard, API, and integration channels. The current system is already functional as a brownfield foundation and is being extended toward agent-native enterprise workflows.
 
 **Core Value:** AI agents and humans can submit and complete governed operational requests with reliable approval, fulfillment, and audit trails in one platform.
 
 ### Constraints
 
-- **Tech stack**: Next.js 16 + React 19 + Drizzle/Postgres + Better Auth - leverage current architecture to ship quickly
+- **Tech stack**: Next.js 16 + React 19 + Drizzle/Postgres + Supabase Auth - leverage current architecture to ship quickly
 - **Security**: Multi-tenant correctness and fail-closed behavior are non-negotiable - prevents cross-tenant leakage and unauthorized actions
 - **Reliability**: Queue processing, policy checks, and rate limits must behave consistently across distributed deployments - platform trust depends on this
 - **Execution**: Brownfield-first evolution, not rewrite - preserve delivery velocity and reduce migration risk

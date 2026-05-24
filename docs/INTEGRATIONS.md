@@ -14,7 +14,7 @@ Verify signatures using the same HMAC scheme as other events (see `src/server/we
 
 ## Email approvals
 
-Set `RESEND_API_KEY` and `EMAIL_FROM` (or rely on dev console logging when unset). Optional `APPROVAL_EMAIL_SECRET` (or reuse `BETTER_AUTH_SECRET`) enables signed **Approve** / **Decline** links; approvers confirm on `/email-approval` before the decision is applied. One-time `jti` values are stored in `approval_email_nonce` for replay protection.
+Set `RESEND_API_KEY` and `EMAIL_FROM` (or rely on dev console logging when unset). `APPROVAL_EMAIL_SECRET` enables signed **Approve** / **Decline** links; approvers confirm on `/email-approval` before the decision is applied. One-time `jti` values are stored in `approval_email_nonce` for replay protection.
 
 ## GCP access after approval (customer automation)
 

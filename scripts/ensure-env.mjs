@@ -65,28 +65,12 @@ function need(key) {
   return !keys.has(key);
 }
 
-function weakAuth() {
-  const v = getVal(body, "BETTER_AUTH_SECRET");
-  return !v || v.includes("replace-with") || v.length < 32;
-}
-
-if (weakAuth()) {
-  if (keys.has("BETTER_AUTH_SECRET")) {
-    body = body.replace(
-      /^BETTER_AUTH_SECRET=.*$/m,
-      `BETTER_AUTH_SECRET="${b64(32)}"`,
-    );
-  } else {
-    additions.push(`BETTER_AUTH_SECRET="${b64(32)}"`);
-  }
-  console.log("Set BETTER_AUTH_SECRET");
-}
-
 const gen = [
   ["API_KEY_PEPPER", () => b64(32)],
   ["CRON_SECRET", () => b64(24)],
   ["CHAT_INGEST_SECRET", () => b64(24)],
   ["FIELD_ENCRYPTION_KEY", () => b64(32)],
+  ["APPROVAL_EMAIL_SECRET", () => b64(32)],
 ];
 
 for (const [key, genFn] of gen) {

@@ -1,8 +1,8 @@
-# AI Service Now Vision
+# AetherOps
 
 ## What This Is
 
-AI Service Now Vision is a ServiceNow-style operations platform adapted for AI agents and AI-native companies. It manages service requests end-to-end: intake, policy checks, approvals, fulfillment, and audits across dashboard, API, and integration channels. The current system is already functional as a brownfield foundation and is being extended toward agent-native enterprise workflows.
+AetherOps is a ServiceNow-style operations platform adapted for AI agents and AI-native companies. It manages service requests end-to-end: intake, policy checks, approvals, fulfillment, and audits across dashboard, API, and integration channels. The current system is already functional as a brownfield foundation and is being extended toward agent-native enterprise workflows.
 
 ## Core Value
 

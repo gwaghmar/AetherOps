@@ -1,6 +1,6 @@
-# Aether Ops
+# AetherOps
 
-Web app for the flow **request → approve → fulfill (connector) → audit + CSV export**, aligned with `COMBINED-VISION.md` in this repo. Fulfillment is pluggable: local **stub**, **http_webhook** for external automation, or additional connectors as you add them.
+Web app for the flow **request → approve → fulfill (connector) → audit + CSV export**. Fulfillment is pluggable: local **stub**, **http_webhook** for external automation, or additional connectors as you add them.
 
 ## Prerequisites
 
@@ -12,13 +12,16 @@ Web app for the flow **request → approve → fulfill (connector) → audit + C
 1. Copy `.env.example` to `.env` or `.env.local` and set:
 
    - `DATABASE_URL` — Postgres connection string. For Supabase cloud, use the **Direct** URI with `sslmode=require`. Production: never commit `sslmode=no-verify`.
-   - `BETTER_AUTH_SECRET` — at least 32 characters (`openssl rand -base64 32`)
-   - `BETTER_AUTH_URL` — e.g. `http://localhost:3000`
-   - `NEXT_PUBLIC_APP_URL` — same as public base URL
+   - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL (Project Settings → API)
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon/public key
+   - `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key (server-only)
+   - `NEXT_PUBLIC_APP_URL` — public base URL (e.g. `http://localhost:3000` in dev)
    - `DEFAULT_ORGANIZATION_ID` — id of the org new users join (e.g. `org_demo` after seed, or your prod org UUID)
    - Optional: `DEFAULT_ORGANIZATION_SLUG` instead of id (exactly one of id or slug should resolve a row)
    - Optional: `NEXT_PUBLIC_APP_NAME` — short product name in the shell and auth screens
-   - Optional: **Email** — `RESEND_API_KEY`, `EMAIL_FROM` (e.g. `Governance <noreply@yourdomain.com>`); optional `APPROVAL_EMAIL_SECRET` (defaults to `BETTER_AUTH_SECRET`) for signed approve/decline links in approver mail
+   - Optional: `API_KEY_PEPPER` — dedicated pepper for API key hashing
+   - Optional: `FIELD_ENCRYPTION_KEY` — 32-byte base64 key; required for connector vault + BYOK
+   - Optional: **Email** — `RESEND_API_KEY`, `EMAIL_FROM` (e.g. `Governance <noreply@yourdomain.com>`); optional `APPROVAL_EMAIL_SECRET` for signed approve/decline links in approver mail
    - Fulfillment: `PROVISION_CONNECTOR=stub` for dev/E2E; production use `http_webhook` with `PROVISION_WEBHOOK_URL` (and optional `PROVISION_WEBHOOK_BEARER`), or `ALLOW_STUB_PROVISION=true` only on staging
 
    In **production**, the app **fails fast on boot** if required env vars are missing, if `DATABASE_URL` uses `sslmode=no-verify`, if neither default-org env is set, or if `PROVISION_CONNECTOR=stub` without `ALLOW_STUB_PROVISION=true`.
@@ -125,7 +128,7 @@ Workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml): Postgres servic
 
 ## End-to-end tests (Playwright)
 
-With Postgres available and `.env` populated (`DATABASE_URL`, `BETTER_AUTH_SECRET` ≥32 chars, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`):
+With Postgres available and `.env` populated (`DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`):
 
 ```bash
 docker compose up -d   # optional: local Postgres on port 5432
@@ -148,12 +151,11 @@ The suite runs `drizzle-kit push --force` and `db:seed` once via global setup, s
 
 ## Production notes
 
-- Set `BETTER_AUTH_URL` (and `NEXT_PUBLIC_APP_URL`) to your **public HTTPS origin** so session cookies use `secure` when the URL is `https://…` (see `src/lib/auth.ts`).
+- Set `NEXT_PUBLIC_APP_URL` to your **public HTTPS origin** so session cookies use `secure` when the URL is `https://…`. Auth is handled by Supabase Auth (`@supabase/ssr`) — see `src/lib/supabase/server.ts` and `src/middleware.ts`.
 - `src/instrumentation.ts` logs missing env in production; fix deploy config if you see those warnings.
 - Security headers are applied in `next.config.ts`.
 
 ## Documentation
 
 - [docs/SETUP.md](./docs/SETUP.md) — operator checklist (DB, auth, AI BYOK, email, invites)
-- [COMBINED-VISION.md](./COMBINED-VISION.md) — product and architecture vision
-- [CONVERSATION-SUMMARY.md](./CONVERSATION-SUMMARY.md) — working notes
+- [docs/](./docs/) — numbered product/architecture docs (vision, personas, flows, policy model, connector arch, AI cost model, approvals, security, fallbacks, roadmap)

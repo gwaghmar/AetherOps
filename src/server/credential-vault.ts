@@ -4,10 +4,10 @@ import { connectorCredential } from "@/db/app-schema";
 import { and, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 
-/** 
- * ALGORITHM: AES-256-GCM 
+/**
+ * ALGORITHM: AES-256-GCM
  * Key must be 32 bytes exactly. We use FIELD_ENCRYPTION_KEY if present,
- * or fallback to a deterministic hash of BETTER_AUTH_SECRET if not in prod.
+ * or fall back to a deterministic hash of SUPABASE_SERVICE_ROLE_KEY outside production.
  */
 function getEncryptionKey(): Buffer {
   const keyStr = process.env.FIELD_ENCRYPTION_KEY;

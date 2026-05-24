@@ -108,7 +108,7 @@ export async function sendRequestCreatedNotifications(input: {
   <a href="${escapeHtml(input.reviewUrl)}" style="display:inline-block;padding:12px 20px;background:#f4f4f5;color:#18181b;text-decoration:none;border-radius:8px;">Full review</a>
 </p>`
         : `<p style="margin:20px 0;"><a href="${escapeHtml(input.reviewUrl)}" style="display:inline-block;padding:12px 20px;background:#18181b;color:#fff;text-decoration:none;border-radius:8px;">Open request</a></p>
-<p style="font-size:13px;color:#71717a;">One-click approve/decline requires APPROVAL_EMAIL_SECRET (or BETTER_AUTH_SECRET) to be set on the server.</p>`;
+<p style="font-size:13px;color:#71717a;">One-click approve/decline requires APPROVAL_EMAIL_SECRET to be set on the server.</p>`;
 
     const html = `<!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;max-width:560px;line-height:1.5;color:#18181b;">
 <h1 style="font-size:18px;">New request needs your decision</h1>

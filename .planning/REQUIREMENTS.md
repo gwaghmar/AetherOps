@@ -1,4 +1,4 @@
-# Requirements: AI Service Now Vision
+# Requirements: AetherOps
 
 **Defined:** 2026-04-14  
 **Core Value:** AI agents and humans can submit and complete governed operational requests with reliable approval, fulfillment, and audit trails in one platform.

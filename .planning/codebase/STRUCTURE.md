@@ -5,7 +5,7 @@
 ## Directory Layout
 
 ```text
-ai-service-now-vision/
+aetherops/
 ├── src/                     # Application source
 │   ├── app/                 # Next.js App Router pages, actions, API routes
 │   ├── components/          # Shared UI components

@@ -12,11 +12,11 @@ progress:
   percent: 14
 ---
 
-# STATE: AI Service Now Vision
+# STATE: AetherOps
 
 ## Project Reference
 
-- **Project**: AI Service Now Vision
+- **Project**: AetherOps
 - **Core value**: AI agents and humans can submit and complete governed operational requests with reliable approval, fulfillment, and audit trails in one platform.
 - **Execution model**: Brownfield-first evolution of the existing Next.js/TypeScript platform.
 - **Roadmap granularity**: fine

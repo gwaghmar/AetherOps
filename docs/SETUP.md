@@ -19,8 +19,9 @@ Use this when onboarding a new environment (startup, staging, production).
 
 ## 2. Auth and URLs
 
-1. `BETTER_AUTH_SECRET` (32+ chars), `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL` — all same public origin in production.
-2. `DEFAULT_ORGANIZATION_ID` or `DEFAULT_ORGANIZATION_SLUG` — must exist in `organization` before sign-ups.
+1. `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` — from Supabase Project Settings → API.
+2. `NEXT_PUBLIC_APP_URL` — public origin (must match Supabase Site URL + Redirect URLs in production).
+3. `DEFAULT_ORGANIZATION_ID` or `DEFAULT_ORGANIZATION_SLUG` — must exist in `organization` before sign-ups.
 
 ## 3. AI
 

@@ -1,6 +1,6 @@
 # Project Research Summary
 
-**Project:** AI Service Now Vision  
+**Project:** AetherOps  
 **Domain:** ServiceNow-style operations platform for AI agents and AI-native companies  
 **Researched:** 2026-04-14  
 **Confidence:** MEDIUM-HIGH

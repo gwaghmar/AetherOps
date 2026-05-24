@@ -1,6 +1,6 @@
-# Conversation summary — AI Service Platform vision
+# Conversation summary — AetherOps vision
 
-**Purpose:** This file captures the main threads from the working chat that led to [`COMBINED-VISION.md`](./COMBINED-VISION.md) and the research in this folder (`ai-service-now-vision`). It is **not** a transcript; it is a **structured memory** of questions, answers, and decisions.
+**Purpose:** This file captures the main threads from the working chat that led to [`COMBINED-VISION.md`](./COMBINED-VISION.md) and the research that became AetherOps. It is **not** a transcript; it is a **structured memory** of questions, answers, and decisions.
 
 **Last updated:** 4 April 2026  
 
