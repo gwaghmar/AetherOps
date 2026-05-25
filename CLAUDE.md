@@ -15,6 +15,16 @@ ServiceNow-style operations platform for AI-native companies. Manages service re
 **Real production URL: `https://aetherops-govw.vercel.app`** (project: `aetherops`, team: `govw`)
 Note: `aetherops.vercel.app` does NOT exist — always use `aetherops-govw.vercel.app`.
 
+## Rules Claude must follow
+
+- **Next.js 16 + React 19**: APIs differ from training data. Read `node_modules/next/dist/docs/` before writing framework code and heed deprecation notices (see AGENTS.md header).
+- **Product/UX/catalog work**: trigger the `think-first-and-validate` skill at `.cursor/skills/think-first-and-validate/SKILL.md` — restate intent, sketch options, validate against ITSM/service-catalog norms, then implement. Catalog category mappings live in `src/lib/catalog-categories.ts`; unmapped slugs surface as "Other services."
+- **GSD workflow**: per AGENTS.md, route file edits through `/gsd-quick`, `/gsd-debug`, or `/gsd-execute-phase` unless the user explicitly bypasses.
+- **Multi-tenant correctness is non-negotiable**: every query must filter by `organizationId`. Use `requireSession()` / `requireRole()` from `src/lib/session.ts` at every action/route boundary.
+- **Append-only audit**: never UPDATE or DELETE rows in `audit_event`. Add new rows via `src/server/audit.ts`.
+- **Production fail-fast**: `src/lib/env.ts` aborts boot in production if required env is missing, if `DATABASE_URL` uses `sslmode=no-verify`, if no default-org env is set, or if `PROVISION_CONNECTOR=stub` without `ALLOW_STUB_PROVISION=true`. Treat startup warnings as bugs.
+- **Design tokens, not Tailwind colors**: see the token table below; no hardcoded color classes in `src/`.
+
 ## Auth Stack
 
 Auth is **Supabase Auth** (`@supabase/ssr`). AGENTS.md references Better Auth — that was removed.
@@ -24,7 +34,7 @@ Auth is **Supabase Auth** (`@supabase/ssr`). AGENTS.md references Better Auth �
 | `src/lib/supabase/client.ts` | Browser Supabase client |
 | `src/lib/supabase/server.ts` | Server Supabase client (reads cookies) |
 | `src/lib/session.ts` | `getSession()` / `requireSession()` / `requireRole()` — reads Supabase auth user + queries `user` table for role/profile |
-| `src/middleware.ts` | Refreshes Supabase session on every request (must not contain custom logic between `createServerClient` and `getUser`) |
+| `src/proxy.ts` | Refreshes Supabase session on every request (Next.js 16 replaces `middleware` with `proxy`; must not contain custom logic between `createServerClient` and `getUser`) |
 | `src/app/api/auth/callback/route.ts` | OAuth / email-link callback — creates user profile row |
 | `src/app/actions/auth.ts` | `ensureUserProfileAction` — called after direct sign-up to create profile row |
 
@@ -55,18 +65,23 @@ npm run db:migrate       # apply pending migrations to DB
 npm run db:push          # push schema directly to DB (dev/staging only)
 npm run db:studio        # open Drizzle Studio GUI
 npm run db:seed          # seed demo data
+npm run db:supabase:sync # db:push + db:seed against current DATABASE_URL
 
 # Tests
-npm run test:unit        # run all Vitest unit tests
-npm run test:e2e         # run all Playwright e2e tests
-npx vitest run tests/request-schemas.test.ts  # run single unit test file
-npx playwright test e2e/governance-flow.spec.ts  # run single e2e spec
+npm run test:unit        # all Vitest unit tests (tests/**/*.test.ts)
+npm run test:e2e         # all Playwright e2e specs (e2e/**/*.spec.ts) — requires DATABASE_URL
+npx vitest run tests/request-schemas.test.ts        # single unit test file
+npx vitest run -t "rate limit"                       # single test by name
+npx playwright test e2e/governance-flow.spec.ts      # single e2e spec
+npx playwright test --ui                             # Playwright UI mode
 
 # Vercel / prod
 vercel env ls
 vercel logs --environment production --limit 50
 vercel deploy --prod --yes
 ```
+
+Playwright `globalSetup` runs `drizzle-kit push --force` + `db:seed` once before the suite and starts `npm run dev` automatically. Set `PLAYWRIGHT_BASE_URL` to target a deployed URL instead of spinning up a local server.
 
 ## Architecture
 
@@ -78,9 +93,20 @@ src/app/sign-in|sign-up   — auth pages
 src/app/api/**            — HTTP endpoints (v1 REST, webhooks, cron workers, admin export)
 src/app/actions/**        — "use server" mutations; validate → delegate to src/server/**
 src/server/**             — domain/service layer (request lifecycle, AI, email, connectors)
-src/db/**                 — Drizzle schema + shared pg connection
+src/db/**                 — Drizzle schema (app-schema.ts + auth-schema.ts) + shared pg connection
 src/lib/**                — utilities, env, auth helpers
+src/proxy.ts              — Next.js 16 proxy (formerly middleware) for Supabase session refresh
 ```
+
+Path alias: `@/*` → `./src/*` (`tsconfig.json`). Always use the alias rather than deep relative imports.
+
+### External HTTP surfaces
+
+- `POST /api/v1/requests` — agent-facing request creation. Auth: `Authorization: Bearer gk_<lookupId>_<secret>`. Per-IP and per-key rate-limited (in-memory; tune via `AGENT_API_RATE_LIMIT_IP_PER_MIN` / `AGENT_API_RATE_LIMIT_KEY_PER_MIN`). 429 includes `Retry-After`.
+- `POST /api/v1/ingest/chat` — Slack/Teams/bot ingest. Auth: `X-Chat-Ingest-Secret`. Requires `CHAT_INGEST_SECRET` + `CHAT_INGEST_ORG_ID`.
+- `POST /api/internal/worker/fulfillment` — cron drain for pending `fulfillment_job` rows. Auth: `Authorization: Bearer <CRON_SECRET>`.
+- `GET /api/admin/audit-pdf?from=…&to=…` — PDF evidence pack (admin only).
+- `POST /api/stripe/webhook`, `POST /api/integrations/slack/interactions` — third-party callbacks; verify signatures before processing.
 
 ### Request lifecycle
 
@@ -194,7 +220,6 @@ Sign-up at `https://aetherops-govw.vercel.app/sign-up` was returning "Failed to 
 - [ ] **Slack integration** — add `SLACK_SIGNING_SECRET`
 - [ ] **Webhook fulfillment** — set `PROVISION_CONNECTOR=http_webhook` + `PROVISION_WEBHOOK_URL`
 - [ ] **OpenRouter fallback** — add `AI_OPENROUTER_API_KEY`
-- [ ] **Middleware rename** — Next.js 16 deprecates `middleware`; rename `src/middleware.ts` → `src/proxy.ts`
 
 ### Code Quality
 - [ ] E2E tests for access reviews, vault, SSO flows
